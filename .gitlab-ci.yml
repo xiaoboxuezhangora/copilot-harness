@@ -1,5 +1,11 @@
 image: node:22-alpine
 
+workflow:
+  rules:
+    - if: '$ENABLE_GITLAB_CI == "1"'
+      when: always
+    - when: never
+
 stages:
   - lint
   - typecheck

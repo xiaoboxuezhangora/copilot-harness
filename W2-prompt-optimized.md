@@ -4,7 +4,7 @@
 
 # 背景
 
-- W1 已完成：单仓 `copilot-harness` 下建好 `orchestrator/`、`skills/`、`playbooks/` 三个工作区目录，pnpm workspace + CI 绿、AGENTS.md v1 合入
+- W1 已完成：单仓 `copilot-harness` 下建好 `orchestrator/`、`skills/`、`playbooks/` 三个工作区目录，pnpm workspace + 本地质量门通过、AGENTS.md v1 合入；GitLab Runner 后移，CI 通过 `ENABLE_GITLAB_CI=1` 启用
 - 现有 skeleton 目录：`src/runtime/` / `src/gates/` / `src/context/` / `src/memory/` / `src/audit/`
 - 现有类型定义：`TurnState`（五态）、`AgentRuntime` 接口占位、`BudgetGate` / `PolicyGate` / `Validator` 接口占位、`ContextAssembler` 接口占位、`MemoryClient` 接口占位、`AuditLogger` / `OTelExporter` 接口占位
 - 本周重点：跑通 **CLI → orchestrator → SDK → gpt-5-mini → JiraReader MCP** 的端到端链路
@@ -115,7 +115,7 @@ interface AgentRuntime {
 - JiraReader MCP Server 子包 + 本地运行文档（`mcp-servers/jira-reader/README.md`）
 - `pnpm smoke` 输出示例（至少 1 条 Jira issue 的 JSON，两个 Runtime 各一次）
 - `audit.log` 示例（至少 2 条 JSONL 记录）
-- CI 绿截图
+- 本地质量门输出；GitLab CI 绿截图在 Runner 启用后补证
 
 # 自检清单（交付前逐项自查）
 

@@ -42,7 +42,9 @@ pnpm test
 pnpm format:check
 ```
 
-The root GitLab CI mirrors these commands with `pnpm --dir orchestrator ...`.
+The root GitLab CI mirrors these commands with `pnpm --dir orchestrator ...`. Until a
+GitLab Runner is assigned to the project, the pipeline is opt-in through
+`ENABLE_GITLAB_CI=1` so W2 feature work is not blocked by pending jobs.
 
 ## Key Documents
 

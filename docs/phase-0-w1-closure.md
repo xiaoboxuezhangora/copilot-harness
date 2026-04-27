@@ -42,7 +42,8 @@ Expected W1 result:
 These cannot be truthfully generated from the local workspace alone:
 
 - First MR URL after pushing the W1 branch.
-- Green GitLab pipeline URL or screenshot after Runner execution.
+- Green GitLab pipeline URL or screenshot after Runner enablement. Runner setup is
+  deferred to a later infrastructure milestone; W2 proceeds with local quality gates.
 - Branch protection screenshot after GitLab Settings are updated.
 
 Attach those links or screenshots to the W1 MR before marking the Notion checklist fully done.

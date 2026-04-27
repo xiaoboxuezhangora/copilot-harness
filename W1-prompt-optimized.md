@@ -89,6 +89,7 @@ SSO / 病案 / 输血闭环 / PDA / CA 签名 / Evidence Pack / turn_state / Bud
 - image：`node:22-alpine`（与 `.nvmrc` 对齐）
 - cache：pnpm store
 - 通过 `pnpm --dir orchestrator ...` 执行包内命令
+- Runner 未就绪时，CI 通过 `ENABLE_GITLAB_CI=1` 显式启用，避免无 Runner 环境产生阻塞流水线
 
 # 约束
 
@@ -103,7 +104,7 @@ SSO / 病案 / 输血闭环 / PDA / CA 签名 / Evidence Pack / turn_state / Bud
 
 - 单仓 GitLab URL + W1 首个 MR 链接
 - `docs/adr/0001-w1-monorepo.md` 单仓决策记录
-- CI 绿截图
+- 本地质量门输出；GitLab CI 绿截图在 Runner 启用后补证
 - `AGENTS.md` 全文（主文件 + `docs/agents/` 拆分文件）可直接发团队评审
 - `docs/agents/glossary.md` 术语表初稿
 

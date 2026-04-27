@@ -44,7 +44,7 @@ Phase 0 — W1 仓库骨架（Notion: Phase 0 — 前置准备 + Harness 骨架 
 ## 需人工补证
 
 - [ ] GitLab MR 链接
-- [ ] GitLab CI 绿链接或截图
+- [ ] GitLab CI 绿链接或截图（Runner 启用后补证；W2 前先以本地质量门为准）
 - [ ] GitLab branch protection 配置截图
 
 ## 评审重点
