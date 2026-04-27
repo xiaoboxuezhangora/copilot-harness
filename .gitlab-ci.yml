@@ -1,0 +1,36 @@
+image: node:22-alpine
+
+stages:
+  - lint
+  - typecheck
+  - test
+
+default:
+  cache:
+    key: pnpm-${CI_COMMIT_REF_SLUG}
+    paths:
+      - .pnpm-store
+  before_script:
+    - corepack enable
+    - pnpm --dir orchestrator config set store-dir ../.pnpm-store
+    - pnpm --dir orchestrator install --frozen-lockfile
+
+format-check:
+  stage: lint
+  script:
+    - pnpm --dir orchestrator format:check
+
+lint:
+  stage: lint
+  script:
+    - pnpm --dir orchestrator lint
+
+typecheck:
+  stage: typecheck
+  script:
+    - pnpm --dir orchestrator typecheck
+
+test:
+  stage: test
+  script:
+    - pnpm --dir orchestrator test

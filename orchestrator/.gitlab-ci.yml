@@ -7,8 +7,6 @@ stages:
   - eval
 
 default:
-  tags:
-    - __RUNNER_TAG__
   cache:
     key: pnpm-${CI_COMMIT_REF_SLUG}
     paths:
@@ -16,7 +14,12 @@ default:
   before_script:
     - corepack enable
     - pnpm config set store-dir .pnpm-store
-    - pnpm install --no-frozen-lockfile
+    - pnpm install --frozen-lockfile
+
+format-check:
+  stage: lint
+  script:
+    - pnpm format:check
 
 lint:
   stage: lint
