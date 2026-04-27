@@ -1,0 +1,63 @@
+image: node:22-alpine
+
+stages:
+  - lint
+  - typecheck
+  - test
+  - eval
+
+default:
+  tags:
+    - __RUNNER_TAG__
+  cache:
+    key: pnpm-${CI_COMMIT_REF_SLUG}
+    paths:
+      - .pnpm-store
+  before_script:
+    - corepack enable
+    - pnpm config set store-dir .pnpm-store
+    - pnpm install --no-frozen-lockfile
+
+lint:
+  stage: lint
+  script:
+    - pnpm lint
+
+typecheck:
+  stage: typecheck
+  script:
+    - pnpm typecheck
+
+test:
+  stage: test
+  script:
+    - pnpm test
+
+# ── Eval ──────────────────────────────────────────────────────────────────────
+# smoke: runs on every MR — 10 core cases, blocks merge if passRate < 90%
+# full:  runs on weekly schedule (Monday 09:00) — 50 cases, checks R9 baseline
+# Both stages are no-ops until eval/ directory is built in Phase 2 (W3).
+
+eval-smoke:
+  stage: eval
+  script:
+    - |
+      if [ -f eval/runner.ts ]; then
+        pnpm eval --suite smoke
+      else
+        echo "eval/ not yet implemented (Phase 2). Skipping."
+      fi
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+
+eval-full:
+  stage: eval
+  script:
+    - |
+      if [ -f eval/runner.ts ]; then
+        pnpm eval --suite full
+      else
+        echo "eval/ not yet implemented (Phase 2). Skipping."
+      fi
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
