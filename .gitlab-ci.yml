@@ -18,25 +18,25 @@ default:
       - .pnpm-store
   before_script:
     - corepack enable
-    - pnpm --dir orchestrator config set store-dir ../.pnpm-store
-    - pnpm --dir orchestrator install --frozen-lockfile
+    - pnpm config set store-dir .pnpm-store
+    - pnpm install --frozen-lockfile --ignore-scripts
 
 format-check:
   stage: lint
   script:
-    - pnpm --dir orchestrator format:check
+    - pnpm format:check
 
 lint:
   stage: lint
   script:
-    - pnpm --dir orchestrator lint
+    - pnpm lint
 
 typecheck:
   stage: typecheck
   script:
-    - pnpm --dir orchestrator typecheck
+    - pnpm typecheck
 
 test:
   stage: test
   script:
-    - pnpm --dir orchestrator test
+    - pnpm test

@@ -12,9 +12,10 @@ workstreams.
 | Path                         | Purpose                                                  | W1 status              |
 | ---------------------------- | -------------------------------------------------------- | ---------------------- |
 | `orchestrator/`              | TypeScript orchestration service skeleton                | Active package         |
+| `mcp-servers/jira-reader/`   | Read-only Jira MCP server                                | W2 implementation      |
 | `skills/`                    | Agent Skill assets under `.github/skills/`               | Bootstrap placeholders |
 | `playbooks/`                 | Ordered workflow playbooks under `.github/playbooks/`    | Bootstrap placeholder  |
-| `docs/adr/`                  | Architecture decisions for repository and delivery shape | Monorepo ADR           |
+| `docs/adr/`                  | Architecture decisions for repository and delivery shape | Monorepo ADRs          |
 | `docs/phase-0-w1-closure.md` | W1 completion evidence and remaining GitLab proof        | W1 closure note        |
 
 ## W1 Acceptance Shape
@@ -32,23 +33,31 @@ cross-project release cadence requires it.
 
 ## Local Validation
 
-Run the W1 quality gate from the package directory:
+Run the current quality gate from the repository root:
 
 ```sh
-cd orchestrator
 pnpm lint
 pnpm typecheck
 pnpm test
 pnpm format:check
 ```
 
-The root GitLab CI mirrors these commands with `pnpm --dir orchestrator ...`. Until a
-GitLab Runner is assigned to the project, the pipeline is opt-in through
+The W2-A acceptance gate can still target the orchestrator package directly:
+
+```sh
+pnpm --dir orchestrator lint
+pnpm --dir orchestrator typecheck
+pnpm --dir orchestrator test
+```
+
+The root GitLab CI installs the root pnpm workspace and dispatches package quality gates through
+root scripts. Until a GitLab Runner is assigned to the project, the pipeline is opt-in through
 `ENABLE_GITLAB_CI=1` so W2 feature work is not blocked by pending jobs.
 
 ## Key Documents
 
 - [Monorepo ADR](docs/adr/0001-w1-monorepo.md)
+- [W2-A runtime and MCP ownership ADR](docs/adr/0002-w2a-runtime-and-mcp-ownership.md)
 - [W1 closure note](docs/phase-0-w1-closure.md)
 - [Orchestrator AGENTS.md](orchestrator/AGENTS.md)
 - [W1 MR description draft](orchestrator/.gitlab/W1-MR-description.md)

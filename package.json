@@ -1,0 +1,14 @@
+{
+  "name": "copilot-harness",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@10.6.2",
+  "scripts": {
+    "format:check": "pnpm -r --if-present format:check",
+    "eval": "pnpm --filter @copilot-harness/orchestrator eval",
+    "lint": "pnpm -r --if-present lint",
+    "smoke": "pnpm --filter @copilot-harness/orchestrator smoke",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "test": "pnpm -r --if-present test"
+  }
+}
