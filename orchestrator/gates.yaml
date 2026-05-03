@@ -1,0 +1,5 @@
+maxFanout: 4
+maxToolCalls: 8
+maxInputTokens: 10000
+maxOutputTokens: 4000
+maxPremiumRequests: 1
