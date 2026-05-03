@@ -30,7 +30,7 @@ type TurnState =
 - strict 模式，禁止 any，优先 unknown + type guard。
 - 命名：camelCase 变量/函数，PascalCase 类型/接口，UPPER_SNAKE 常量。
 - 异步统一 async/await，禁止裸 then 链。
-- 错误处理使用自定义 Error 继承体系，禁止 catch(e: any)。
+- 错误处理使用自定义 Error 继承体系，禁止 catch 参数使用 any。
 
 ## 外挂文档
 

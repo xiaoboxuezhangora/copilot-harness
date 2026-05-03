@@ -21,7 +21,7 @@
 ## 4. 错误处理
 
 - 使用自定义 Error 继承体系（如 `PolicyGateError`、`ValidationError`）。
-- 禁止 `catch (e: any)`，统一 `catch (error: unknown)` 并做类型收敛。
+- 禁止 catch 参数使用 `any`，统一 `catch (error: unknown)` 并做类型收敛。
 - 错误消息禁止包含密钥、token、内网地址等敏感信息。
 
 ## 5. 可测试性
