@@ -1,0 +1,405 @@
+{
+  "promptVersion": "jira-analysis-prompt@0.1",
+  "samples": [
+    {
+      "id": "sso-1",
+      "domain": "SSO",
+      "issue": {
+        "key": "SSO-101",
+        "summary": "SSO login failure on mobile",
+        "description": "Users cannot complete SSO login after app upgrade.",
+        "status": "Open",
+        "priority": "High",
+        "assignee": "Identity Team",
+        "labels": ["sso", "mobile"],
+        "project": "IAM"
+      },
+      "source_ref": "jira://SSO-101",
+      "ground_truth": {
+        "modules": ["auth", "mobile"],
+        "expected_skill": "jira-requirement-analysis",
+        "expected_conclusion": "needs cross-module investigation"
+      }
+    },
+    {
+      "id": "sso-2",
+      "domain": "SSO",
+      "issue": {
+        "key": "SSO-102",
+        "summary": "SSO session timeout clarification",
+        "description": "Confirm whether timeout should be 15 or 30 minutes.",
+        "status": "Open",
+        "priority": "Medium",
+        "assignee": "Platform Team",
+        "labels": ["sso", "session"],
+        "project": "IAM"
+      },
+      "source_ref": "jira://SSO-102",
+      "ground_truth": {
+        "modules": ["auth"],
+        "expected_skill": "jira-requirement-analysis",
+        "expected_conclusion": "needs requirement clarification"
+      }
+    },
+    {
+      "id": "sso-3",
+      "domain": "SSO",
+      "issue": {
+        "key": "SSO-103",
+        "summary": "SSO audit log cleanup",
+        "description": "Remove stale session audit entries after retention period.",
+        "status": "In Progress",
+        "priority": "Low",
+        "assignee": "Identity Team",
+        "labels": ["sso", "audit"],
+        "project": "IAM"
+      },
+      "source_ref": "jira://SSO-103",
+      "ground_truth": {
+        "modules": ["audit", "auth"],
+        "expected_skill": "jira-requirement-analysis",
+        "expected_conclusion": "ready for implementation planning"
+      }
+    },
+    {
+      "id": "sso-4",
+      "domain": "SSO",
+      "issue": {
+        "key": "SSO-104",
+        "summary": "SSO consent screen copy",
+        "description": "Text on consent screen should mention enterprise login.",
+        "status": "Open",
+        "priority": "Medium",
+        "assignee": "UX Team",
+        "labels": ["sso", "ui"],
+        "project": "IAM"
+      },
+      "source_ref": "jira://SSO-104",
+      "ground_truth": {
+        "modules": ["ui", "auth"],
+        "expected_skill": "jira-requirement-analysis",
+        "expected_conclusion": "needs copy review"
+      }
+    },
+    {
+      "id": "sso-5",
+      "domain": "SSO",
+      "issue": {
+        "key": "SSO-105",
+        "summary": "SSO account link edge case",
+        "description": "Linking a second account may duplicate tokens.",
+        "status": "Open",
+        "priority": "High",
+        "assignee": "Identity Team",
+        "labels": ["sso", "token"],
+        "project": "IAM"
+      },
+      "source_ref": "jira://SSO-105",
+      "ground_truth": {
+        "modules": ["auth", "backend"],
+        "expected_skill": "jira-requirement-analysis",
+        "expected_conclusion": "needs security review"
+      }
+    },
+    {
+      "id": "case-1",
+      "domain": "病案",
+      "issue": {
+        "key": "CASE-201",
+        "summary": "病案归档状态同步",
+        "description": "归档状态在多个页面显示不一致，需要统一口径。",
+        "status": "Open",
+        "priority": "High",
+        "assignee": "Clinical Ops",
+        "labels": ["病案", "sync"],
+        "project": "MED"
+      },
+      "source_ref": "jira://CASE-201",
+      "ground_truth": {
+        "modules": ["clinical-records", "ui"],
+        "expected_skill": "jira-requirement-analysis",
+        "expected_conclusion": "await_human"
+      }
+    },
+    {
+      "id": "case-2",
+      "domain": "病案",
+      "issue": {
+        "key": "CASE-202",
+        "summary": "病案字段展示优化",
+        "description": "只调整列表展示，不变更原始病案内容。",
+        "status": "Open",
+        "priority": "Medium",
+        "assignee": "Clinical Ops",
+        "labels": ["病案", "list"],
+        "project": "MED"
+      },
+      "source_ref": "jira://CASE-202",
+      "ground_truth": {
+        "modules": ["ui", "clinical-records"],
+        "expected_skill": "jira-requirement-analysis",
+        "expected_conclusion": "await_human"
+      }
+    },
+    {
+      "id": "case-3",
+      "domain": "病案",
+      "issue": {
+        "key": "CASE-203",
+        "summary": "病案查询条件说明",
+        "description": "需求未明确查询范围和例外规则。",
+        "status": "Open",
+        "priority": "High",
+        "assignee": "Clinical Ops",
+        "labels": ["病案", "search"],
+        "project": "MED"
+      },
+      "source_ref": "jira://CASE-203",
+      "ground_truth": {
+        "modules": ["backend", "clinical-records"],
+        "expected_skill": "jira-requirement-analysis",
+        "expected_conclusion": "needs requirement clarification"
+      }
+    },
+    {
+      "id": "case-4",
+      "domain": "病案",
+      "issue": {
+        "key": "CASE-204",
+        "summary": "病案附件展示脱敏",
+        "description": "附件列表要展示元数据，不暴露正文。",
+        "status": "In Progress",
+        "priority": "Low",
+        "assignee": "Clinical Ops",
+        "labels": ["病案", "attachment"],
+        "project": "MED"
+      },
+      "source_ref": "jira://CASE-204",
+      "ground_truth": {
+        "modules": ["attachments", "ui"],
+        "expected_skill": "jira-requirement-analysis",
+        "expected_conclusion": "ready for implementation planning"
+      }
+    },
+    {
+      "id": "case-5",
+      "domain": "病案",
+      "issue": {
+        "key": "CASE-205",
+        "summary": "病案列表排序",
+        "description": "按最近更新时间排序。",
+        "status": "Open",
+        "priority": "Medium",
+        "assignee": "Clinical Ops",
+        "labels": ["病案", "sort"],
+        "project": "MED"
+      },
+      "source_ref": "jira://CASE-205",
+      "ground_truth": {
+        "modules": ["backend", "ui"],
+        "expected_skill": "jira-requirement-analysis",
+        "expected_conclusion": "needs implementation scoping"
+      }
+    },
+    {
+      "id": "transfusion-1",
+      "domain": "输血",
+      "issue": {
+        "key": "TX-301",
+        "summary": "输血前核对步骤调整",
+        "description": "增加床旁二次核对提醒。",
+        "status": "Open",
+        "priority": "High",
+        "assignee": "Clinical Safety",
+        "labels": ["输血", "workflow"],
+        "project": "BLOOD"
+      },
+      "source_ref": "jira://TX-301",
+      "ground_truth": {
+        "modules": ["workflow", "ui"],
+        "expected_skill": "jira-requirement-analysis",
+        "expected_conclusion": "needs safety review"
+      }
+    },
+    {
+      "id": "transfusion-2",
+      "domain": "输血",
+      "issue": {
+        "key": "TX-302",
+        "summary": "输血闭环状态补齐",
+        "description": "状态机缺少一个中间态，影响追踪。",
+        "status": "Open",
+        "priority": "High",
+        "assignee": "Clinical Safety",
+        "labels": ["输血", "state"],
+        "project": "BLOOD"
+      },
+      "source_ref": "jira://TX-302",
+      "ground_truth": {
+        "modules": ["state-machine", "audit"],
+        "expected_skill": "jira-requirement-analysis",
+        "expected_conclusion": "needs cross-module investigation"
+      }
+    },
+    {
+      "id": "transfusion-3",
+      "domain": "输血",
+      "issue": {
+        "key": "TX-303",
+        "summary": "输血记录导出",
+        "description": "导出格式需包含审批追踪。",
+        "status": "In Progress",
+        "priority": "Medium",
+        "assignee": "Reporting Team",
+        "labels": ["输血", "export"],
+        "project": "BLOOD"
+      },
+      "source_ref": "jira://TX-303",
+      "ground_truth": {
+        "modules": ["reporting", "audit"],
+        "expected_skill": "jira-requirement-analysis",
+        "expected_conclusion": "ready for implementation planning"
+      }
+    },
+    {
+      "id": "transfusion-4",
+      "domain": "输血",
+      "issue": {
+        "key": "TX-304",
+        "summary": "输血通知文案",
+        "description": "提示语要更明确但不能包含患者原文。",
+        "status": "Open",
+        "priority": "Low",
+        "assignee": "Clinical Safety",
+        "labels": ["输血", "ui"],
+        "project": "BLOOD"
+      },
+      "source_ref": "jira://TX-304",
+      "ground_truth": {
+        "modules": ["ui", "policy"],
+        "expected_skill": "jira-requirement-analysis",
+        "expected_conclusion": "await_human"
+      }
+    },
+    {
+      "id": "transfusion-5",
+      "domain": "输血",
+      "issue": {
+        "key": "TX-305",
+        "summary": "输血事件追踪查询",
+        "description": "需要按事件 id 检索闭环记录。",
+        "status": "Open",
+        "priority": "High",
+        "assignee": "Reporting Team",
+        "labels": ["输血", "search"],
+        "project": "BLOOD"
+      },
+      "source_ref": "jira://TX-305",
+      "ground_truth": {
+        "modules": ["search", "audit"],
+        "expected_skill": "jira-requirement-analysis",
+        "expected_conclusion": "needs requirement clarification"
+      }
+    },
+    {
+      "id": "pda-1",
+      "domain": "PDA",
+      "issue": {
+        "key": "PDA-401",
+        "summary": "PDA 扫码失败重试",
+        "description": "现场扫码偶发失败，需要增加重试提示。",
+        "status": "Open",
+        "priority": "High",
+        "assignee": "Device Team",
+        "labels": ["PDA", "scan"],
+        "project": "FIELD"
+      },
+      "source_ref": "jira://PDA-401",
+      "ground_truth": {
+        "modules": ["device", "ui"],
+        "expected_skill": "jira-requirement-analysis",
+        "expected_conclusion": "needs cross-module investigation"
+      }
+    },
+    {
+      "id": "pda-2",
+      "domain": "PDA",
+      "issue": {
+        "key": "PDA-402",
+        "summary": "PDA 离线缓存同步",
+        "description": "离线数据同步顺序不稳定。",
+        "status": "In Progress",
+        "priority": "High",
+        "assignee": "Device Team",
+        "labels": ["PDA", "offline"],
+        "project": "FIELD"
+      },
+      "source_ref": "jira://PDA-402",
+      "ground_truth": {
+        "modules": ["sync", "device"],
+        "expected_skill": "jira-requirement-analysis",
+        "expected_conclusion": "needs implementation scoping"
+      }
+    },
+    {
+      "id": "pda-3",
+      "domain": "PDA",
+      "issue": {
+        "key": "PDA-403",
+        "summary": "PDA 锁屏后续操作",
+        "description": "锁屏后需要明确恢复流程。",
+        "status": "Open",
+        "priority": "Medium",
+        "assignee": "Device Team",
+        "labels": ["PDA", "workflow"],
+        "project": "FIELD"
+      },
+      "source_ref": "jira://PDA-403",
+      "ground_truth": {
+        "modules": ["device", "workflow"],
+        "expected_skill": "jira-requirement-analysis",
+        "expected_conclusion": "needs requirement clarification"
+      }
+    },
+    {
+      "id": "pda-4",
+      "domain": "PDA",
+      "issue": {
+        "key": "PDA-404",
+        "summary": "PDA 图标更新",
+        "description": "只替换图标资源，不改交互逻辑。",
+        "status": "Open",
+        "priority": "Low",
+        "assignee": "UX Team",
+        "labels": ["PDA", "ui"],
+        "project": "FIELD"
+      },
+      "source_ref": "jira://PDA-404",
+      "ground_truth": {
+        "modules": ["ui"],
+        "expected_skill": "jira-requirement-analysis",
+        "expected_conclusion": "ready for implementation planning"
+      }
+    },
+    {
+      "id": "pda-5",
+      "domain": "PDA",
+      "issue": {
+        "key": "PDA-405",
+        "summary": "PDA 设备兼容范围",
+        "description": "需要列出支持机型和禁用机型。",
+        "status": "Open",
+        "priority": "High",
+        "assignee": "Device Team",
+        "labels": ["PDA", "compatibility"],
+        "project": "FIELD"
+      },
+      "source_ref": "jira://PDA-405",
+      "ground_truth": {
+        "modules": ["device", "policy"],
+        "expected_skill": "jira-requirement-analysis",
+        "expected_conclusion": "needs safety review"
+      }
+    }
+  ]
+}
