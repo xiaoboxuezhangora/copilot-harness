@@ -8,10 +8,7 @@ import { CallToolResultSchema } from '@modelcontextprotocol/sdk/types.js';
 
 import { AuditLogger } from './audit/index.js';
 import {
-  CopilotCliAdapter,
-  CopilotCliRuntime,
-  CopilotSdkAdapter,
-  CopilotSdkRuntime,
+  createBootstrappedRuntime,
   type AgentResult
 } from './runtime/index.js';
 import {
@@ -67,16 +64,14 @@ export async function runSmoke(
     // ── Runtime: contract stub or real execution ──
     const auditLogger = new AuditLogger(join(tempDir, 'audit.jsonl'));
     const allowExternalExecution = isLive;
-    const runtimeInstance =
-      runtimeName === 'sdk'
-        ? new CopilotSdkRuntime({
-            auditLogger,
-            adapter: new CopilotSdkAdapter({ allowExternalExecution })
-          })
-        : new CopilotCliRuntime({
-            auditLogger,
-            adapter: new CopilotCliAdapter({ allowExternalExecution })
-          });
+    const runtimeInstance = createBootstrappedRuntime({
+      runtime: runtimeName,
+      auditLogger,
+      allowExternalExecution,
+      autoMemory: {
+        enabled: process.env.AUTO_MEMORY_HARVEST !== '0'
+      }
+    });
 
     const result = await runtimeInstance.run({
       taskId: `w2-smoke-${runtimeName}-${mode}`,

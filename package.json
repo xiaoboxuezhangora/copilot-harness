@@ -7,8 +7,17 @@
     "format:check": "pnpm -r --if-present format:check",
     "eval": "pnpm --filter @copilot-harness/orchestrator eval",
     "lint": "pnpm -r --if-present lint",
-    "smoke": "pnpm --filter @copilot-harness/orchestrator smoke",
+    "skills:validate": "node scripts/validate-skills.mjs",
+    "showcase:evidence": "bash scripts/oc-evidence-closure.sh",
+    "showcase:lint": "pnpm --filter @copilot-harness/showcase lint",
+    "showcase:lint:readonly": "pnpm --filter @copilot-harness/showcase lint:readonly",
+    "showcase:typecheck": "pnpm --filter @copilot-harness/showcase typecheck",
+    "showcase:build": "pnpm --filter @copilot-harness/showcase build",
+    "smoke": "pnpm --filter @copilot-harness/orchestrator smoke -- --runtime sdk && pnpm --filter @copilot-harness/orchestrator smoke -- --runtime cli",
     "typecheck": "pnpm -r --if-present typecheck",
+    "w10:fleet-smoke": "pnpm --filter @copilot-harness/orchestrator w10:fleet-smoke",
+    "w8:current-eval": "bash scripts/run-w8-current-eval.sh",
+    "w8:mapping-draft": "bash scripts/run-w8-mapping-draft.sh",
     "test": "pnpm -r --if-present test"
   }
 }

@@ -9,12 +9,17 @@ coverage/
 # Runtime artifacts
 *.log
 reports/
+reports/memory.sqlite
+.memory/
 audit.log
+apps/showcase/.tmp/
 
 # Environment
 .env
 .env.*
 !.env.example
+secrets/
+secrets/*.env
 
 # IDE / OS
 .DS_Store
