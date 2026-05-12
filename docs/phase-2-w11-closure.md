@@ -10,9 +10,9 @@ Generated at: 2026-05-12
 - Gate 2 eval regression: PASS / mock regression evidence only
 - Gate 3 policy: PASS
 - Correction Capture fixture: PASS
-- Live GitLab MR proof: PENDING / no MR environment in current shell
+- Live GitLab MR proof: PARTIAL / Draft MR created, API auth pending
 
-W11 can close as a local deterministic implementation with fixture evidence. It is not a perfect live closure until one real GitLab draft MR runs the three gates and yields at least one actionable review discussion captured into `.memory/pending/correction-*.md`.
+W11 can close as a local deterministic implementation with fixture evidence. A draft MR has been created for live validation, but this is not a perfect live closure until the GitLab MR pipeline and review discussion evidence can be read through an authenticated API or logged-in browser session.
 
 ## Scope Boundary
 
@@ -94,6 +94,15 @@ Observed Review CLI fixture parsing:
 - `orchestrator/fixtures/w11-correction-discussions.json`
 
 Runtime artifact directories are ignored by git, so the report and pending files are evidence artifacts rather than source files.
+
+## Live MR Attempt
+
+- Branch: `codex/w11-live-closure`
+- Commit: `2510148`
+- Draft MR: `http://10.100.77.238/b.w_neu/copilot-harness/-/merge_requests/2`
+- Push result: branch pushed successfully and GitLab returned the MR URL.
+- Current API status: unauthenticated API calls return `401` or private-project `404`; the web page redirects to `/users/sign_in`.
+- Current limitation: pipeline jobs, MR discussions, and `source=gitlab_api` correction capture cannot be verified without a GitLab API token, `CI_JOB_TOKEN`, or authenticated browser session.
 
 ## Remaining Live Proof
 
