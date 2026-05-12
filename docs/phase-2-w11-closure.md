@@ -10,9 +10,10 @@ Generated at: 2026-05-12
 - Gate 2 eval regression: PASS / mock regression evidence only
 - Gate 3 policy: PASS
 - Correction Capture fixture: PASS
-- Live GitLab MR proof: PARTIAL / Draft MR created, API auth pending
+- Live GitLab API correction proof: PASS
+- Live GitLab MR pipeline execution: BLOCKED / no project runner available
 
-W11 can close as a local deterministic implementation with fixture evidence. A draft MR has been created for live validation, but this is not a perfect live closure until the GitLab MR pipeline and review discussion evidence can be read through an authenticated API or logged-in browser session.
+W11 can close as a local deterministic implementation with fixture evidence and as a real GitLab API correction-capture proof. It is not a perfect live CI closure yet because the GitLab MR pipeline is created from `merge_request_event` but remains queued without an available project runner.
 
 ## Scope Boundary
 
@@ -98,20 +99,62 @@ Runtime artifact directories are ignored by git, so the report and pending files
 ## Live MR Attempt
 
 - Branch: `codex/w11-live-closure`
-- Commit: `2510148`
+- Commits:
+  - `2510148` - W11 CI gates and correction capture implementation
+  - `82f4c53` - initial live MR attempt record
 - Draft MR: `http://10.100.77.238/b.w_neu/copilot-harness/-/merge_requests/2`
-- Push result: branch pushed successfully and GitLab returned the MR URL.
-- Current API status: unauthenticated API calls return `401` or private-project `404`; the web page redirects to `/users/sign_in`.
-- Current limitation: pipeline jobs, MR discussions, and `source=gitlab_api` correction capture cannot be verified without a GitLab API token, `CI_JOB_TOKEN`, or authenticated browser session.
+- MR state: opened draft MR; no automatic merge was enabled.
+- MR pipeline: `http://10.100.77.238/b.w_neu/copilot-harness/-/pipelines/3723`
+- MR pipeline source: `merge_request_event`
+- Actionable review discussion: `discussion:12f225b2dec8c0294ba0e5518db56d93d6f131b7`, `note:130921`
+
+Observed MR pipeline jobs:
+
+| Job                          | Job URL                                                     | Observed status |
+| ---------------------------- | ----------------------------------------------------------- | --------------- |
+| `w11-gate-1-quality`         | `http://10.100.77.238/b.w_neu/copilot-harness/-/jobs/13107` | `pending`       |
+| `w11-gate-2-eval-regression` | `http://10.100.77.238/b.w_neu/copilot-harness/-/jobs/13108` | `created`       |
+| `w11-gate-3-policy`          | `http://10.100.77.238/b.w_neu/copilot-harness/-/jobs/13109` | `created`       |
+| `w11-correction-capture`     | `http://10.100.77.238/b.w_neu/copilot-harness/-/jobs/13110` | `created`       |
+
+Runner availability check:
+
+- Project runners API returned an empty list.
+- Job `13107` remained `pending` with no assigned runner.
+- Therefore the MR pipeline wiring is proven, but job execution is blocked outside the repository by GitLab Runner availability.
+
+Live GitLab API correction capture:
+
+- Command shape: `automemory-capture-corrections --gitlab-base-url ... --project-id 2290 --mr-iid 2 --report reports/w11-correction-capture-live.json --audit-log reports/audit.log --output-dir .memory/pending/w11-live`
+- Token handling: token was supplied only as a process environment variable and was not written to source files, reports, pending candidates, or audit summaries.
+- Report: `reports/w11-correction-capture-live.json`
+- Pending file: `.memory/pending/w11-live/correction-2-20260512T125911Z.md`
+- `source`: `gitlab_api`
+- `status`: `captured`
+- `discussion_count`: 3
+- `note_count`: 3
+- `actionable_note_count`: 1
+- `pending_written_count`: 1
+- `skipped_redline_count`: 0
+
+Observed Review CLI live parsing:
+
+```sh
+pnpm --filter @copilot-harness/orchestrator automemory-review -- --dry-run --pending-dir ../.memory/pending/w11-live
+```
+
+- `pending_files`: 1
+- `candidate_total`: 1
+- Candidate kind: `correction`
+- Candidate source ref: `gitlab:2290#mr:2#discussion:12f225b2dec8c0294ba0e5518db56d93d6f131b7#note:130921`
 
 ## Remaining Live Proof
 
-Perfect W11 closure still requires one real GitLab draft MR with:
+Perfect W11 live CI closure still requires a GitLab runner to execute the already-created MR pipeline jobs:
 
-- MR pipeline created by `merge_request_event`.
-- `w11-gate-1-quality`, `w11-gate-2-eval-regression`, and `w11-gate-3-policy` all passing.
-- At least one actionable GitLab review discussion.
-- `w11-correction-capture` running with `CI_PROJECT_ID`, `CI_MERGE_REQUEST_IID`, and a read-only token available.
-- A generated `.memory/pending/correction-*.md` file from `source=gitlab_api`.
+- `w11-gate-1-quality`
+- `w11-gate-2-eval-regression`
+- `w11-gate-3-policy`
+- `w11-correction-capture`
 
-Until that live proof exists, W11 status should be reported as `local closure: PASS; live GitLab proof: PENDING`.
+Until those jobs finish in GitLab CI, W11 status should be reported as `local closure: PASS; live GitLab API correction proof: PASS; live GitLab CI execution: BLOCKED_BY_RUNNER`.
