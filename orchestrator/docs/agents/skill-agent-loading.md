@@ -10,6 +10,9 @@
 
 - The SDK live path now explicitly assembles session config with `workingDirectory`, `skillDirectories`, `customAgents`, and `agent`.
 - The investigator agent is registered from `orchestrator/docs/agents/investigator.agent.md` and preloads `jira-requirement-analysis` from `skills/.github/skills`.
+- The investigator agent conditionally adds `blood-transfusion` when the task description matches
+  transfusion-domain triggers such as `输血`, `血袋`, `备改输`, `BIZ857`,
+  `bloodTransfusionCode`, `neuBTMIS`, `blood transfusion`, or `atBloodApply`.
 - `orchestrator/AGENTS.md` is appended to the SDK session `systemMessage`, so W3 does not depend on monorepo directory discovery for this file.
 - The investigator custom agent is limited to Jira Reader `getIssue`, `searchIssues`, and `getComments`; other tool calls are denied by the SDK pre-tool hook.
 - Mock smoke still does not execute a real Copilot session, but the session config construction is covered by unit tests.

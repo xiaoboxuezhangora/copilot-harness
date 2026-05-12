@@ -16,6 +16,7 @@ export interface RuntimeAdapterProbe {
 export interface RuntimeAdapterRequest {
   readonly taskId: string;
   readonly prompt: string;
+  readonly taskDescription?: string;
   readonly model: RuntimeModel;
   readonly reasoningEffort: ReasoningEffort;
   readonly timeoutMs?: number;

@@ -26,7 +26,10 @@ export interface CopilotSdkAdapterOptions {
   readonly cwd?: string;
   readonly repoRoot?: string;
   readonly enableConfigDiscovery?: boolean;
-  readonly skillAgentSessionConfigFactory?: (repoRoot: string) => Promise<SkillAgentSessionConfig>;
+  readonly skillAgentSessionConfigFactory?: (
+    repoRoot: string,
+    options?: { readonly taskDescription?: string }
+  ) => Promise<SkillAgentSessionConfig>;
 }
 
 export interface CopilotSdkSessionConfigInput {
@@ -137,7 +140,7 @@ export class CopilotSdkAdapter implements RuntimeAdapter {
     const repoRoot = this.options.repoRoot ?? resolveRepoRoot();
     const skillAgentConfig = await (
       this.options.skillAgentSessionConfigFactory ?? createSkillAgentSessionConfig
-    )(repoRoot);
+    )(repoRoot, { taskDescription: request.taskDescription ?? request.prompt });
     const client = new sdk.CopilotClient({
       logLevel: 'error',
       useLoggedInUser: true,

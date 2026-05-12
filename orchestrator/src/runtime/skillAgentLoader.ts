@@ -25,7 +25,12 @@ export interface SystemMessageAppendConfig {
 
 export const INVESTIGATOR_AGENT_NAME = 'investigator';
 export const INVESTIGATOR_SKILL_NAME = 'jira-requirement-analysis';
+export const BLOOD_TRANSFUSION_SKILL_NAME = 'blood-transfusion';
 export const INVESTIGATOR_ALLOWED_TOOLS = ['getIssue', 'searchIssues', 'getComments'] as const;
+
+export interface SkillAgentSessionOptions {
+  readonly taskDescription?: string;
+}
 
 export function resolveRepoRoot(fromFileUrl: string = import.meta.url): string {
   const runtimeDir = dirname(fileURLToPath(fromFileUrl));
@@ -33,7 +38,8 @@ export function resolveRepoRoot(fromFileUrl: string = import.meta.url): string {
 }
 
 export async function createSkillAgentSessionConfig(
-  repoRoot = resolveRepoRoot()
+  repoRoot = resolveRepoRoot(),
+  options: SkillAgentSessionOptions = {}
 ): Promise<SkillAgentSessionConfig> {
   const [prompt, agentsMd] = await Promise.all([
     loadInvestigatorPrompt(repoRoot),
@@ -47,7 +53,7 @@ export async function createSkillAgentSessionConfig(
         name: INVESTIGATOR_AGENT_NAME,
         prompt,
         tools: [...INVESTIGATOR_ALLOWED_TOOLS],
-        skills: [INVESTIGATOR_SKILL_NAME]
+        skills: resolveInvestigatorSkills(options.taskDescription)
       }
     ],
     agent: INVESTIGATOR_AGENT_NAME,
@@ -56,6 +62,40 @@ export async function createSkillAgentSessionConfig(
       content: buildAgentsSystemMessage(agentsMd)
     }
   };
+}
+
+export function resolveInvestigatorSkills(taskDescription = ''): string[] {
+  const skills = [INVESTIGATOR_SKILL_NAME];
+
+  if (shouldLoadBloodTransfusionSkill(taskDescription)) {
+    skills.push(BLOOD_TRANSFUSION_SKILL_NAME);
+  }
+
+  return skills;
+}
+
+export function shouldLoadBloodTransfusionSkill(taskDescription: string): boolean {
+  const normalized = taskDescription.toLowerCase();
+  const triggerPatterns = [
+    '输血',
+    '血袋',
+    '取血',
+    '备改输',
+    '双人核对',
+    '配血',
+    '输注',
+    '输血反应',
+    'bloodtransfusioncode',
+    'neubtmis',
+    'biz857',
+    'blood bag',
+    'blood transfusion',
+    'transfusion',
+    'blood-closed-loop',
+    'atbloodapply'
+  ];
+
+  return triggerPatterns.some((pattern) => normalized.includes(pattern));
 }
 
 export async function loadInvestigatorPrompt(repoRoot = resolveRepoRoot()): Promise<string> {
