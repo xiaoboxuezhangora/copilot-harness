@@ -1,0 +1,25 @@
+{
+  "discussions": [
+    {
+      "id": "discussion-w11-fixture-1",
+      "notes": [
+        {
+          "id": 1101,
+          "body": "Please keep the policy gate deterministic and avoid printing raw matched content in CI logs.\n\n```suggestion\nprocess.stderr.write(renderViolationSummary(report.violations));\n```",
+          "system": false,
+          "resolvable": true,
+          "position": {
+            "new_path": "orchestrator/src/ci/policyCheck.ts",
+            "new_line": 214
+          },
+          "suggestions": [
+            {
+              "from_content": "process.stderr.write(JSON.stringify(report.violations));",
+              "to_content": "process.stderr.write(renderViolationSummary(report.violations));"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

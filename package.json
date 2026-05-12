@@ -4,6 +4,10 @@
   "private": true,
   "packageManager": "pnpm@10.6.2",
   "scripts": {
+    "ci:gate1": "pnpm --filter @copilot-harness/orchestrator ci:format-check && pnpm lint && pnpm typecheck && pnpm test",
+    "ci:gate2": "pnpm --filter @copilot-harness/orchestrator eval:harvester -- --mode=mock --enforce-thresholds",
+    "ci:gate3": "pnpm --filter @copilot-harness/orchestrator ci:policy-check",
+    "w11:correction-fixture": "pnpm --filter @copilot-harness/orchestrator automemory-capture-corrections --fixture orchestrator/fixtures/w11-correction-discussions.json --project-id fixture/project --mr-iid 11 --report reports/w11-correction-capture-fixture.json --audit-log reports/audit.log --output-dir .memory/pending/w11-fixture",
     "format:check": "pnpm -r --if-present format:check",
     "eval": "pnpm --filter @copilot-harness/orchestrator eval",
     "lint": "pnpm -r --if-present lint",

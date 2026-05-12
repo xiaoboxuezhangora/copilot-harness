@@ -2,15 +2,17 @@ image: node:22-alpine
 
 workflow:
   rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: always
     - if: '$ENABLE_GITLAB_CI == "1"'
       when: always
     - when: never
 
 stages:
-  - lint
-  - typecheck
-  - test
-  - eval
+  - gate_1_quality
+  - gate_2_eval
+  - gate_3_policy
+  - correction_capture
 
 default:
   cache:
@@ -22,33 +24,38 @@ default:
     - pnpm config set store-dir .pnpm-store
     - pnpm install --frozen-lockfile --ignore-scripts
 
-format-check:
-  stage: lint
+w11-gate-1-quality:
+  stage: gate_1_quality
   script:
-    - pnpm format:check
+    - pnpm ci:gate1
 
-lint:
-  stage: lint
+w11-gate-2-eval-regression:
+  stage: gate_2_eval
+  timeout: 5 minutes
   script:
-    - pnpm lint
-
-typecheck:
-  stage: typecheck
-  script:
-    - pnpm typecheck
-
-test:
-  stage: test
-  script:
-    - pnpm test
-
-eval-harvester-mock:
-  stage: eval
-  script:
-    - pnpm --filter @copilot-harness/orchestrator eval:harvester -- --mode=mock --enforce-thresholds
+    - pnpm ci:gate2
   artifacts:
     when: always
     paths:
       - orchestrator/eval/harvester-report.json
       - orchestrator/eval/harvester-report.md
       - orchestrator/eval/harvester/
+
+w11-gate-3-policy:
+  stage: gate_3_policy
+  script:
+    - pnpm ci:gate3
+  artifacts:
+    when: always
+    paths:
+      - reports/w11-policy-report.json
+
+w11-correction-capture:
+  stage: correction_capture
+  script:
+    - pnpm --filter @copilot-harness/orchestrator automemory-capture-corrections
+  artifacts:
+    when: always
+    paths:
+      - reports/w11-correction-capture.json
+      - .memory/pending/correction-*.md

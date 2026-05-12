@@ -4,14 +4,20 @@
   "private": true,
   "type": "module",
   "bin": {
-    "automemory-review": "bin/automemory-review"
+    "automemory-capture-corrections": "bin/automemory-capture-corrections",
+    "automemory-review": "bin/automemory-review",
+    "w11-format-check": "bin/w11-format-check",
+    "w11-policy-check": "bin/w11-policy-check"
   },
   "packageManager": "pnpm@10.6.2",
   "scripts": {
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "automemory-capture-corrections": "tsx src/automemory/correctionCapture.ts",
     "automemory-review": "tsx src/automemory/reviewCli.ts",
+    "ci:format-check": "tsx src/ci/formatCheck.ts",
+    "ci:policy-check": "tsx src/ci/policyCheck.ts",
     "eval": "tsx src/eval.ts",
     "eval:w8": "tsx src/w8Eval.ts",
     "eval:harvester": "tsx src/automemory/evalHarvester.ts",

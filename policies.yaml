@@ -1,0 +1,46 @@
+schema_version: phase-2-w11-policies@1
+
+redline_paths:
+  - id: real_fleet_runtime
+    pattern: "(^|/)orchestrator/src/fleet/real(/|$)"
+    reason: "Real /fleet runtime remains real_disabled after W10."
+  - id: real_worktree_runtime
+    pattern: "(^|/)orchestrator/src/worktrees/real(/|$)"
+    reason: "Real worktree creation remains disabled for W11."
+  - id: real_merge_request_creation
+    pattern: '(^|/)orchestrator/src/gitlab/(mergeRequestCreator|mrCreator)\.ts$'
+    reason: "Real GitLab MR creation remains disabled for W11."
+  - id: env_file
+    pattern: '(^|/)\.env(\..*)?$'
+    reason: "Environment files may contain secrets."
+  - id: private_key_material
+    pattern: '\.(pem|key|p12|pfx)$'
+    reason: "Private key material must not be committed."
+
+forbidden_patterns:
+  - id: private_key_block
+    regex: "-----BEGIN (RSA |EC |OPENSSH |)PRIVATE KEY-----"
+    reason: "Private keys must not enter repo, prompts, logs, or pending memory."
+  - id: authorization_bearer
+    regex: '(authorization\s*:\s*bearer\s+[a-z0-9\-._~+/]{12,}=*|\bbearer\s+[a-z0-9\-._~+/]{12,}=*)'
+    reason: "Bearer tokens must not be written in plaintext."
+  - id: gitlab_token
+    regex: "glpat-[A-Za-z0-9_-]{20,}"
+    reason: "GitLab tokens must not be written in plaintext."
+  - id: openai_key
+    regex: "sk-[A-Za-z0-9_-]{20,}"
+    reason: "Model provider API keys must not be written in plaintext."
+  - id: platform_credentials
+    regex: '(client_secret|app_secret|access_key|secret_key|platform[_-]?(credential|secret|token)|平台(凭证|密钥|令牌))\s*[:=]\s*\S{8,}'
+    reason: "Platform credentials must not be written in plaintext."
+  - id: patient_identifier
+    regex: '(patient(_?id|_?no)|inpatient(_?id|_?no)|患者(编号|标识|姓名|证件)|身份证号?|住院号)\s*[:=：]\s*\S{2,}'
+    reason: "Patient identifiers and PHI must not enter CI artifacts."
+  - id: sensitive_request_response_dump
+    regex: '(full\s+(request|response)|raw\s+(request|response)|完整(敏感)?(请求|响应)|request\s*body\s*[:=]|response\s*body\s*[:=])'
+    reason: "Sensitive raw request/response dumps must not enter logs or pending memory."
+
+scan_exempt_paths:
+  - '^policies\.yaml$'
+  - '^orchestrator/src/ci/policyCheck\.test\.ts$'
+  - '^orchestrator/src/automemory/correctionCapture\.test\.ts$'
