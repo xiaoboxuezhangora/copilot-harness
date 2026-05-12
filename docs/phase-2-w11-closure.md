@@ -99,31 +99,29 @@ Runtime artifact directories are ignored by git, so the report and pending files
 ## Live MR Attempt
 
 - Branch: `codex/w11-live-closure`
-- Commits:
-  - `2510148` - W11 CI gates and correction capture implementation
-  - `82f4c53` - initial live MR attempt record
-  - `9a67843` - live GitLab API capture record
+- Implementation commit: `2510148`
+- Docs evidence commits are carried on the same MR branch.
 - Draft MR: `http://10.100.77.238/b.w_neu/copilot-harness/-/merge_requests/2`
 - MR state: opened draft MR; no automatic merge was enabled.
-- MR head SHA: `9a67843e580bc2d29104ce06d9a0cd6ebcb6f4cf`
-- MR head pipeline: `http://10.100.77.238/b.w_neu/copilot-harness/-/pipelines/3724`
-- MR pipeline source: `merge_request_event`
+- Observed MR pipeline sample: `http://10.100.77.238/b.w_neu/copilot-harness/-/pipelines/3725`
+- Observed MR pipeline source: `merge_request_event`
 - Actionable review discussion: `discussion:12f225b2dec8c0294ba0e5518db56d93d6f131b7`, `note:130921`
 
 Observed MR pipeline jobs:
 
 | Job                          | Job URL                                                     | Observed status |
 | ---------------------------- | ----------------------------------------------------------- | --------------- |
-| `w11-gate-1-quality`         | `http://10.100.77.238/b.w_neu/copilot-harness/-/jobs/13111` | `pending`       |
-| `w11-gate-2-eval-regression` | `http://10.100.77.238/b.w_neu/copilot-harness/-/jobs/13112` | `created`       |
-| `w11-gate-3-policy`          | `http://10.100.77.238/b.w_neu/copilot-harness/-/jobs/13113` | `created`       |
-| `w11-correction-capture`     | `http://10.100.77.238/b.w_neu/copilot-harness/-/jobs/13114` | `created`       |
+| `w11-gate-1-quality`         | `http://10.100.77.238/b.w_neu/copilot-harness/-/jobs/13115` | `pending`       |
+| `w11-gate-2-eval-regression` | `http://10.100.77.238/b.w_neu/copilot-harness/-/jobs/13116` | `created`       |
+| `w11-gate-3-policy`          | `http://10.100.77.238/b.w_neu/copilot-harness/-/jobs/13117` | `created`       |
+| `w11-correction-capture`     | `http://10.100.77.238/b.w_neu/copilot-harness/-/jobs/13118` | `created`       |
 
 Runner availability check:
 
 - Project runners API returned an empty list.
-- Job `13111` remained `pending` with no assigned runner.
+- Job `13115` remained `pending` with no assigned runner.
 - Therefore the MR pipeline wiring is proven, but job execution is blocked outside the repository by GitLab Runner availability.
+- Later pushes to the MR branch can create successor MR pipelines with new ids; the runner-blocked condition remains the gating issue until a runner is attached.
 
 Live GitLab API correction capture:
 
