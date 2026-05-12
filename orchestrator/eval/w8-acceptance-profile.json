@@ -1,0 +1,16 @@
+{
+  "schema_version": "phase-1b-w8-acceptance-profile@1",
+  "name": "w8-current-jira-limited-closure",
+  "temporary": true,
+  "reason": "当前 Jira 条件仅返回 15 条，先以 12 条已确认 Jira+GitLab 联合样本作为 W8 阶段性收尾标准；后续阶段恢复 50/20 最终标准。",
+  "dataset_path": "eval/w8-jira-gitlab-eval-current.json",
+  "required_sample_count": 12,
+  "required_real_joint_sample_count": 12,
+  "accept_rate_target": 0.4,
+  "require_review_metrics": false,
+  "review_time_target_minutes": 10,
+  "final_target": {
+    "required_sample_count": 50,
+    "required_real_joint_sample_count": 20
+  }
+}

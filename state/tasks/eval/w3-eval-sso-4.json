@@ -1,0 +1,41 @@
+{
+  "taskId": "w3-eval-sso-4",
+  "turn_state": "continue_current",
+  "execution_mode": "eval",
+  "role": "investigator",
+  "prompt_version": "jira-analysis-prompt@0.1",
+  "model": "gpt-5-mini",
+  "runtime": "eval_fixture",
+  "evidence_pack_size": 2,
+  "memory_hit_count": 0,
+  "evidencePack": {
+    "taskId": "w3-eval-sso-4",
+    "intent": "Jira requirement analysis eval sample sso-4",
+    "evidences": [
+      {
+        "source_ref": "jira://SSO-104",
+        "content": "SSO-104 SSO consent screen copy",
+        "tool": "jira-eval-fixture"
+      },
+      {
+        "source_ref": "eval:sso-4#prediction",
+        "content": "Predicted conclusion: needs implementation scoping; executable_score=0.6499999999999999.",
+        "tool": "jira-requirement-analysis"
+      }
+    ],
+    "assumptions": [
+      {
+        "statement": "Eval prediction did not match W3 ground truth: conclusion_mismatch.",
+        "confidence": 0.45
+      }
+    ],
+    "confidence": 0.52
+  },
+  "closure": {
+    "generated_at": "2026-05-07T05:45:07.249Z",
+    "snapshot_date": "2026-05-07",
+    "data_origin": "orchestrator/eval/report.json",
+    "domain": "SSO",
+    "passed": false
+  }
+}

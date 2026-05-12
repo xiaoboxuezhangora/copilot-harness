@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Phase 1b W8 Jira + GitLab Eval Dataset",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "samples"],
+  "properties": {
+    "schema_version": {
+      "const": "phase-1b-w8-eval@1"
+    },
+    "samples": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Required sample counts are controlled by eval/w8-acceptance-profile.json; final W8 target remains 50 samples.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "task_id",
+          "eval_input_ref",
+          "jira_key",
+          "source_ref",
+          "ground_truth_repo",
+          "ground_truth_modules",
+          "gitlab_evidence_refs",
+          "expected_next_action",
+          "review_decision",
+          "high_risk"
+        ],
+        "properties": {
+          "task_id": { "type": "string", "minLength": 1 },
+          "eval_input_ref": { "type": "string", "minLength": 1 },
+          "jira_key": { "type": "string", "minLength": 1 },
+          "source_ref": {
+            "type": "string",
+            "pattern": "^jira:[A-Z][A-Z0-9]+-[0-9]+$"
+          },
+          "ground_truth_repo": { "type": "string" },
+          "ground_truth_modules": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "gitlab_evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^(gitlab:[^#]+#(file:[^@]+@[^#]+#L[0-9]+-L[0-9]+|mr:[0-9]+|commit:[A-Za-z0-9._-]+|pipeline:[0-9]+@[A-Za-z0-9._-]+)|local:[^#]+#file:[^@]+@[^#]+#L[0-9]+-L[0-9]+)$"
+            }
+          },
+          "expected_next_action": {
+            "enum": ["draft_plan", "ask_human", "need_more_context"]
+          },
+          "review_decision": {
+            "enum": ["accept", "edit_accept", "major_edit", "reject", "skip", "not_reviewed"]
+          },
+          "high_risk": { "type": "boolean" },
+          "predicted": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["gitlab_evidence_refs", "repo_hints", "plan", "next_action"],
+            "properties": {
+              "gitlab_evidence_refs": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "repo_hints": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["project", "module", "confidence", "source_refs"],
+                  "properties": {
+                    "project": { "type": "string" },
+                    "module": { "type": "string" },
+                    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+                    "source_refs": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    }
+                  }
+                }
+              },
+              "plan": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["summary", "steps", "files", "risks", "test_hints"],
+                "properties": {
+                  "summary": { "type": "string" },
+                  "steps": {
+                    "type": "array",
+                    "items": { "type": "string" }
+                  },
+                  "files": {
+                    "type": "array",
+                    "items": { "type": "string" }
+                  },
+                  "risks": {
+                    "type": "array",
+                    "items": { "type": "string" }
+                  },
+                  "test_hints": {
+                    "type": "array",
+                    "items": { "type": "string" }
+                  }
+                }
+              },
+              "next_action": {
+                "enum": ["draft_plan", "ask_human", "need_more_context"]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Phase 1b W8 Acceptance Profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "name",
+    "temporary",
+    "reason",
+    "required_sample_count",
+    "required_real_joint_sample_count",
+    "accept_rate_target",
+    "require_review_metrics",
+    "review_time_target_minutes",
+    "final_target"
+  ],
+  "properties": {
+    "schema_version": { "const": "phase-1b-w8-acceptance-profile@1" },
+    "name": { "type": "string", "minLength": 1 },
+    "temporary": { "type": "boolean" },
+    "reason": { "type": "string", "minLength": 1 },
+    "dataset_path": { "type": "string", "minLength": 1 },
+    "required_sample_count": { "type": "integer", "minimum": 1 },
+    "required_real_joint_sample_count": { "type": "integer", "minimum": 1 },
+    "accept_rate_target": { "type": "number", "minimum": 0, "maximum": 1 },
+    "require_review_metrics": { "type": "boolean" },
+    "review_time_target_minutes": { "type": "number", "minimum": 0 },
+    "final_target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required_sample_count", "required_real_joint_sample_count"],
+      "properties": {
+        "required_sample_count": { "type": "integer", "minimum": 1 },
+        "required_real_joint_sample_count": { "type": "integer", "minimum": 1 }
+      }
+    }
+  }
+}

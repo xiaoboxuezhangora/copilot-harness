@@ -1,0 +1,2266 @@
+{
+  "schema_version": "phase-1b-w8-jira-gitlab-mapping-draft@1",
+  "generated_at": "2026-05-08T14:46:39.111Z",
+  "source_summary": {
+    "jira_jql_ref": "env:W8_MAPPING_JIRA_JQL",
+    "jira_jql_hash": "c9bf76a434c03a145efb48ebf12c2f92b8dc1cb4cddce455a1b32b30ec08efa2",
+    "jira_total": 15,
+    "jira_sample_count": 15,
+    "gitlab_project_count": 160,
+    "history_search_issue_count": 15
+  },
+  "update_protocol": {
+    "rule_status_flow": [
+      "candidate",
+      "confirmed",
+      "rejected",
+      "superseded"
+    ],
+    "merge_strategy": "可以反复重新生成候选规则，但不得覆盖人工标记为 confirmed/rejected 的规则；只有经过人工确认后，才能提升为 eval 真值数据。",
+    "confirmation_policy": "只有工程和分支都经过人工确认，或存在 GitLab issue-key 历史证据支撑时，规则才可标记为 confirmed。"
+  },
+  "confirmed_rule_catalog": [
+    {
+      "id": "text.angular17.frontend",
+      "label": "标题或描述包含 Angular17",
+      "project": "apmis/odcbs/odcbs-frontend",
+      "branch_policy": "固定 develop_to_angular17",
+      "note": "Angular17 相关工单固定进入前端 Angular17 升级分支。"
+    },
+    {
+      "id": "integration.sso.dc-sso",
+      "label": "单点登录系统厂商对接",
+      "project": "apmis/dc-sso",
+      "branch_policy": "固定 master",
+      "note": "dc-sso 用于对接各单点登录系统厂商。"
+    },
+    {
+      "id": "integration.signature.odcbs-ca",
+      "label": "电子签名厂商对接",
+      "project": "apmis/ca-sso/odcbs-ca",
+      "branch_policy": "固定 master",
+      "note": "odcbs-ca 用于对接各个电子签名厂商；GitLab 已验证路径为 apmis/ca-sso/odcbs-ca。"
+    },
+    {
+      "id": "client.mobile.aims-mobile-vue",
+      "label": "移动端代码",
+      "project": "apmis/mobile/aims-mobile-vue",
+      "branch_policy": "主版本 master；西安交通大学 xajd；广东省人民 gdsrm",
+      "note": "aims-mobile-vue 是移动端代码。"
+    },
+    {
+      "id": "client.pda.aims-pda-vue",
+      "label": "PDA 代码",
+      "project": "apmis/mobile/aims-pda-vue",
+      "branch_policy": "主版本 main；广东省人民 gdsrm",
+      "note": "aims-pda-vue 是 PDA 代码。"
+    },
+    {
+      "id": "server.backend.odcbs-backend",
+      "label": "后端代码",
+      "project": "apmis/odcbs/odcbs-backend",
+      "branch_policy": "开发分支 develop；广东省人民 gdsrm_develop",
+      "note": "odcbs-backend 是后端代码。"
+    },
+    {
+      "id": "client.frontend.odcbs-frontend",
+      "label": "前端代码",
+      "project": "apmis/odcbs/odcbs-frontend",
+      "branch_policy": "开发分支 develop；广东省人民 gdsrm_develop；Angular17 由更高优先级规则进入 develop_to_angular17",
+      "note": "odcbs-frontend 是前端代码。"
+    },
+    {
+      "id": "integration.platform.odbip-custom-backend",
+      "label": "手麻平台三方交互接口",
+      "project": "apmis/odbip/odbip-custom-backend",
+      "branch_policy": "固定 develop",
+      "note": "odbip-custom-backend 是当前手麻平台项目，用于处理手麻系统一切跟三方系统交互接口的处理；GitLab 验证实际分支为 develop，未发现 deveop。"
+    }
+  ],
+  "field_value_rules": [
+    {
+      "id": "domain_rule-92b455956818",
+      "status": "candidate",
+      "field": "domain_rule",
+      "value": "新手麻代码在 APMIS",
+      "issue_count": 15,
+      "sample_jira_keys": [
+        "APMIS-1988",
+        "APMIS-2061",
+        "APMIS-2062",
+        "APMIS-2028",
+        "APMIS-2027",
+        "APMIS-2026",
+        "APMIS-2213",
+        "APMIS-2096",
+        "APMIS-2090",
+        "APMIS-2045"
+      ],
+      "project_candidates": [
+        {
+          "project": "apmis/odcbs/odcbs-frontend",
+          "hits": 15,
+          "average_confidence": 0.878,
+          "branch_candidates": [
+            "develop_to_angular17",
+            "develop"
+          ]
+        }
+      ],
+      "confirmation_instruction": "使用该规则作为 W8 真值前，请先将 status 标记为 confirmed/rejected，并保留一个明确的工程/分支策略。"
+    },
+    {
+      "id": "jira_project-6b2decfe80fe",
+      "status": "candidate",
+      "field": "jira_project",
+      "value": "APMIS",
+      "issue_count": 15,
+      "sample_jira_keys": [
+        "APMIS-1988",
+        "APMIS-2061",
+        "APMIS-2062",
+        "APMIS-2028",
+        "APMIS-2027",
+        "APMIS-2026",
+        "APMIS-2213",
+        "APMIS-2096",
+        "APMIS-2090",
+        "APMIS-2045"
+      ],
+      "project_candidates": [
+        {
+          "project": "apmis/odcbs/odcbs-frontend",
+          "hits": 15,
+          "average_confidence": 0.878,
+          "branch_candidates": [
+            "develop_to_angular17",
+            "develop"
+          ]
+        }
+      ],
+      "confirmation_instruction": "使用该规则作为 W8 真值前，请先将 status 标记为 confirmed/rejected，并保留一个明确的工程/分支策略。"
+    },
+    {
+      "id": "product_module-8b5418a0c902",
+      "status": "candidate",
+      "field": "product_module",
+      "value": "手麻",
+      "issue_count": 15,
+      "sample_jira_keys": [
+        "APMIS-1988",
+        "APMIS-2061",
+        "APMIS-2062",
+        "APMIS-2028",
+        "APMIS-2027",
+        "APMIS-2026",
+        "APMIS-2213",
+        "APMIS-2096",
+        "APMIS-2090",
+        "APMIS-2045"
+      ],
+      "project_candidates": [
+        {
+          "project": "apmis/odcbs/odcbs-frontend",
+          "hits": 15,
+          "average_confidence": 0.878,
+          "branch_candidates": [
+            "develop_to_angular17",
+            "develop"
+          ]
+        }
+      ],
+      "confirmation_instruction": "使用该规则作为 W8 真值前，请先将 status 标记为 confirmed/rejected，并保留一个明确的工程/分支策略。"
+    },
+    {
+      "id": "project_source-365b71f36e24",
+      "status": "candidate",
+      "field": "project_source",
+      "value": "Z总部集成测试",
+      "issue_count": 12,
+      "sample_jira_keys": [
+        "APMIS-1988",
+        "APMIS-2061",
+        "APMIS-2062",
+        "APMIS-2028",
+        "APMIS-2027",
+        "APMIS-2026",
+        "APMIS-2213",
+        "APMIS-2096",
+        "APMIS-2045",
+        "APMIS-2088"
+      ],
+      "project_candidates": [
+        {
+          "project": "apmis/odcbs/odcbs-frontend",
+          "hits": 12,
+          "average_confidence": 0.898,
+          "branch_candidates": [
+            "develop_to_angular17",
+            "develop"
+          ]
+        }
+      ],
+      "confirmation_instruction": "使用该规则作为 W8 真值前，请先将 status 标记为 confirmed/rejected，并保留一个明确的工程/分支策略。"
+    },
+    {
+      "id": "manual_rules-ffecfa1d1262",
+      "status": "confirmed",
+      "field": "manual_rules",
+      "value": "client.frontend.odcbs-frontend",
+      "issue_count": 8,
+      "sample_jira_keys": [
+        "APMIS-2028",
+        "APMIS-2027",
+        "APMIS-2213",
+        "APMIS-2090",
+        "APMIS-2045",
+        "APMIS-1955",
+        "APMIS-73",
+        "APMIS-1004"
+      ],
+      "project_candidates": [
+        {
+          "project": "apmis/odcbs/odcbs-frontend",
+          "hits": 8,
+          "average_confidence": 1,
+          "branch_candidates": [
+            "develop_to_angular17",
+            "develop"
+          ]
+        }
+      ],
+      "confirmation_instruction": "该规则来自人工确认：前端代码 时，映射到 apmis/odcbs/odcbs-frontend，分支策略：开发分支 develop；广东省人民 gdsrm_develop；Angular17 由更高优先级规则进入 develop_to_angular17。"
+    },
+    {
+      "id": "manual_rules-0030f06a8991",
+      "status": "confirmed",
+      "field": "manual_rules",
+      "value": "text.angular17.frontend",
+      "issue_count": 7,
+      "sample_jira_keys": [
+        "APMIS-1988",
+        "APMIS-2061",
+        "APMIS-2062",
+        "APMIS-2028",
+        "APMIS-2027",
+        "APMIS-2026",
+        "APMIS-2213"
+      ],
+      "project_candidates": [
+        {
+          "project": "apmis/odcbs/odcbs-frontend",
+          "hits": 7,
+          "average_confidence": 1,
+          "branch_candidates": [
+            "develop_to_angular17"
+          ]
+        }
+      ],
+      "confirmation_instruction": "该规则来自人工确认：标题或描述包含 Angular17 时，映射到 apmis/odcbs/odcbs-frontend，分支策略：固定 develop_to_angular17。"
+    },
+    {
+      "id": "project_source-bb6308a5e75d",
+      "status": "candidate",
+      "field": "project_source",
+      "value": "SH盛京医院",
+      "issue_count": 2,
+      "sample_jira_keys": [
+        "APMIS-73",
+        "APMIS-840"
+      ],
+      "project_candidates": [
+        {
+          "project": "apmis/odcbs/odcbs-frontend",
+          "hits": 2,
+          "average_confidence": 0.695,
+          "branch_candidates": [
+            "develop"
+          ]
+        }
+      ],
+      "confirmation_instruction": "使用该规则作为 W8 真值前，请先将 status 标记为 confirmed/rejected，并保留一个明确的工程/分支策略。"
+    },
+    {
+      "id": "project_source-ed71dec4bf94",
+      "status": "candidate",
+      "field": "project_source",
+      "value": "H怀化市第一人民医院",
+      "issue_count": 1,
+      "sample_jira_keys": [
+        "APMIS-2090"
+      ],
+      "project_candidates": [
+        {
+          "project": "apmis/odcbs/odcbs-frontend",
+          "hits": 1,
+          "average_confidence": 1,
+          "branch_candidates": [
+            "develop"
+          ]
+        }
+      ],
+      "confirmation_instruction": "使用该规则作为 W8 真值前，请先将 status 标记为 confirmed/rejected，并保留一个明确的工程/分支策略。"
+    }
+  ],
+  "issue_mappings": [
+    {
+      "jira_key": "APMIS-1988",
+      "signals": {
+        "manual_rules": [
+          "text.angular17.frontend"
+        ],
+        "domain_rule": "新手麻代码在 APMIS",
+        "jira_project": "APMIS",
+        "issue_type": "缺陷",
+        "status": "处理中",
+        "project_source": "Z总部集成测试",
+        "product_module": "手麻",
+        "target_version": "7.0.187.0",
+        "fix_versions": [],
+        "affected_versions": [],
+        "labels": []
+      },
+      "history_hits": [],
+      "candidates": [
+        {
+          "project": "apmis/odcbs/odcbs-frontend",
+          "default_branch": "develop",
+          "confidence": 1,
+          "score": 1,
+          "matched_signals": [
+            "confirmed_rule:text.angular17.frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop_to_angular17",
+              "confidence": 1,
+              "source": "confirmed_rule",
+              "matched_value": "标题或描述包含 Angular17"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "命中人工确认规则：标题或描述包含 Angular17，映射到 apmis/odcbs/odcbs-frontend@develop_to_angular17。"
+        },
+        {
+          "project": "apmis/intelligent-risk-evaluate/ire-frontend",
+          "default_branch": "develop",
+          "confidence": 0.723,
+          "score": 0.723,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:text.angular17.frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "3 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/cdms/cdms-frontend",
+          "default_branch": "master",
+          "confidence": 0.723,
+          "score": 0.723,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:text.angular17.frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "3 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/mrts/mrts-frontend",
+          "default_branch": "master",
+          "confidence": 0.723,
+          "score": 0.723,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:text.angular17.frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "3 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/cpc/cpc-framework-frontend",
+          "default_branch": "master",
+          "confidence": 0.723,
+          "score": 0.723,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:text.angular17.frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "3 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        }
+      ],
+      "confirmation_status": "confirmed",
+      "confirmation_note": "命中人工确认规则：标题或描述包含 Angular17。"
+    },
+    {
+      "jira_key": "APMIS-2061",
+      "signals": {
+        "manual_rules": [
+          "text.angular17.frontend"
+        ],
+        "domain_rule": "新手麻代码在 APMIS",
+        "jira_project": "APMIS",
+        "issue_type": "缺陷",
+        "status": "处理中",
+        "project_source": "Z总部集成测试",
+        "product_module": "手麻",
+        "target_version": "7.0.187.0",
+        "fix_versions": [],
+        "affected_versions": [],
+        "labels": []
+      },
+      "history_hits": [],
+      "candidates": [
+        {
+          "project": "apmis/odcbs/odcbs-frontend",
+          "default_branch": "develop",
+          "confidence": 1,
+          "score": 1,
+          "matched_signals": [
+            "confirmed_rule:text.angular17.frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop_to_angular17",
+              "confidence": 1,
+              "source": "confirmed_rule",
+              "matched_value": "标题或描述包含 Angular17"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "命中人工确认规则：标题或描述包含 Angular17，映射到 apmis/odcbs/odcbs-frontend@develop_to_angular17。"
+        },
+        {
+          "project": "apmis/intelligent-risk-evaluate/ire-frontend",
+          "default_branch": "develop",
+          "confidence": 0.723,
+          "score": 0.723,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:text.angular17.frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "3 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/cdms/cdms-frontend",
+          "default_branch": "master",
+          "confidence": 0.723,
+          "score": 0.723,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:text.angular17.frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "3 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/mrts/mrts-frontend",
+          "default_branch": "master",
+          "confidence": 0.723,
+          "score": 0.723,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:text.angular17.frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "3 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/cpc/cpc-framework-frontend",
+          "default_branch": "master",
+          "confidence": 0.723,
+          "score": 0.723,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:text.angular17.frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "3 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        }
+      ],
+      "confirmation_status": "confirmed",
+      "confirmation_note": "命中人工确认规则：标题或描述包含 Angular17。"
+    },
+    {
+      "jira_key": "APMIS-2062",
+      "signals": {
+        "manual_rules": [
+          "text.angular17.frontend"
+        ],
+        "domain_rule": "新手麻代码在 APMIS",
+        "jira_project": "APMIS",
+        "issue_type": "缺陷",
+        "status": "处理中",
+        "project_source": "Z总部集成测试",
+        "product_module": "手麻",
+        "target_version": "7.0.187.0",
+        "fix_versions": [],
+        "affected_versions": [],
+        "labels": []
+      },
+      "history_hits": [],
+      "candidates": [
+        {
+          "project": "apmis/odcbs/odcbs-frontend",
+          "default_branch": "develop",
+          "confidence": 1,
+          "score": 1,
+          "matched_signals": [
+            "confirmed_rule:text.angular17.frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop_to_angular17",
+              "confidence": 1,
+              "source": "confirmed_rule",
+              "matched_value": "标题或描述包含 Angular17"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "命中人工确认规则：标题或描述包含 Angular17，映射到 apmis/odcbs/odcbs-frontend@develop_to_angular17。"
+        },
+        {
+          "project": "apmis/intelligent-risk-evaluate/ire-frontend",
+          "default_branch": "develop",
+          "confidence": 0.723,
+          "score": 0.723,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:text.angular17.frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "3 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/cdms/cdms-frontend",
+          "default_branch": "master",
+          "confidence": 0.723,
+          "score": 0.723,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:text.angular17.frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "3 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/mrts/mrts-frontend",
+          "default_branch": "master",
+          "confidence": 0.723,
+          "score": 0.723,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:text.angular17.frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "3 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/cpc/cpc-framework-frontend",
+          "default_branch": "master",
+          "confidence": 0.723,
+          "score": 0.723,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:text.angular17.frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "3 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        }
+      ],
+      "confirmation_status": "confirmed",
+      "confirmation_note": "命中人工确认规则：标题或描述包含 Angular17。"
+    },
+    {
+      "jira_key": "APMIS-2028",
+      "signals": {
+        "manual_rules": [
+          "text.angular17.frontend",
+          "client.frontend.odcbs-frontend"
+        ],
+        "domain_rule": "新手麻代码在 APMIS",
+        "jira_project": "APMIS",
+        "issue_type": "缺陷",
+        "status": "处理中",
+        "project_source": "Z总部集成测试",
+        "product_module": "手麻",
+        "target_version": "7.0.186.0",
+        "fix_versions": [
+          "7.0.186.0"
+        ],
+        "affected_versions": [],
+        "labels": []
+      },
+      "history_hits": [],
+      "candidates": [
+        {
+          "project": "apmis/odcbs/odcbs-frontend",
+          "default_branch": "develop",
+          "confidence": 1,
+          "score": 1,
+          "matched_signals": [
+            "confirmed_rule:text.angular17.frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop_to_angular17",
+              "confidence": 1,
+              "source": "confirmed_rule",
+              "matched_value": "标题或描述包含 Angular17"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "命中人工确认规则：标题或描述包含 Angular17，映射到 apmis/odcbs/odcbs-frontend@develop_to_angular17。"
+        },
+        {
+          "project": "apmis/odcbs/odcbs-frontend",
+          "default_branch": "develop",
+          "confidence": 1,
+          "score": 1,
+          "matched_signals": [
+            "confirmed_rule:client.frontend.odcbs-frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 1,
+              "source": "confirmed_rule",
+              "matched_value": "前端代码"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "命中人工确认规则：前端代码，映射到 apmis/odcbs/odcbs-frontend@develop。"
+        },
+        {
+          "project": "b.w_neu/odcbs-frontend",
+          "default_branch": "develop",
+          "confidence": 1,
+          "score": 1,
+          "matched_signals": [
+            "manual_rule:text.angular17.frontend",
+            "manual_rule:client.frontend.odcbs-frontend",
+            "layer_keyword:0.12"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "3 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/intelligent-risk-evaluate/ire-frontend",
+          "default_branch": "develop",
+          "confidence": 1,
+          "score": 1,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:text.angular17.frontend",
+            "manual_rule:client.frontend.odcbs-frontend",
+            "layer_keyword:0.12"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "5 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/cdms/cdms-frontend",
+          "default_branch": "master",
+          "confidence": 1,
+          "score": 1,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:text.angular17.frontend",
+            "manual_rule:client.frontend.odcbs-frontend",
+            "layer_keyword:0.12"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "5 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/mrts/mrts-frontend",
+          "default_branch": "master",
+          "confidence": 1,
+          "score": 1,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:text.angular17.frontend",
+            "manual_rule:client.frontend.odcbs-frontend",
+            "layer_keyword:0.12"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "5 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        }
+      ],
+      "confirmation_status": "confirmed",
+      "confirmation_note": "命中人工确认规则：标题或描述包含 Angular17；前端代码。"
+    },
+    {
+      "jira_key": "APMIS-2027",
+      "signals": {
+        "manual_rules": [
+          "text.angular17.frontend",
+          "client.frontend.odcbs-frontend"
+        ],
+        "domain_rule": "新手麻代码在 APMIS",
+        "jira_project": "APMIS",
+        "issue_type": "缺陷",
+        "status": "处理中",
+        "project_source": "Z总部集成测试",
+        "product_module": "手麻",
+        "target_version": "7.0.186.0",
+        "fix_versions": [
+          "7.0.186.0"
+        ],
+        "affected_versions": [],
+        "labels": []
+      },
+      "history_hits": [],
+      "candidates": [
+        {
+          "project": "apmis/odcbs/odcbs-frontend",
+          "default_branch": "develop",
+          "confidence": 1,
+          "score": 1,
+          "matched_signals": [
+            "confirmed_rule:text.angular17.frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop_to_angular17",
+              "confidence": 1,
+              "source": "confirmed_rule",
+              "matched_value": "标题或描述包含 Angular17"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "命中人工确认规则：标题或描述包含 Angular17，映射到 apmis/odcbs/odcbs-frontend@develop_to_angular17。"
+        },
+        {
+          "project": "apmis/odcbs/odcbs-frontend",
+          "default_branch": "develop",
+          "confidence": 1,
+          "score": 1,
+          "matched_signals": [
+            "confirmed_rule:client.frontend.odcbs-frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 1,
+              "source": "confirmed_rule",
+              "matched_value": "前端代码"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "命中人工确认规则：前端代码，映射到 apmis/odcbs/odcbs-frontend@develop。"
+        },
+        {
+          "project": "b.w_neu/odcbs-frontend",
+          "default_branch": "develop",
+          "confidence": 1,
+          "score": 1,
+          "matched_signals": [
+            "manual_rule:text.angular17.frontend",
+            "manual_rule:client.frontend.odcbs-frontend",
+            "layer_keyword:0.12"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "3 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/intelligent-risk-evaluate/ire-frontend",
+          "default_branch": "develop",
+          "confidence": 1,
+          "score": 1,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:text.angular17.frontend",
+            "manual_rule:client.frontend.odcbs-frontend",
+            "layer_keyword:0.12"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "5 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/cdms/cdms-frontend",
+          "default_branch": "master",
+          "confidence": 1,
+          "score": 1,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:text.angular17.frontend",
+            "manual_rule:client.frontend.odcbs-frontend",
+            "layer_keyword:0.12"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "5 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/mrts/mrts-frontend",
+          "default_branch": "master",
+          "confidence": 1,
+          "score": 1,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:text.angular17.frontend",
+            "manual_rule:client.frontend.odcbs-frontend",
+            "layer_keyword:0.12"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "5 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        }
+      ],
+      "confirmation_status": "confirmed",
+      "confirmation_note": "命中人工确认规则：标题或描述包含 Angular17；前端代码。"
+    },
+    {
+      "jira_key": "APMIS-2026",
+      "signals": {
+        "manual_rules": [
+          "text.angular17.frontend"
+        ],
+        "domain_rule": "新手麻代码在 APMIS",
+        "jira_project": "APMIS",
+        "issue_type": "缺陷",
+        "status": "处理中",
+        "project_source": "Z总部集成测试",
+        "product_module": "手麻",
+        "target_version": "7.0.186.0",
+        "fix_versions": [
+          "7.0.186.0"
+        ],
+        "affected_versions": [],
+        "labels": []
+      },
+      "history_hits": [],
+      "candidates": [
+        {
+          "project": "apmis/odcbs/odcbs-frontend",
+          "default_branch": "develop",
+          "confidence": 1,
+          "score": 1,
+          "matched_signals": [
+            "confirmed_rule:text.angular17.frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop_to_angular17",
+              "confidence": 1,
+              "source": "confirmed_rule",
+              "matched_value": "标题或描述包含 Angular17"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "命中人工确认规则：标题或描述包含 Angular17，映射到 apmis/odcbs/odcbs-frontend@develop_to_angular17。"
+        },
+        {
+          "project": "apmis/intelligent-risk-evaluate/ire-frontend",
+          "default_branch": "develop",
+          "confidence": 0.723,
+          "score": 0.723,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:text.angular17.frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "3 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/cdms/cdms-frontend",
+          "default_branch": "master",
+          "confidence": 0.723,
+          "score": 0.723,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:text.angular17.frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "3 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/mrts/mrts-frontend",
+          "default_branch": "master",
+          "confidence": 0.723,
+          "score": 0.723,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:text.angular17.frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "3 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/cpc/cpc-framework-frontend",
+          "default_branch": "master",
+          "confidence": 0.723,
+          "score": 0.723,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:text.angular17.frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "3 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        }
+      ],
+      "confirmation_status": "confirmed",
+      "confirmation_note": "命中人工确认规则：标题或描述包含 Angular17。"
+    },
+    {
+      "jira_key": "APMIS-2213",
+      "signals": {
+        "manual_rules": [
+          "text.angular17.frontend",
+          "client.frontend.odcbs-frontend"
+        ],
+        "domain_rule": "新手麻代码在 APMIS",
+        "jira_project": "APMIS",
+        "issue_type": "缺陷",
+        "status": "处理中",
+        "project_source": "Z总部集成测试",
+        "product_module": "手麻",
+        "target_version": "7.0.190.0",
+        "fix_versions": [],
+        "affected_versions": [],
+        "labels": []
+      },
+      "history_hits": [],
+      "candidates": [
+        {
+          "project": "apmis/odcbs/odcbs-frontend",
+          "default_branch": "develop",
+          "confidence": 1,
+          "score": 1,
+          "matched_signals": [
+            "confirmed_rule:text.angular17.frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop_to_angular17",
+              "confidence": 1,
+              "source": "confirmed_rule",
+              "matched_value": "标题或描述包含 Angular17"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "命中人工确认规则：标题或描述包含 Angular17，映射到 apmis/odcbs/odcbs-frontend@develop_to_angular17。"
+        },
+        {
+          "project": "apmis/odcbs/odcbs-frontend",
+          "default_branch": "develop",
+          "confidence": 1,
+          "score": 1,
+          "matched_signals": [
+            "confirmed_rule:client.frontend.odcbs-frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 1,
+              "source": "confirmed_rule",
+              "matched_value": "前端代码"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "命中人工确认规则：前端代码，映射到 apmis/odcbs/odcbs-frontend@develop。"
+        },
+        {
+          "project": "b.w_neu/odcbs-frontend",
+          "default_branch": "develop",
+          "confidence": 1,
+          "score": 1,
+          "matched_signals": [
+            "manual_rule:text.angular17.frontend",
+            "manual_rule:client.frontend.odcbs-frontend",
+            "layer_keyword:0.12"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "3 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/intelligent-risk-evaluate/ire-frontend",
+          "default_branch": "develop",
+          "confidence": 1,
+          "score": 1,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:text.angular17.frontend",
+            "manual_rule:client.frontend.odcbs-frontend",
+            "layer_keyword:0.12"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "5 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/cdms/cdms-frontend",
+          "default_branch": "master",
+          "confidence": 1,
+          "score": 1,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:text.angular17.frontend",
+            "manual_rule:client.frontend.odcbs-frontend",
+            "layer_keyword:0.12"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "5 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/mrts/mrts-frontend",
+          "default_branch": "master",
+          "confidence": 1,
+          "score": 1,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:text.angular17.frontend",
+            "manual_rule:client.frontend.odcbs-frontend",
+            "layer_keyword:0.12"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "5 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        }
+      ],
+      "confirmation_status": "confirmed",
+      "confirmation_note": "命中人工确认规则：标题或描述包含 Angular17；前端代码。"
+    },
+    {
+      "jira_key": "APMIS-2096",
+      "signals": {
+        "manual_rules": [],
+        "domain_rule": "新手麻代码在 APMIS",
+        "jira_project": "APMIS",
+        "issue_type": "缺陷",
+        "status": "处理中",
+        "project_source": "Z总部集成测试",
+        "product_module": "手麻",
+        "target_version": null,
+        "fix_versions": [],
+        "affected_versions": [],
+        "labels": []
+      },
+      "history_hits": [],
+      "candidates": [
+        {
+          "project": "apmis/odcbs/odcbs-frontend",
+          "default_branch": "develop",
+          "confidence": 0.39,
+          "score": 0.39,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "2 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/odcbs/odcbs-backend",
+          "default_branch": "develop",
+          "confidence": 0.39,
+          "score": 0.39,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "2 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/odbip/odbip-custom-backend",
+          "default_branch": "develop",
+          "confidence": 0.39,
+          "score": 0.39,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "2 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/mobile/aims-mobile-vue",
+          "default_branch": "master",
+          "confidence": 0.39,
+          "score": 0.39,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "2 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/aims-2019-doc",
+          "default_branch": "master",
+          "confidence": 0.39,
+          "score": 0.39,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "2 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        }
+      ],
+      "confirmation_status": "candidate",
+      "confirmation_note": "由 Jira 字段、GitLab 工程/分支/历史信号生成；在确认前仅作为候选草稿。"
+    },
+    {
+      "jira_key": "APMIS-2090",
+      "signals": {
+        "manual_rules": [
+          "client.frontend.odcbs-frontend"
+        ],
+        "domain_rule": "新手麻代码在 APMIS",
+        "jira_project": "APMIS",
+        "issue_type": "需求",
+        "status": "处理中",
+        "project_source": "H怀化市第一人民医院",
+        "product_module": "手麻",
+        "target_version": "7.0.189.0",
+        "fix_versions": [],
+        "affected_versions": [],
+        "labels": []
+      },
+      "history_hits": [],
+      "candidates": [
+        {
+          "project": "apmis/odcbs/odcbs-frontend",
+          "default_branch": "develop",
+          "confidence": 1,
+          "score": 1,
+          "matched_signals": [
+            "confirmed_rule:client.frontend.odcbs-frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 1,
+              "source": "confirmed_rule",
+              "matched_value": "前端代码"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "命中人工确认规则：前端代码，映射到 apmis/odcbs/odcbs-frontend@develop。"
+        },
+        {
+          "project": "apmis/forecast/odcbs-forecast-frontend",
+          "default_branch": "master",
+          "confidence": 1,
+          "score": 1,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:client.frontend.odcbs-frontend",
+            "layer_keyword:0.12"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "4 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/intelligent-risk-evaluate/ire-frontend",
+          "default_branch": "develop",
+          "confidence": 0.843,
+          "score": 0.843,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:client.frontend.odcbs-frontend",
+            "layer_keyword:0.12"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "4 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/cdms/cdms-frontend",
+          "default_branch": "master",
+          "confidence": 0.843,
+          "score": 0.843,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:client.frontend.odcbs-frontend",
+            "layer_keyword:0.12"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "4 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/mrts/mrts-frontend",
+          "default_branch": "master",
+          "confidence": 0.843,
+          "score": 0.843,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:client.frontend.odcbs-frontend",
+            "layer_keyword:0.12"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "4 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        }
+      ],
+      "confirmation_status": "confirmed",
+      "confirmation_note": "命中人工确认规则：前端代码。"
+    },
+    {
+      "jira_key": "APMIS-2045",
+      "signals": {
+        "manual_rules": [
+          "client.frontend.odcbs-frontend"
+        ],
+        "domain_rule": "新手麻代码在 APMIS",
+        "jira_project": "APMIS",
+        "issue_type": "缺陷",
+        "status": "处理中",
+        "project_source": "Z总部集成测试",
+        "product_module": "手麻",
+        "target_version": "7.0.188.0",
+        "fix_versions": [],
+        "affected_versions": [],
+        "labels": []
+      },
+      "history_hits": [],
+      "candidates": [
+        {
+          "project": "apmis/odcbs/odcbs-frontend",
+          "default_branch": "develop",
+          "confidence": 1,
+          "score": 1,
+          "matched_signals": [
+            "confirmed_rule:client.frontend.odcbs-frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 1,
+              "source": "confirmed_rule",
+              "matched_value": "前端代码"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "命中人工确认规则：前端代码，映射到 apmis/odcbs/odcbs-frontend@develop。"
+        },
+        {
+          "project": "apmis/forecast/odcbs-forecast-frontend",
+          "default_branch": "master",
+          "confidence": 1,
+          "score": 1,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:client.frontend.odcbs-frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "3 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/odcbs/odcbs-backend",
+          "default_branch": "develop",
+          "confidence": 0.723,
+          "score": 0.723,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:client.frontend.odcbs-frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "3 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/intelligent-risk-evaluate/ire-frontend",
+          "default_branch": "develop",
+          "confidence": 0.723,
+          "score": 0.723,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:client.frontend.odcbs-frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "3 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/ca-sso/odcbs-ca",
+          "default_branch": "master",
+          "confidence": 0.723,
+          "score": 0.723,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:client.frontend.odcbs-frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "3 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        }
+      ],
+      "confirmation_status": "confirmed",
+      "confirmation_note": "命中人工确认规则：前端代码。"
+    },
+    {
+      "jira_key": "APMIS-2088",
+      "signals": {
+        "manual_rules": [],
+        "domain_rule": "新手麻代码在 APMIS",
+        "jira_project": "APMIS",
+        "issue_type": "缺陷",
+        "status": "处理中",
+        "project_source": "Z总部集成测试",
+        "product_module": "手麻",
+        "target_version": "7.0.188.0",
+        "fix_versions": [],
+        "affected_versions": [],
+        "labels": []
+      },
+      "history_hits": [],
+      "candidates": [
+        {
+          "project": "apmis/odcbs/odcbs-frontend",
+          "default_branch": "develop",
+          "confidence": 0.39,
+          "score": 0.39,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "2 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/odcbs/odcbs-backend",
+          "default_branch": "develop",
+          "confidence": 0.39,
+          "score": 0.39,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "2 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/odbip/odbip-custom-backend",
+          "default_branch": "develop",
+          "confidence": 0.39,
+          "score": 0.39,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "2 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/mobile/aims-mobile-vue",
+          "default_branch": "master",
+          "confidence": 0.39,
+          "score": 0.39,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "2 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/aims-2019-doc",
+          "default_branch": "master",
+          "confidence": 0.39,
+          "score": 0.39,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "2 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        }
+      ],
+      "confirmation_status": "candidate",
+      "confirmation_note": "由 Jira 字段、GitLab 工程/分支/历史信号生成；在确认前仅作为候选草稿。"
+    },
+    {
+      "jira_key": "APMIS-1955",
+      "signals": {
+        "manual_rules": [
+          "client.frontend.odcbs-frontend"
+        ],
+        "domain_rule": "新手麻代码在 APMIS",
+        "jira_project": "APMIS",
+        "issue_type": "需求",
+        "status": "处理中",
+        "project_source": "Z总部集成测试",
+        "product_module": "手麻",
+        "target_version": "7.0.187.0",
+        "fix_versions": [],
+        "affected_versions": [],
+        "labels": []
+      },
+      "history_hits": [],
+      "candidates": [
+        {
+          "project": "apmis/odcbs/odcbs-frontend",
+          "default_branch": "develop",
+          "confidence": 1,
+          "score": 1,
+          "matched_signals": [
+            "confirmed_rule:client.frontend.odcbs-frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 1,
+              "source": "confirmed_rule",
+              "matched_value": "前端代码"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "命中人工确认规则：前端代码，映射到 apmis/odcbs/odcbs-frontend@develop。"
+        },
+        {
+          "project": "apmis/forecast/odcbs-forecast-frontend",
+          "default_branch": "master",
+          "confidence": 1,
+          "score": 1,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:client.frontend.odcbs-frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "3 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/odcbs/odcbs-backend",
+          "default_branch": "develop",
+          "confidence": 0.723,
+          "score": 0.723,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:client.frontend.odcbs-frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "3 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/intelligent-risk-evaluate/ire-frontend",
+          "default_branch": "develop",
+          "confidence": 0.723,
+          "score": 0.723,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:client.frontend.odcbs-frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "3 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/ca-sso/odcbs-ca",
+          "default_branch": "master",
+          "confidence": 0.723,
+          "score": 0.723,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:client.frontend.odcbs-frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "3 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        }
+      ],
+      "confirmation_status": "confirmed",
+      "confirmation_note": "命中人工确认规则：前端代码。"
+    },
+    {
+      "jira_key": "APMIS-73",
+      "signals": {
+        "manual_rules": [
+          "client.frontend.odcbs-frontend"
+        ],
+        "domain_rule": "新手麻代码在 APMIS",
+        "jira_project": "APMIS",
+        "issue_type": "需求",
+        "status": "处理中",
+        "project_source": "SH盛京医院",
+        "product_module": "手麻",
+        "target_version": "7.0.187.0",
+        "fix_versions": [],
+        "affected_versions": [],
+        "labels": []
+      },
+      "history_hits": [
+        {
+          "kind": "merge_request",
+          "project": "apmis/odcbs/odcbs-frontend",
+          "sourceRef": "gitlab:apmis/odcbs/odcbs-frontend#mr:1737"
+        },
+        {
+          "kind": "merge_request",
+          "project": "apmis/odcbs/odcbs-backend",
+          "sourceRef": "gitlab:apmis/odcbs/odcbs-backend#mr:1744"
+        },
+        {
+          "kind": "merge_request",
+          "project": "apmis/odbip/odbip-custom-backend",
+          "sourceRef": "gitlab:apmis/odbip/odbip-custom-backend#mr:677"
+        },
+        {
+          "kind": "merge_request",
+          "project": "apmis/odcbs/odcbs-frontend",
+          "sourceRef": "gitlab:apmis/odcbs/odcbs-frontend#mr:1717"
+        },
+        {
+          "kind": "merge_request",
+          "project": "apmis/odbip/odbip-custom-backend",
+          "sourceRef": "gitlab:apmis/odbip/odbip-custom-backend#mr:676"
+        },
+        {
+          "kind": "merge_request",
+          "project": "apmis/odbip/odbip-custom-backend",
+          "sourceRef": "gitlab:apmis/odbip/odbip-custom-backend#mr:675"
+        },
+        {
+          "kind": "merge_request",
+          "project": "apmis/odcbs/odcbs-backend",
+          "sourceRef": "gitlab:apmis/odcbs/odcbs-backend#mr:1700"
+        }
+      ],
+      "candidates": [
+        {
+          "project": "apmis/odcbs/odcbs-frontend",
+          "default_branch": "develop",
+          "confidence": 1,
+          "score": 1,
+          "matched_signals": [
+            "confirmed_rule:client.frontend.odcbs-frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 1,
+              "source": "confirmed_rule",
+              "matched_value": "前端代码"
+            }
+          ],
+          "evidence_refs": [
+            "gitlab:apmis/odcbs/odcbs-frontend#mr:1737",
+            "gitlab:apmis/odcbs/odcbs-frontend#mr:1717"
+          ],
+          "rationale": "命中人工确认规则：前端代码，映射到 apmis/odcbs/odcbs-frontend@develop。"
+        },
+        {
+          "project": "apmis/odcbs/odcbs-backend",
+          "default_branch": "develop",
+          "confidence": 1,
+          "score": 1,
+          "matched_signals": [
+            "gitlab_history:issue_key",
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:client.frontend.odcbs-frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 0.75,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [
+            "gitlab:apmis/odcbs/odcbs-backend#mr:1744",
+            "gitlab:apmis/odcbs/odcbs-backend#mr:1700"
+          ],
+          "rationale": "Jira 编号命中 GitLab 历史记录（2 个引用），同时匹配 4 个字段/路径信号。"
+        },
+        {
+          "project": "apmis/odbip/odbip-custom-backend",
+          "default_branch": "develop",
+          "confidence": 1,
+          "score": 1,
+          "matched_signals": [
+            "gitlab_history:issue_key",
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 0.75,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [
+            "gitlab:apmis/odbip/odbip-custom-backend#mr:677",
+            "gitlab:apmis/odbip/odbip-custom-backend#mr:676",
+            "gitlab:apmis/odbip/odbip-custom-backend#mr:675"
+          ],
+          "rationale": "Jira 编号命中 GitLab 历史记录（3 个引用），同时匹配 3 个字段/路径信号。"
+        },
+        {
+          "project": "apmis/forecast/odcbs-forecast-frontend",
+          "default_branch": "master",
+          "confidence": 1,
+          "score": 1,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:client.frontend.odcbs-frontend",
+            "layer_keyword:0.12"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "4 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/intelligent-risk-evaluate/ire-frontend",
+          "default_branch": "develop",
+          "confidence": 0.843,
+          "score": 0.843,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:client.frontend.odcbs-frontend",
+            "layer_keyword:0.12"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "4 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        }
+      ],
+      "confirmation_status": "confirmed",
+      "confirmation_note": "命中人工确认规则：前端代码。"
+    },
+    {
+      "jira_key": "APMIS-840",
+      "signals": {
+        "manual_rules": [],
+        "domain_rule": "新手麻代码在 APMIS",
+        "jira_project": "APMIS",
+        "issue_type": "需求",
+        "status": "处理中",
+        "project_source": "SH盛京医院",
+        "product_module": "手麻",
+        "target_version": "7.0.187.0",
+        "fix_versions": [],
+        "affected_versions": [],
+        "labels": []
+      },
+      "history_hits": [],
+      "candidates": [
+        {
+          "project": "apmis/odcbs/odcbs-frontend",
+          "default_branch": "develop",
+          "confidence": 0.39,
+          "score": 0.39,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "2 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/odcbs/odcbs-backend",
+          "default_branch": "develop",
+          "confidence": 0.39,
+          "score": 0.39,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "2 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/odbip/odbip-custom-backend",
+          "default_branch": "develop",
+          "confidence": 0.39,
+          "score": 0.39,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "2 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/mobile/aims-mobile-vue",
+          "default_branch": "master",
+          "confidence": 0.39,
+          "score": 0.39,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "2 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/aims-2019-doc",
+          "default_branch": "master",
+          "confidence": 0.39,
+          "score": 0.39,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "2 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        }
+      ],
+      "confirmation_status": "candidate",
+      "confirmation_note": "由 Jira 字段、GitLab 工程/分支/历史信号生成；在确认前仅作为候选草稿。"
+    },
+    {
+      "jira_key": "APMIS-1004",
+      "signals": {
+        "manual_rules": [
+          "client.frontend.odcbs-frontend"
+        ],
+        "domain_rule": "新手麻代码在 APMIS",
+        "jira_project": "APMIS",
+        "issue_type": "缺陷",
+        "status": "处理中",
+        "project_source": "Z总部集成测试",
+        "product_module": "手麻",
+        "target_version": "1.0.175.0",
+        "fix_versions": [],
+        "affected_versions": [],
+        "labels": []
+      },
+      "history_hits": [],
+      "candidates": [
+        {
+          "project": "apmis/odcbs/odcbs-frontend",
+          "default_branch": "develop",
+          "confidence": 1,
+          "score": 1,
+          "matched_signals": [
+            "confirmed_rule:client.frontend.odcbs-frontend"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 1,
+              "source": "confirmed_rule",
+              "matched_value": "前端代码"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "命中人工确认规则：前端代码，映射到 apmis/odcbs/odcbs-frontend@develop。"
+        },
+        {
+          "project": "apmis/forecast/odcbs-forecast-frontend",
+          "default_branch": "master",
+          "confidence": 1,
+          "score": 1,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:client.frontend.odcbs-frontend",
+            "layer_keyword:0.12"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "4 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/intelligent-risk-evaluate/ire-frontend",
+          "default_branch": "develop",
+          "confidence": 0.843,
+          "score": 0.843,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:client.frontend.odcbs-frontend",
+            "layer_keyword:0.12"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "develop",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "4 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/cdms/cdms-frontend",
+          "default_branch": "master",
+          "confidence": 0.843,
+          "score": 0.843,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:client.frontend.odcbs-frontend",
+            "layer_keyword:0.12"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "4 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        },
+        {
+          "project": "apmis/mrts/mrts-frontend",
+          "default_branch": "master",
+          "confidence": 0.843,
+          "score": 0.843,
+          "matched_signals": [
+            "jira_project:APMIS",
+            "domain_rule:新手麻代码在 APMIS",
+            "manual_rule:client.frontend.odcbs-frontend",
+            "layer_keyword:0.12"
+          ],
+          "ref_candidates": [
+            {
+              "ref": "master",
+              "confidence": 0.55,
+              "source": "default_branch"
+            }
+          ],
+          "evidence_refs": [],
+          "rationale": "4 个 Jira 字段/文本信号匹配 GitLab 工程路径或名称。"
+        }
+      ],
+      "confirmation_status": "confirmed",
+      "confirmation_note": "命中人工确认规则：前端代码。"
+    }
+  ],
+  "next_confirmation_actions": [
+    "优先确认或驳回工单数量较多的 field_value_rules。",
+    "每条 confirmed 规则都需要明确 GitLab 分支策略：默认分支、版本分支或功能分支。",
+    "从 confirmed 的 issue_mappings 中挑选至少 20 条作为 W8 真实联合 eval 种子样本。",
+    "不要把 candidate 规则直接复制为 W8 真值，必须先经过人工确认。"
+  ]
+}

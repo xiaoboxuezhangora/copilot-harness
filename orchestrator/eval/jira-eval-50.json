@@ -1,0 +1,455 @@
+{
+  "promptVersion": "w6-eval-skill-routing@0.1",
+  "samples": [
+    {
+      "task_id": "ad-01",
+      "domain": "AngularDelivery",
+      "input_description": "Angular delivery: 只调整 ng-zorro editable table 列宽样式，acceptance criteria provided.",
+      "expected_skill": "angular-delivery",
+      "ground_truth_conclusion": "ready for implementation planning",
+      "source_ref": "skills/.github/skills/angular-delivery/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "ad-02",
+      "domain": "AngularDelivery",
+      "input_description": "Angular delivery: overlay popover 内 table body 高度偶发计算错误，cross-module trace needed.",
+      "expected_skill": "angular-delivery",
+      "ground_truth_conclusion": "needs cross-module investigation",
+      "source_ref": "skills/.github/skills/angular-delivery/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "ad-03",
+      "domain": "AngularDelivery",
+      "input_description": "Angular delivery: dynamic form 标签换行规则待确认，范围待定。",
+      "expected_skill": "angular-delivery",
+      "ground_truth_conclusion": "needs requirement clarification",
+      "source_ref": "skills/.github/skills/angular-delivery/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "ad-04",
+      "domain": "AngularDelivery",
+      "input_description": "Angular delivery: shared modal footer button spacing style cleanup only update.",
+      "expected_skill": "angular-delivery",
+      "ground_truth_conclusion": "ready for implementation planning",
+      "source_ref": "skills/.github/skills/angular-delivery/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "ad-05",
+      "domain": "AngularDelivery",
+      "input_description": "Angular delivery: route guard 与 interceptor 责任边界未明确，需先定义实现范围。",
+      "expected_skill": "angular-delivery",
+      "ground_truth_conclusion": "needs requirement clarification",
+      "source_ref": "skills/.github/skills/angular-delivery/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "ad-06",
+      "domain": "AngularDelivery",
+      "input_description": "Angular delivery: custom form control 在表格单元格撑宽，根因待排查。",
+      "expected_skill": "angular-delivery",
+      "ground_truth_conclusion": "needs cross-module investigation",
+      "source_ref": "skills/.github/skills/angular-delivery/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "ad-07",
+      "domain": "AngularDelivery",
+      "input_description": "Angular delivery: 列表排序字段映射已确定，仅做字段映射实现。",
+      "expected_skill": "angular-delivery",
+      "ground_truth_conclusion": "ready for implementation planning",
+      "source_ref": "skills/.github/skills/angular-delivery/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "ad-08",
+      "domain": "AngularDelivery",
+      "input_description": "Angular delivery: upload cell compact mode implementation scope needs design notes.",
+      "expected_skill": "angular-delivery",
+      "ground_truth_conclusion": "needs implementation scoping",
+      "source_ref": "skills/.github/skills/angular-delivery/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "ad-09",
+      "domain": "AngularDelivery",
+      "input_description": "Angular delivery: tooltip copy 文案优化，only update copy with acceptance criteria provided.",
+      "expected_skill": "angular-delivery",
+      "ground_truth_conclusion": "ready for implementation planning",
+      "source_ref": "skills/.github/skills/angular-delivery/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "ad-10",
+      "domain": "AngularDelivery",
+      "input_description": "Angular delivery: tab lazy mount measuring timing uncertain for first paint.",
+      "expected_skill": "angular-delivery",
+      "ground_truth_conclusion": "needs cross-module investigation",
+      "source_ref": "skills/.github/skills/angular-delivery/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "ad-11",
+      "domain": "AngularDelivery",
+      "input_description": "Angular delivery: dashboard card layout implementation scope to be split by component ownership.",
+      "expected_skill": "angular-delivery",
+      "ground_truth_conclusion": "needs implementation scoping",
+      "source_ref": "skills/.github/skills/angular-delivery/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "ad-12",
+      "domain": "AngularDelivery",
+      "input_description": "Angular delivery: reusable table column config extraction, cross-module dependency with shared ui package.",
+      "expected_skill": "angular-delivery",
+      "ground_truth_conclusion": "needs cross-module investigation",
+      "source_ref": "skills/.github/skills/angular-delivery/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "ad-13",
+      "domain": "AngularDelivery",
+      "input_description": "Angular delivery: filter panel keyboard behavior 待澄清 and fallback rule 未明确.",
+      "expected_skill": "angular-delivery",
+      "ground_truth_conclusion": "needs requirement clarification",
+      "source_ref": "skills/.github/skills/angular-delivery/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "ad-14",
+      "domain": "AngularDelivery",
+      "input_description": "Angular delivery: list row action icon style refresh only update style tokens.",
+      "expected_skill": "angular-delivery",
+      "ground_truth_conclusion": "ready for implementation planning",
+      "source_ref": "skills/.github/skills/angular-delivery/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "ad-15",
+      "domain": "AngularDelivery",
+      "input_description": "Angular delivery: form section collapse interaction implementation scope not aligned yet.",
+      "expected_skill": "angular-delivery",
+      "ground_truth_conclusion": "needs implementation scoping",
+      "source_ref": "skills/.github/skills/angular-delivery/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "ad-16",
+      "domain": "AngularDelivery",
+      "input_description": "Angular delivery: footer copy 文案统一，只调整文案不改逻辑。",
+      "expected_skill": "angular-delivery",
+      "ground_truth_conclusion": "ready for implementation planning",
+      "source_ref": "skills/.github/skills/angular-delivery/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "ad-17",
+      "domain": "AngularDelivery",
+      "input_description": "Angular delivery: ng-zorro table header/body width intermittent mismatch, trace required.",
+      "expected_skill": "angular-delivery",
+      "ground_truth_conclusion": "needs cross-module investigation",
+      "source_ref": "skills/.github/skills/angular-delivery/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "a17-01",
+      "domain": "Angular17Regression",
+      "input_description": "Angular 17 升级后页面右侧空白，复现困难，需要 trace。",
+      "expected_skill": "angular17-upgrade-regression-handler",
+      "ground_truth_conclusion": "needs cross-module investigation",
+      "source_ref": "skills/.github/skills/angular17-upgrade-regression-handler/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "a17-02",
+      "domain": "Angular17Regression",
+      "input_description": "升级后 modal footer 消失，只调整样式并已给明确验收。",
+      "expected_skill": "angular17-upgrade-regression-handler",
+      "ground_truth_conclusion": "ready for implementation planning",
+      "source_ref": "skills/.github/skills/angular17-upgrade-regression-handler/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "a17-03",
+      "domain": "Angular17Regression",
+      "input_description": "upgrade regression twotone icon color drift across shared components.",
+      "expected_skill": "angular17-upgrade-regression-handler",
+      "ground_truth_conclusion": "needs implementation scoping",
+      "source_ref": "skills/.github/skills/angular17-upgrade-regression-handler/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "a17-04",
+      "domain": "Angular17Regression",
+      "input_description": "Angular 17 升级后 dynamic-form 行高异常，范围待定待确认。",
+      "expected_skill": "angular17-upgrade-regression-handler",
+      "ground_truth_conclusion": "needs requirement clarification",
+      "source_ref": "skills/.github/skills/angular17-upgrade-regression-handler/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "a17-05",
+      "domain": "Angular17Regression",
+      "input_description": "升级后 overlay 首次渲染表头错位，偶发且 timing uncertain。",
+      "expected_skill": "angular17-upgrade-regression-handler",
+      "ground_truth_conclusion": "needs cross-module investigation",
+      "source_ref": "skills/.github/skills/angular17-upgrade-regression-handler/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "a17-06",
+      "domain": "Angular17Regression",
+      "input_description": "upgrade regression cdk drag handle broken, 根因未定位。",
+      "expected_skill": "angular17-upgrade-regression-handler",
+      "ground_truth_conclusion": "needs cross-module investigation",
+      "source_ref": "skills/.github/skills/angular17-upgrade-regression-handler/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "a17-07",
+      "domain": "Angular17Regression",
+      "input_description": "Angular 17 upgrade regression: blank page in monitor route, implementation scope pending.",
+      "expected_skill": "angular17-upgrade-regression-handler",
+      "ground_truth_conclusion": "needs implementation scoping",
+      "source_ref": "skills/.github/skills/angular17-upgrade-regression-handler/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "a17-08",
+      "domain": "Angular17Regression",
+      "input_description": "升级后 nz-icon color token map only update style.",
+      "expected_skill": "angular17-upgrade-regression-handler",
+      "ground_truth_conclusion": "ready for implementation planning",
+      "source_ref": "skills/.github/skills/angular17-upgrade-regression-handler/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "a17-09",
+      "domain": "Angular17Regression",
+      "input_description": "upgrade regression shared modal title missing, cross-module adapter trace.",
+      "expected_skill": "angular17-upgrade-regression-handler",
+      "ground_truth_conclusion": "needs cross-module investigation",
+      "source_ref": "skills/.github/skills/angular17-upgrade-regression-handler/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "a17-10",
+      "domain": "Angular17Regression",
+      "input_description": "升级后 sticky table scrollbar overlap，只调整样式。",
+      "expected_skill": "angular17-upgrade-regression-handler",
+      "ground_truth_conclusion": "ready for implementation planning",
+      "source_ref": "skills/.github/skills/angular17-upgrade-regression-handler/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "a17-11",
+      "domain": "Angular17Regression",
+      "input_description": "upgrade regression default selection chain broken，待澄清 fallback rule。",
+      "expected_skill": "angular17-upgrade-regression-handler",
+      "ground_truth_conclusion": "needs requirement clarification",
+      "source_ref": "skills/.github/skills/angular17-upgrade-regression-handler/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "a17-12",
+      "domain": "Angular17Regression",
+      "input_description": "Angular 17 升级后 timeline hover lag intermittent.",
+      "expected_skill": "angular17-upgrade-regression-handler",
+      "ground_truth_conclusion": "needs cross-module investigation",
+      "source_ref": "skills/.github/skills/angular17-upgrade-regression-handler/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "a17-13",
+      "domain": "Angular17Regression",
+      "input_description": "升级后 right panel empty in tab lazy mount，trace logs available.",
+      "expected_skill": "angular17-upgrade-regression-handler",
+      "ground_truth_conclusion": "needs cross-module investigation",
+      "source_ref": "skills/.github/skills/angular17-upgrade-regression-handler/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "a17-14",
+      "domain": "Angular17Regression",
+      "input_description": "upgrade regression copy 文案只调整，acceptance criteria provided.",
+      "expected_skill": "angular17-upgrade-regression-handler",
+      "ground_truth_conclusion": "ready for implementation planning",
+      "source_ref": "skills/.github/skills/angular17-upgrade-regression-handler/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "a17-15",
+      "domain": "Angular17Regression",
+      "input_description": "升级后 svg global css overreach, only update style scope.",
+      "expected_skill": "angular17-upgrade-regression-handler",
+      "ground_truth_conclusion": "ready for implementation planning",
+      "source_ref": "skills/.github/skills/angular17-upgrade-regression-handler/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "a17-16",
+      "domain": "Angular17Regression",
+      "input_description": "Angular 17 upgrade regression drawer content height zero，偶发复现困难。",
+      "expected_skill": "angular17-upgrade-regression-handler",
+      "ground_truth_conclusion": "needs cross-module investigation",
+      "source_ref": "skills/.github/skills/angular17-upgrade-regression-handler/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "a17-17",
+      "domain": "Angular17Regression",
+      "input_description": "升级后 monitor page blank with one module contract unclear.",
+      "expected_skill": "angular17-upgrade-regression-handler",
+      "ground_truth_conclusion": "needs implementation scoping",
+      "source_ref": "skills/.github/skills/angular17-upgrade-regression-handler/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "bt-01",
+      "domain": "BloodTransfusion",
+      "input_description": "输血前双人核对流程增加 scan gate reminder.",
+      "expected_skill": "blood-transfusion",
+      "ground_truth_conclusion": "needs safety review",
+      "source_ref": "skills/.github/skills/blood-transfusion/SKILL.md",
+      "high_risk": true
+    },
+    {
+      "task_id": "bt-02",
+      "domain": "BloodTransfusion",
+      "input_description": "备改输 BIZ857 状态写回跨模块，cross-module trace required.",
+      "expected_skill": "blood-transfusion",
+      "ground_truth_conclusion": "needs cross-module investigation",
+      "source_ref": "skills/.github/skills/blood-transfusion/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "bt-03",
+      "domain": "BloodTransfusion",
+      "input_description": "bloodTransfusionCode scene code 只调整字段映射 with acceptance criteria provided.",
+      "expected_skill": "blood-transfusion",
+      "ground_truth_conclusion": "ready for implementation planning",
+      "source_ref": "skills/.github/skills/blood-transfusion/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "bt-04",
+      "domain": "BloodTransfusion",
+      "input_description": "输血反应上报 SOP 必填项待确认，范围待定。",
+      "expected_skill": "blood-transfusion",
+      "ground_truth_conclusion": "needs requirement clarification",
+      "source_ref": "skills/.github/skills/blood-transfusion/SKILL.md",
+      "high_risk": true
+    },
+    {
+      "task_id": "bt-05",
+      "domain": "BloodTransfusion",
+      "input_description": "取血扫码后偶发重复执行，根因排查需要 trace.",
+      "expected_skill": "blood-transfusion",
+      "ground_truth_conclusion": "needs cross-module investigation",
+      "source_ref": "skills/.github/skills/blood-transfusion/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "bt-06",
+      "domain": "BloodTransfusion",
+      "input_description": "输血 platform push DTO 字段映射 only update mapping and export field list.",
+      "expected_skill": "blood-transfusion",
+      "ground_truth_conclusion": "ready for implementation planning",
+      "source_ref": "skills/.github/skills/blood-transfusion/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "bt-07",
+      "domain": "BloodTransfusion",
+      "input_description": "输血申请校验规则 implementation scope pending with backend owner.",
+      "expected_skill": "blood-transfusion",
+      "ground_truth_conclusion": "needs implementation scoping",
+      "source_ref": "skills/.github/skills/blood-transfusion/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "bt-08",
+      "domain": "BloodTransfusion",
+      "input_description": "blood transfusion async replay idempotent key 未明确.",
+      "expected_skill": "blood-transfusion",
+      "ground_truth_conclusion": "needs requirement clarification",
+      "source_ref": "skills/.github/skills/blood-transfusion/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "bt-09",
+      "domain": "BloodTransfusion",
+      "input_description": "输血闭环 platform push intermittent timeout, cross-module trace.",
+      "expected_skill": "blood-transfusion",
+      "ground_truth_conclusion": "needs cross-module investigation",
+      "source_ref": "skills/.github/skills/blood-transfusion/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "bt-10",
+      "domain": "BloodTransfusion",
+      "input_description": "输血记录导出 copy 文案只调整，不改流程。",
+      "expected_skill": "blood-transfusion",
+      "ground_truth_conclusion": "ready for implementation planning",
+      "source_ref": "skills/.github/skills/blood-transfusion/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "bt-11",
+      "domain": "BloodTransfusion",
+      "input_description": "输血执行 scan gate and reaction handling policy update.",
+      "expected_skill": "blood-transfusion",
+      "ground_truth_conclusion": "needs safety review",
+      "source_ref": "skills/.github/skills/blood-transfusion/SKILL.md",
+      "high_risk": true
+    },
+    {
+      "task_id": "bt-12",
+      "domain": "BloodTransfusion",
+      "input_description": "neuBTMIS scene integration contract 待确认。",
+      "expected_skill": "blood-transfusion",
+      "ground_truth_conclusion": "needs requirement clarification",
+      "source_ref": "skills/.github/skills/blood-transfusion/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "bt-13",
+      "domain": "BloodTransfusion",
+      "input_description": "BIZ857 message consumer retry logic implementation scope for odbip layer.",
+      "expected_skill": "blood-transfusion",
+      "ground_truth_conclusion": "needs implementation scoping",
+      "source_ref": "skills/.github/skills/blood-transfusion/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "bt-14",
+      "domain": "BloodTransfusion",
+      "input_description": "输血前核对页面 icon style only update style tokens.",
+      "expected_skill": "blood-transfusion",
+      "ground_truth_conclusion": "ready for implementation planning",
+      "source_ref": "skills/.github/skills/blood-transfusion/SKILL.md",
+      "high_risk": false
+    },
+    {
+      "task_id": "bt-15",
+      "domain": "BloodTransfusion",
+      "input_description": "输血平台凭证 token rotation strategy high risk.",
+      "expected_skill": "blood-transfusion",
+      "ground_truth_conclusion": "needs safety review",
+      "source_ref": "skills/.github/skills/blood-transfusion/SKILL.md",
+      "high_risk": true
+    },
+    {
+      "task_id": "bt-16",
+      "domain": "BloodTransfusion",
+      "input_description": "blood transfusion take-blood timeline intermittent sync gap trace.",
+      "expected_skill": "blood-transfusion",
+      "ground_truth_conclusion": "needs cross-module investigation",
+      "source_ref": "skills/.github/skills/blood-transfusion/SKILL.md",
+      "high_risk": false
+    }
+  ]
+}

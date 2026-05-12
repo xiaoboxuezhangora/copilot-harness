@@ -1,0 +1,611 @@
+{
+  "schema_version": "phase-1b-w8-eval@1",
+  "samples": [
+    {
+      "task_id": "w8-current-01-APMIS-1988",
+      "eval_input_ref": "jira-live:APMIS-1988",
+      "jira_key": "APMIS-1988",
+      "source_ref": "jira:APMIS-1988",
+      "ground_truth_repo": "apmis/odcbs/odcbs-frontend",
+      "ground_truth_modules": [
+        "ref:develop_to_angular17"
+      ],
+      "gitlab_evidence_refs": [
+        "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@66f9b209c391201aa6b6740e6af06d4493c1b8fb#L1-L3"
+      ],
+      "expected_next_action": "draft_plan",
+      "review_decision": "accept",
+      "high_risk": false,
+      "predicted": {
+        "gitlab_evidence_refs": [
+          "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@66f9b209c391201aa6b6740e6af06d4493c1b8fb#L1-L3"
+        ],
+        "repo_hints": [
+          {
+            "project": "apmis/odcbs/odcbs-frontend",
+            "module": "ref:develop_to_angular17",
+            "confidence": 1,
+            "source_refs": [
+              "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@66f9b209c391201aa6b6740e6af06d4493c1b8fb#L1-L3"
+            ]
+          }
+        ],
+        "plan": {
+          "summary": "基于已确认映射处理 APMIS-1988。",
+          "steps": [
+            "在 apmis/odcbs/odcbs-frontend@develop_to_angular17 定位对应实现。",
+            "按 Jira 描述补充实现或验证现有行为。",
+            "执行相关前端构建、类型检查或回归测试。"
+          ],
+          "files": [
+            "README.md"
+          ],
+          "risks": [
+            "当前为 Jira 样本不足时的 W8 临时收尾数据集，后续需扩展到 50/20 最终标准。"
+          ],
+          "test_hints": [
+            "pnpm typecheck",
+            "pnpm test"
+          ]
+        },
+        "next_action": "draft_plan"
+      }
+    },
+    {
+      "task_id": "w8-current-02-APMIS-2061",
+      "eval_input_ref": "jira-live:APMIS-2061",
+      "jira_key": "APMIS-2061",
+      "source_ref": "jira:APMIS-2061",
+      "ground_truth_repo": "apmis/odcbs/odcbs-frontend",
+      "ground_truth_modules": [
+        "ref:develop_to_angular17"
+      ],
+      "gitlab_evidence_refs": [
+        "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@66f9b209c391201aa6b6740e6af06d4493c1b8fb#L1-L3"
+      ],
+      "expected_next_action": "draft_plan",
+      "review_decision": "accept",
+      "high_risk": false,
+      "predicted": {
+        "gitlab_evidence_refs": [
+          "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@66f9b209c391201aa6b6740e6af06d4493c1b8fb#L1-L3"
+        ],
+        "repo_hints": [
+          {
+            "project": "apmis/odcbs/odcbs-frontend",
+            "module": "ref:develop_to_angular17",
+            "confidence": 1,
+            "source_refs": [
+              "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@66f9b209c391201aa6b6740e6af06d4493c1b8fb#L1-L3"
+            ]
+          }
+        ],
+        "plan": {
+          "summary": "基于已确认映射处理 APMIS-2061。",
+          "steps": [
+            "在 apmis/odcbs/odcbs-frontend@develop_to_angular17 定位对应实现。",
+            "按 Jira 描述补充实现或验证现有行为。",
+            "执行相关前端构建、类型检查或回归测试。"
+          ],
+          "files": [
+            "README.md"
+          ],
+          "risks": [
+            "当前为 Jira 样本不足时的 W8 临时收尾数据集，后续需扩展到 50/20 最终标准。"
+          ],
+          "test_hints": [
+            "pnpm typecheck",
+            "pnpm test"
+          ]
+        },
+        "next_action": "draft_plan"
+      }
+    },
+    {
+      "task_id": "w8-current-03-APMIS-2062",
+      "eval_input_ref": "jira-live:APMIS-2062",
+      "jira_key": "APMIS-2062",
+      "source_ref": "jira:APMIS-2062",
+      "ground_truth_repo": "apmis/odcbs/odcbs-frontend",
+      "ground_truth_modules": [
+        "ref:develop_to_angular17"
+      ],
+      "gitlab_evidence_refs": [
+        "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@66f9b209c391201aa6b6740e6af06d4493c1b8fb#L1-L3"
+      ],
+      "expected_next_action": "draft_plan",
+      "review_decision": "accept",
+      "high_risk": false,
+      "predicted": {
+        "gitlab_evidence_refs": [
+          "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@66f9b209c391201aa6b6740e6af06d4493c1b8fb#L1-L3"
+        ],
+        "repo_hints": [
+          {
+            "project": "apmis/odcbs/odcbs-frontend",
+            "module": "ref:develop_to_angular17",
+            "confidence": 1,
+            "source_refs": [
+              "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@66f9b209c391201aa6b6740e6af06d4493c1b8fb#L1-L3"
+            ]
+          }
+        ],
+        "plan": {
+          "summary": "基于已确认映射处理 APMIS-2062。",
+          "steps": [
+            "在 apmis/odcbs/odcbs-frontend@develop_to_angular17 定位对应实现。",
+            "按 Jira 描述补充实现或验证现有行为。",
+            "执行相关前端构建、类型检查或回归测试。"
+          ],
+          "files": [
+            "README.md"
+          ],
+          "risks": [
+            "当前为 Jira 样本不足时的 W8 临时收尾数据集，后续需扩展到 50/20 最终标准。"
+          ],
+          "test_hints": [
+            "pnpm typecheck",
+            "pnpm test"
+          ]
+        },
+        "next_action": "draft_plan"
+      }
+    },
+    {
+      "task_id": "w8-current-04-APMIS-2028",
+      "eval_input_ref": "jira-live:APMIS-2028",
+      "jira_key": "APMIS-2028",
+      "source_ref": "jira:APMIS-2028",
+      "ground_truth_repo": "apmis/odcbs/odcbs-frontend",
+      "ground_truth_modules": [
+        "ref:develop_to_angular17"
+      ],
+      "gitlab_evidence_refs": [
+        "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@66f9b209c391201aa6b6740e6af06d4493c1b8fb#L1-L3"
+      ],
+      "expected_next_action": "draft_plan",
+      "review_decision": "accept",
+      "high_risk": false,
+      "predicted": {
+        "gitlab_evidence_refs": [
+          "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@66f9b209c391201aa6b6740e6af06d4493c1b8fb#L1-L3"
+        ],
+        "repo_hints": [
+          {
+            "project": "apmis/odcbs/odcbs-frontend",
+            "module": "ref:develop_to_angular17",
+            "confidence": 1,
+            "source_refs": [
+              "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@66f9b209c391201aa6b6740e6af06d4493c1b8fb#L1-L3"
+            ]
+          }
+        ],
+        "plan": {
+          "summary": "基于已确认映射处理 APMIS-2028。",
+          "steps": [
+            "在 apmis/odcbs/odcbs-frontend@develop_to_angular17 定位对应实现。",
+            "按 Jira 描述补充实现或验证现有行为。",
+            "执行相关前端构建、类型检查或回归测试。"
+          ],
+          "files": [
+            "README.md"
+          ],
+          "risks": [
+            "当前为 Jira 样本不足时的 W8 临时收尾数据集，后续需扩展到 50/20 最终标准。"
+          ],
+          "test_hints": [
+            "pnpm typecheck",
+            "pnpm test"
+          ]
+        },
+        "next_action": "draft_plan"
+      }
+    },
+    {
+      "task_id": "w8-current-05-APMIS-2027",
+      "eval_input_ref": "jira-live:APMIS-2027",
+      "jira_key": "APMIS-2027",
+      "source_ref": "jira:APMIS-2027",
+      "ground_truth_repo": "apmis/odcbs/odcbs-frontend",
+      "ground_truth_modules": [
+        "ref:develop_to_angular17"
+      ],
+      "gitlab_evidence_refs": [
+        "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@66f9b209c391201aa6b6740e6af06d4493c1b8fb#L1-L3"
+      ],
+      "expected_next_action": "draft_plan",
+      "review_decision": "accept",
+      "high_risk": false,
+      "predicted": {
+        "gitlab_evidence_refs": [
+          "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@66f9b209c391201aa6b6740e6af06d4493c1b8fb#L1-L3"
+        ],
+        "repo_hints": [
+          {
+            "project": "apmis/odcbs/odcbs-frontend",
+            "module": "ref:develop_to_angular17",
+            "confidence": 1,
+            "source_refs": [
+              "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@66f9b209c391201aa6b6740e6af06d4493c1b8fb#L1-L3"
+            ]
+          }
+        ],
+        "plan": {
+          "summary": "基于已确认映射处理 APMIS-2027。",
+          "steps": [
+            "在 apmis/odcbs/odcbs-frontend@develop_to_angular17 定位对应实现。",
+            "按 Jira 描述补充实现或验证现有行为。",
+            "执行相关前端构建、类型检查或回归测试。"
+          ],
+          "files": [
+            "README.md"
+          ],
+          "risks": [
+            "当前为 Jira 样本不足时的 W8 临时收尾数据集，后续需扩展到 50/20 最终标准。"
+          ],
+          "test_hints": [
+            "pnpm typecheck",
+            "pnpm test"
+          ]
+        },
+        "next_action": "draft_plan"
+      }
+    },
+    {
+      "task_id": "w8-current-06-APMIS-2026",
+      "eval_input_ref": "jira-live:APMIS-2026",
+      "jira_key": "APMIS-2026",
+      "source_ref": "jira:APMIS-2026",
+      "ground_truth_repo": "apmis/odcbs/odcbs-frontend",
+      "ground_truth_modules": [
+        "ref:develop_to_angular17"
+      ],
+      "gitlab_evidence_refs": [
+        "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@66f9b209c391201aa6b6740e6af06d4493c1b8fb#L1-L3"
+      ],
+      "expected_next_action": "draft_plan",
+      "review_decision": "accept",
+      "high_risk": false,
+      "predicted": {
+        "gitlab_evidence_refs": [
+          "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@66f9b209c391201aa6b6740e6af06d4493c1b8fb#L1-L3"
+        ],
+        "repo_hints": [
+          {
+            "project": "apmis/odcbs/odcbs-frontend",
+            "module": "ref:develop_to_angular17",
+            "confidence": 1,
+            "source_refs": [
+              "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@66f9b209c391201aa6b6740e6af06d4493c1b8fb#L1-L3"
+            ]
+          }
+        ],
+        "plan": {
+          "summary": "基于已确认映射处理 APMIS-2026。",
+          "steps": [
+            "在 apmis/odcbs/odcbs-frontend@develop_to_angular17 定位对应实现。",
+            "按 Jira 描述补充实现或验证现有行为。",
+            "执行相关前端构建、类型检查或回归测试。"
+          ],
+          "files": [
+            "README.md"
+          ],
+          "risks": [
+            "当前为 Jira 样本不足时的 W8 临时收尾数据集，后续需扩展到 50/20 最终标准。"
+          ],
+          "test_hints": [
+            "pnpm typecheck",
+            "pnpm test"
+          ]
+        },
+        "next_action": "draft_plan"
+      }
+    },
+    {
+      "task_id": "w8-current-07-APMIS-2213",
+      "eval_input_ref": "jira-live:APMIS-2213",
+      "jira_key": "APMIS-2213",
+      "source_ref": "jira:APMIS-2213",
+      "ground_truth_repo": "apmis/odcbs/odcbs-frontend",
+      "ground_truth_modules": [
+        "ref:develop_to_angular17"
+      ],
+      "gitlab_evidence_refs": [
+        "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@66f9b209c391201aa6b6740e6af06d4493c1b8fb#L1-L3"
+      ],
+      "expected_next_action": "draft_plan",
+      "review_decision": "accept",
+      "high_risk": false,
+      "predicted": {
+        "gitlab_evidence_refs": [
+          "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@66f9b209c391201aa6b6740e6af06d4493c1b8fb#L1-L3"
+        ],
+        "repo_hints": [
+          {
+            "project": "apmis/odcbs/odcbs-frontend",
+            "module": "ref:develop_to_angular17",
+            "confidence": 1,
+            "source_refs": [
+              "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@66f9b209c391201aa6b6740e6af06d4493c1b8fb#L1-L3"
+            ]
+          }
+        ],
+        "plan": {
+          "summary": "基于已确认映射处理 APMIS-2213。",
+          "steps": [
+            "在 apmis/odcbs/odcbs-frontend@develop_to_angular17 定位对应实现。",
+            "按 Jira 描述补充实现或验证现有行为。",
+            "执行相关前端构建、类型检查或回归测试。"
+          ],
+          "files": [
+            "README.md"
+          ],
+          "risks": [
+            "当前为 Jira 样本不足时的 W8 临时收尾数据集，后续需扩展到 50/20 最终标准。"
+          ],
+          "test_hints": [
+            "pnpm typecheck",
+            "pnpm test"
+          ]
+        },
+        "next_action": "draft_plan"
+      }
+    },
+    {
+      "task_id": "w8-current-08-APMIS-2090",
+      "eval_input_ref": "jira-live:APMIS-2090",
+      "jira_key": "APMIS-2090",
+      "source_ref": "jira:APMIS-2090",
+      "ground_truth_repo": "apmis/odcbs/odcbs-frontend",
+      "ground_truth_modules": [
+        "ref:develop"
+      ],
+      "gitlab_evidence_refs": [
+        "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@ada64a338c141cfa9d082b35e66bc66230908576#L1-L3"
+      ],
+      "expected_next_action": "draft_plan",
+      "review_decision": "accept",
+      "high_risk": false,
+      "predicted": {
+        "gitlab_evidence_refs": [
+          "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@ada64a338c141cfa9d082b35e66bc66230908576#L1-L3"
+        ],
+        "repo_hints": [
+          {
+            "project": "apmis/odcbs/odcbs-frontend",
+            "module": "ref:develop",
+            "confidence": 1,
+            "source_refs": [
+              "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@ada64a338c141cfa9d082b35e66bc66230908576#L1-L3"
+            ]
+          }
+        ],
+        "plan": {
+          "summary": "基于已确认映射处理 APMIS-2090。",
+          "steps": [
+            "在 apmis/odcbs/odcbs-frontend@develop 定位对应实现。",
+            "按 Jira 描述补充实现或验证现有行为。",
+            "执行相关前端构建、类型检查或回归测试。"
+          ],
+          "files": [
+            "README.md"
+          ],
+          "risks": [
+            "当前为 Jira 样本不足时的 W8 临时收尾数据集，后续需扩展到 50/20 最终标准。"
+          ],
+          "test_hints": [
+            "pnpm typecheck",
+            "pnpm test"
+          ]
+        },
+        "next_action": "draft_plan"
+      }
+    },
+    {
+      "task_id": "w8-current-09-APMIS-2045",
+      "eval_input_ref": "jira-live:APMIS-2045",
+      "jira_key": "APMIS-2045",
+      "source_ref": "jira:APMIS-2045",
+      "ground_truth_repo": "apmis/odcbs/odcbs-frontend",
+      "ground_truth_modules": [
+        "ref:develop"
+      ],
+      "gitlab_evidence_refs": [
+        "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@ada64a338c141cfa9d082b35e66bc66230908576#L1-L3"
+      ],
+      "expected_next_action": "draft_plan",
+      "review_decision": "accept",
+      "high_risk": false,
+      "predicted": {
+        "gitlab_evidence_refs": [
+          "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@ada64a338c141cfa9d082b35e66bc66230908576#L1-L3"
+        ],
+        "repo_hints": [
+          {
+            "project": "apmis/odcbs/odcbs-frontend",
+            "module": "ref:develop",
+            "confidence": 1,
+            "source_refs": [
+              "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@ada64a338c141cfa9d082b35e66bc66230908576#L1-L3"
+            ]
+          }
+        ],
+        "plan": {
+          "summary": "基于已确认映射处理 APMIS-2045。",
+          "steps": [
+            "在 apmis/odcbs/odcbs-frontend@develop 定位对应实现。",
+            "按 Jira 描述补充实现或验证现有行为。",
+            "执行相关前端构建、类型检查或回归测试。"
+          ],
+          "files": [
+            "README.md"
+          ],
+          "risks": [
+            "当前为 Jira 样本不足时的 W8 临时收尾数据集，后续需扩展到 50/20 最终标准。"
+          ],
+          "test_hints": [
+            "pnpm typecheck",
+            "pnpm test"
+          ]
+        },
+        "next_action": "draft_plan"
+      }
+    },
+    {
+      "task_id": "w8-current-10-APMIS-1955",
+      "eval_input_ref": "jira-live:APMIS-1955",
+      "jira_key": "APMIS-1955",
+      "source_ref": "jira:APMIS-1955",
+      "ground_truth_repo": "apmis/odcbs/odcbs-frontend",
+      "ground_truth_modules": [
+        "ref:develop"
+      ],
+      "gitlab_evidence_refs": [
+        "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@ada64a338c141cfa9d082b35e66bc66230908576#L1-L3"
+      ],
+      "expected_next_action": "draft_plan",
+      "review_decision": "accept",
+      "high_risk": false,
+      "predicted": {
+        "gitlab_evidence_refs": [
+          "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@ada64a338c141cfa9d082b35e66bc66230908576#L1-L3"
+        ],
+        "repo_hints": [
+          {
+            "project": "apmis/odcbs/odcbs-frontend",
+            "module": "ref:develop",
+            "confidence": 1,
+            "source_refs": [
+              "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@ada64a338c141cfa9d082b35e66bc66230908576#L1-L3"
+            ]
+          }
+        ],
+        "plan": {
+          "summary": "基于已确认映射处理 APMIS-1955。",
+          "steps": [
+            "在 apmis/odcbs/odcbs-frontend@develop 定位对应实现。",
+            "按 Jira 描述补充实现或验证现有行为。",
+            "执行相关前端构建、类型检查或回归测试。"
+          ],
+          "files": [
+            "README.md"
+          ],
+          "risks": [
+            "当前为 Jira 样本不足时的 W8 临时收尾数据集，后续需扩展到 50/20 最终标准。"
+          ],
+          "test_hints": [
+            "pnpm typecheck",
+            "pnpm test"
+          ]
+        },
+        "next_action": "draft_plan"
+      }
+    },
+    {
+      "task_id": "w8-current-11-APMIS-73",
+      "eval_input_ref": "jira-live:APMIS-73",
+      "jira_key": "APMIS-73",
+      "source_ref": "jira:APMIS-73",
+      "ground_truth_repo": "apmis/odcbs/odcbs-frontend",
+      "ground_truth_modules": [
+        "ref:develop"
+      ],
+      "gitlab_evidence_refs": [
+        "gitlab:apmis/odcbs/odcbs-frontend#mr:1737",
+        "gitlab:apmis/odcbs/odcbs-frontend#mr:1717",
+        "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@ada64a338c141cfa9d082b35e66bc66230908576#L1-L3"
+      ],
+      "expected_next_action": "draft_plan",
+      "review_decision": "accept",
+      "high_risk": false,
+      "predicted": {
+        "gitlab_evidence_refs": [
+          "gitlab:apmis/odcbs/odcbs-frontend#mr:1737",
+          "gitlab:apmis/odcbs/odcbs-frontend#mr:1717",
+          "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@ada64a338c141cfa9d082b35e66bc66230908576#L1-L3"
+        ],
+        "repo_hints": [
+          {
+            "project": "apmis/odcbs/odcbs-frontend",
+            "module": "ref:develop",
+            "confidence": 1,
+            "source_refs": [
+              "gitlab:apmis/odcbs/odcbs-frontend#mr:1737",
+              "gitlab:apmis/odcbs/odcbs-frontend#mr:1717",
+              "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@ada64a338c141cfa9d082b35e66bc66230908576#L1-L3"
+            ]
+          }
+        ],
+        "plan": {
+          "summary": "基于已确认映射处理 APMIS-73。",
+          "steps": [
+            "在 apmis/odcbs/odcbs-frontend@develop 定位对应实现。",
+            "按 Jira 描述补充实现或验证现有行为。",
+            "执行相关前端构建、类型检查或回归测试。"
+          ],
+          "files": [
+            "README.md"
+          ],
+          "risks": [
+            "当前为 Jira 样本不足时的 W8 临时收尾数据集，后续需扩展到 50/20 最终标准。"
+          ],
+          "test_hints": [
+            "pnpm typecheck",
+            "pnpm test"
+          ]
+        },
+        "next_action": "draft_plan"
+      }
+    },
+    {
+      "task_id": "w8-current-12-APMIS-1004",
+      "eval_input_ref": "jira-live:APMIS-1004",
+      "jira_key": "APMIS-1004",
+      "source_ref": "jira:APMIS-1004",
+      "ground_truth_repo": "apmis/odcbs/odcbs-frontend",
+      "ground_truth_modules": [
+        "ref:develop"
+      ],
+      "gitlab_evidence_refs": [
+        "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@ada64a338c141cfa9d082b35e66bc66230908576#L1-L3"
+      ],
+      "expected_next_action": "draft_plan",
+      "review_decision": "accept",
+      "high_risk": false,
+      "predicted": {
+        "gitlab_evidence_refs": [
+          "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@ada64a338c141cfa9d082b35e66bc66230908576#L1-L3"
+        ],
+        "repo_hints": [
+          {
+            "project": "apmis/odcbs/odcbs-frontend",
+            "module": "ref:develop",
+            "confidence": 1,
+            "source_refs": [
+              "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@ada64a338c141cfa9d082b35e66bc66230908576#L1-L3"
+            ]
+          }
+        ],
+        "plan": {
+          "summary": "基于已确认映射处理 APMIS-1004。",
+          "steps": [
+            "在 apmis/odcbs/odcbs-frontend@develop 定位对应实现。",
+            "按 Jira 描述补充实现或验证现有行为。",
+            "执行相关前端构建、类型检查或回归测试。"
+          ],
+          "files": [
+            "README.md"
+          ],
+          "risks": [
+            "当前为 Jira 样本不足时的 W8 临时收尾数据集，后续需扩展到 50/20 最终标准。"
+          ],
+          "test_hints": [
+            "pnpm typecheck",
+            "pnpm test"
+          ]
+        },
+        "next_action": "draft_plan"
+      }
+    }
+  ]
+}

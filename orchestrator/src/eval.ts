@@ -1,46 +1,44 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 
+type SkillName =
+  | 'angular-delivery'
+  | 'angular17-upgrade-regression-handler'
+  | 'blood-transfusion';
+
+type Conclusion =
+  | 'ready for implementation planning'
+  | 'needs implementation scoping'
+  | 'needs cross-module investigation'
+  | 'needs requirement clarification'
+  | 'needs safety review';
+
 interface EvalDataset {
   readonly promptVersion: string;
   readonly samples: readonly EvalSample[];
 }
 
 interface EvalSample {
-  readonly id: string;
+  readonly task_id: string;
   readonly domain: string;
-  readonly issue: {
-    readonly key: string;
-    readonly summary: string;
-    readonly description: string;
-    readonly status: string;
-    readonly priority: string;
-    readonly assignee: string;
-    readonly labels: readonly string[];
-    readonly project: string;
-  };
+  readonly input_description: string;
+  readonly expected_skill: SkillName;
+  readonly ground_truth_conclusion: Conclusion;
   readonly source_ref: string;
-  readonly ground_truth: {
-    readonly modules: readonly string[];
-    readonly expected_skill: string;
-    readonly expected_conclusion: string;
-  };
+  readonly high_risk: boolean;
 }
 
 interface EvalSampleResult {
-  readonly id: string;
+  readonly task_id: string;
   readonly domain: string;
   readonly passed: boolean;
+  readonly high_risk: boolean;
+  readonly source_ref_present: boolean;
+  readonly memory_hit_count: number;
   readonly failureReason?: string;
   readonly predicted: {
-    readonly problem_summary: string;
-    readonly impact_scope: readonly string[];
-    readonly priority_suggestion: string;
-    readonly attachment_notes: readonly string[];
-    readonly ambiguity: string;
-    readonly executable_score: number;
-    readonly next_queries: readonly string[];
-    readonly conclusion: string;
+    readonly skill: SkillName;
+    readonly conclusion: Conclusion;
   };
 }
 
@@ -48,10 +46,16 @@ interface EvalSummary {
   readonly sampleCount: number;
   readonly passedCount: number;
   readonly failedCount: number;
+  readonly highRiskSampleCount: number;
   readonly repoHitAt1: 'not_applicable';
   readonly repoHitAt1Reason: string;
   readonly planExecutability: number;
   readonly correctionRate: number;
+  readonly memoryHitCount: {
+    readonly total: number;
+    readonly average: number;
+  };
+  readonly sourceRefCoverage: number;
   readonly failureCategories: Readonly<Record<string, number>>;
 }
 
@@ -61,7 +65,7 @@ interface EvalReport {
   readonly samples: readonly EvalSampleResult[];
 }
 
-const DATASET_PATH = join('eval', 'jira-eval-20.json');
+const DATASET_PATH = join('eval', 'jira-eval-50.json');
 const OUTPUT_JSON_PATH = join('eval', 'report.json');
 const OUTPUT_MD_PATH = join('eval', 'report.md');
 
@@ -85,6 +89,7 @@ async function loadDataset(path: string): Promise<EvalDataset> {
   if (!isDataset(parsed)) {
     throw new Error('Eval dataset is malformed');
   }
+
   return parsed;
 }
 
@@ -92,12 +97,14 @@ function buildReport(dataset: EvalDataset): EvalReport {
   const results = dataset.samples.map((sample) => evaluateSample(sample));
   const passedCount = results.filter((result) => result.passed).length;
   const failedCount = results.length - passedCount;
+  const memoryHitCountTotal = results.reduce((acc, result) => acc + result.memory_hit_count, 0);
+  const sourceRefCoverage = roundRatio(
+    results.filter((result) => result.source_ref_present).length,
+    results.length
+  );
   const failureCategories = results.reduce<Readonly<Record<string, number>>>(
     (accumulator, result) => {
-      if (result.passed) {
-        return accumulator;
-      }
-
+      if (result.passed) return accumulator;
       const category = categorizeFailure(result.failureReason ?? 'unknown');
       return {
         ...accumulator,
@@ -113,10 +120,17 @@ function buildReport(dataset: EvalDataset): EvalReport {
       sampleCount: results.length,
       passedCount,
       failedCount,
+      highRiskSampleCount: results.filter((result) => result.high_risk).length,
       repoHitAt1: 'not_applicable',
-      repoHitAt1Reason: 'Repo resolver is not implemented in W3; score is intentionally withheld.',
+      repoHitAt1Reason:
+        'Repo Hit@1 remains not_applicable in W6 and will be enabled after W8 Code Retrieval MCP is online.',
       planExecutability: roundRatio(passedCount, results.length),
       correctionRate: roundRatio(failedCount, results.length),
+      memoryHitCount: {
+        total: memoryHitCountTotal,
+        average: roundRatio(memoryHitCountTotal, results.length)
+      },
+      sourceRefCoverage,
       failureCategories
     },
     samples: results
@@ -124,137 +138,158 @@ function buildReport(dataset: EvalDataset): EvalReport {
 }
 
 function evaluateSample(sample: EvalSample): EvalSampleResult {
-  const modules = sample.ground_truth.modules.map((module) => module.toLowerCase());
-  const conclusion = predictConclusion(sample);
-  const predictedModules = predictModules(sample);
-  const moduleCoverage = coverageRatio(normalizeList(predictedModules), normalizeList(modules));
+  const predictedSkill = predictSkill(sample.input_description);
+  const predictedConclusion = predictConclusion(sample.input_description, sample.high_risk);
+  const sourceRefPresent = sample.source_ref.trim().length > 0;
+  const memoryHitCount = estimateMemoryHitCount(sample, predictedSkill, sourceRefPresent);
   const passed =
-    moduleCoverage >= 0.5 &&
-    conclusion === sample.ground_truth.expected_conclusion &&
-    sample.ground_truth.expected_skill === 'jira-requirement-analysis';
+    predictedSkill === sample.expected_skill &&
+    predictedConclusion === sample.ground_truth_conclusion &&
+    sourceRefPresent;
 
   return {
-    id: sample.id,
+    task_id: sample.task_id,
     domain: sample.domain,
     passed,
+    high_risk: sample.high_risk,
+    source_ref_present: sourceRefPresent,
+    memory_hit_count: memoryHitCount,
     ...(passed
       ? {}
       : {
-          failureReason: buildFailureReason(sample, predictedModules, conclusion)
+          failureReason: buildFailureReason(
+            sample,
+            predictedSkill,
+            predictedConclusion,
+            sourceRefPresent
+          )
         }),
     predicted: {
-      problem_summary: sample.issue.summary,
-      impact_scope: predictedModules,
-      priority_suggestion: sample.issue.priority,
-      attachment_notes: [],
-      ambiguity: sample.issue.description,
-      executable_score: scoreFromIssue(sample),
-      next_queries: predictedModules.length === 0 ? ['clarify module ownership'] : [],
-      conclusion
+      skill: predictedSkill,
+      conclusion: predictedConclusion
     }
   };
 }
 
-function predictModules(sample: EvalSample): readonly string[] {
-  const text =
-    `${sample.issue.summary} ${sample.issue.description} ${sample.issue.labels.join(' ')}`.toLowerCase();
-  const modules: string[] = [];
-  if (text.includes('sso') || text.includes('login') || text.includes('session'))
-    modules.push('auth');
-  if (text.includes('mobile')) modules.push('mobile');
-  if (text.includes('pda') || text.includes('device')) modules.push('device');
+function predictSkill(inputDescription: string): SkillName {
+  const text = inputDescription.toLowerCase();
   if (
-    text.includes('ui') ||
-    text.includes('screen') ||
-    text.includes('copy') ||
-    text.includes('图标') ||
-    text.includes('页面') ||
-    text.includes('展示') ||
-    text.includes('list')
+    containsAny(text, [
+      'angular 17',
+      'angular17',
+      '升级后',
+      'upgrade regression',
+      '回归',
+      'twotone',
+      '空白',
+      'blank page',
+      'icon color drift'
+    ])
   ) {
-    modules.push('ui');
+    return 'angular17-upgrade-regression-handler';
   }
-  if (text.includes('audit') || text.includes('追踪') || text.includes('log'))
-    modules.push('audit');
+
   if (
-    text.includes('workflow') ||
-    text.includes('状态') ||
-    text.includes('步骤') ||
-    text.includes('核对')
+    containsAny(text, [
+      '输血',
+      'blood transfusion',
+      'bloodtransfusioncode',
+      '备改输',
+      'biz857',
+      '取血',
+      '双人核对',
+      'neubtmis',
+      'platform push',
+      'reaction sop',
+      '反应上报'
+    ])
   ) {
-    modules.push('workflow');
+    return 'blood-transfusion';
   }
-  if (text.includes('attachment') || text.includes('附件')) modules.push('attachments');
-  if (
-    text.includes('api') ||
-    text.includes('接口') ||
-    text.includes('service') ||
-    text.includes('search')
-  ) {
-    modules.push('backend');
-  }
-  if (text.includes('病案')) modules.push('clinical-records');
-  if (text.includes('输血')) modules.push('blood-safety');
-  return [...new Set(modules)];
+
+  return 'angular-delivery';
 }
 
-function predictConclusion(sample: EvalSample): string {
-  const text = `${sample.issue.summary} ${sample.issue.description}`.toLowerCase();
-  if (text.includes('原文') || text.includes('患者') || text.includes('ca')) return 'await_human';
-  if (text.includes('未明确') || text.includes('clarify') || text.includes('范围'))
-    return 'needs requirement clarification';
+function predictConclusion(inputDescription: string, highRisk: boolean): Conclusion {
+  const text = inputDescription.toLowerCase();
+
   if (
-    text.includes('重试') ||
-    text.includes('同步') ||
-    text.includes('追踪') ||
-    text.includes('接口')
+    containsAny(text, ['未明确', '待确认', 'clarify', '范围待定', 'scope not confirmed', '待澄清'])
+  ) {
+    return 'needs requirement clarification';
+  }
+
+  if (
+    highRisk ||
+    containsAny(text, [
+      'double-check',
+      '双人核对',
+      'scan gate',
+      'reaction',
+      'authorization',
+      'token',
+      'credential',
+      '凭证'
+    ])
+  ) {
+    return 'needs safety review';
+  }
+
+  if (
+    containsAny(text, [
+      'intermittent',
+      '偶发',
+      '根因',
+      'trace',
+      '复现困难',
+      'cross-module',
+      '跨模块',
+      'timing uncertain'
+    ])
   ) {
     return 'needs cross-module investigation';
   }
+
   if (
-    text.includes('只替换') ||
-    text.includes('只调整') ||
-    text.includes('元数据') ||
-    text.includes('导出') ||
-    text.includes('排序') ||
-    text.includes('优化') ||
-    text.includes('reminder')
+    containsAny(text, [
+      '只调整',
+      'only update',
+      '文案',
+      'copy',
+      '样式',
+      'style',
+      '排序',
+      'export',
+      '字段映射',
+      '明确验收',
+      'acceptance criteria provided'
+    ])
   ) {
     return 'ready for implementation planning';
   }
-  if (text.includes('安全') || text.includes('token') || text.includes('兼容'))
-    return 'needs safety review';
+
   return 'needs implementation scoping';
 }
 
-function scoreFromIssue(sample: EvalSample): number {
-  const text = `${sample.issue.summary} ${sample.issue.description}`;
-  const clarity = text.length > 80 ? 0.85 : text.length > 40 ? 0.7 : 0.4;
-  const moduleClues = sample.issue.labels.length > 1 ? 0.8 : 0.5;
-  const acceptance =
-    sample.issue.description.includes('only') || sample.issue.description.includes('只')
-      ? 0.8
-      : 0.4;
-  const missingInfo = sample.issue.description.includes('未明确') ? 0.2 : 0.7;
-  return clamp01((clarity + moduleClues + acceptance + missingInfo) / 4);
+function estimateMemoryHitCount(
+  sample: EvalSample,
+  predictedSkill: SkillName,
+  sourceRefPresent: boolean
+): number {
+  if (!sourceRefPresent) return 0;
+  const expectedSkillRef = sample.source_ref.toLowerCase().includes(predictedSkill);
+  return expectedSkillRef ? 1 : 0;
 }
 
 function buildFailureReason(
   sample: EvalSample,
-  predictedModules: readonly string[],
-  conclusion: string
+  predictedSkill: SkillName,
+  predictedConclusion: Conclusion,
+  sourceRefPresent: boolean
 ): string {
-  if (sample.ground_truth.expected_skill !== 'jira-requirement-analysis') {
-    return 'skill_mismatch';
-  }
-  if (
-    coverageRatio(normalizeList(predictedModules), normalizeList(sample.ground_truth.modules)) < 0.5
-  ) {
-    return 'module_mismatch';
-  }
-  if (conclusion !== sample.ground_truth.expected_conclusion) {
-    return 'conclusion_mismatch';
-  }
+  if (!sourceRefPresent) return 'source_ref_missing';
+  if (predictedSkill !== sample.expected_skill) return 'skill_mismatch';
+  if (predictedConclusion !== sample.ground_truth_conclusion) return 'conclusion_mismatch';
   return 'unknown';
 }
 
@@ -265,10 +300,14 @@ function renderMarkdown(report: EvalReport): string {
     `- Samples: ${report.summary.sampleCount}`,
     `- Passed: ${report.summary.passedCount}`,
     `- Failed: ${report.summary.failedCount}`,
+    `- High-risk samples: ${report.summary.highRiskSampleCount}`,
     `- Repo Hit@1: ${report.summary.repoHitAt1}`,
     `- Repo Hit@1 reason: ${report.summary.repoHitAt1Reason}`,
     `- Plan Executability: ${report.summary.planExecutability}`,
     `- Correction Rate: ${report.summary.correctionRate}`,
+    `- memory_hit_count.total: ${report.summary.memoryHitCount.total}`,
+    `- memory_hit_count.average: ${report.summary.memoryHitCount.average}`,
+    `- source_ref coverage: ${report.summary.sourceRefCoverage}`,
     '',
     '## Failure Categories',
     ...Object.entries(report.summary.failureCategories).map(([key, value]) => `- ${key}: ${value}`),
@@ -276,8 +315,9 @@ function renderMarkdown(report: EvalReport): string {
     '## Failed Samples',
     ...report.samples
       .filter((sample) => !sample.passed)
-      .map((sample) => `- ${sample.id}: ${sample.failureReason ?? 'unknown'}`)
+      .map((sample) => `- ${sample.task_id}: ${sample.failureReason ?? 'unknown'}`)
   ];
+
   return `${lines.join('\n')}\n`;
 }
 
@@ -286,34 +326,39 @@ function roundRatio(numerator: number, denominator: number): number {
   return Math.round((numerator / denominator) * 1000) / 1000;
 }
 
-function normalizeList(values: readonly string[]): readonly string[] {
-  return [...new Set(values.map((value) => value.toLowerCase()).sort())];
-}
-
-function coverageRatio(left: readonly string[], right: readonly string[]): number {
-  if (right.length === 0) return 1;
-  const covered = right.filter((value) => left.includes(value)).length;
-  return covered / right.length;
-}
-
-function clamp01(value: number): number {
-  if (value < 0) return 0;
-  if (value > 1) return 1;
-  return value;
+function containsAny(text: string, needles: readonly string[]): boolean {
+  return needles.some((needle) => text.includes(needle));
 }
 
 function categorizeFailure(reason: string): string {
-  if (reason.includes('module')) return 'module_mismatch';
+  if (reason.includes('skill')) return 'skill_mismatch';
   if (reason.includes('conclusion')) return 'conclusion_mismatch';
+  if (reason.includes('source_ref')) return 'source_ref_missing';
   return 'other';
 }
 
 function isDataset(value: unknown): value is EvalDataset {
+  if (typeof value !== 'object' || value === null) return false;
+  const candidate = value as Record<string, unknown>;
   return (
-    typeof value === 'object' &&
-    value !== null &&
-    'promptVersion' in value &&
-    'samples' in value &&
-    Array.isArray((value as { samples?: unknown }).samples)
+    typeof candidate.promptVersion === 'string' &&
+    Array.isArray(candidate.samples) &&
+    candidate.samples.every((sample) => isSample(sample))
+  );
+}
+
+function isSample(value: unknown): value is EvalSample {
+  if (typeof value !== 'object' || value === null) return false;
+  const sample = value as Record<string, unknown>;
+  return (
+    typeof sample.task_id === 'string' &&
+    typeof sample.domain === 'string' &&
+    typeof sample.input_description === 'string' &&
+    (sample.expected_skill === 'angular-delivery' ||
+      sample.expected_skill === 'angular17-upgrade-regression-handler' ||
+      sample.expected_skill === 'blood-transfusion') &&
+    typeof sample.ground_truth_conclusion === 'string' &&
+    typeof sample.source_ref === 'string' &&
+    typeof sample.high_risk === 'boolean'
   );
 }

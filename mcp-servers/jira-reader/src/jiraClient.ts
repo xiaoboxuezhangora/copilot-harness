@@ -6,7 +6,6 @@ import {
   JIRA_FIELD_WHITELIST,
   normalizeMaxResults,
   sanitizeText,
-  sanitizeUnknown,
 } from "./security.js";
 import type { JiraSecurityPolicy } from "./security.js";
 import type {
@@ -124,7 +123,7 @@ export class JiraClient {
       }
 
       const json: unknown = await response.json();
-      return sanitizeUnknown(json);
+      return json;
     } catch (error: unknown) {
       if (error instanceof JiraRequestError) {
         throw error;
@@ -175,22 +174,48 @@ function mapIssue(rawIssue: unknown): JiraIssue {
   }
 
   const description = readSanitizedString(fields, "description");
+  const issueType = readNestedName(fields, "issuetype");
   const status = readNestedName(fields, "status");
   const assignee = readUser(fields, "assignee");
   const priority = readNestedName(fields, "priority");
   const project = readProject(fields, "project");
   const attachments = mapAttachments(fields);
+  const timeTracking = readTimeTracking(fields);
+  const created = readSanitizedString(fields, "created");
+  const updated = readSanitizedString(fields, "updated");
+  const dueDate = readSanitizedString(fields, "duedate");
+  const targetVersion = readFieldText(fields, "customfield_13301");
+  const productModule = readFieldText(fields, "customfield_10126");
+  const defectCategory = readFieldText(fields, "customfield_10302");
+  const issueCategory = readFieldText(fields, "customfield_10116");
+  const projectSource = readFieldText(fields, "customfield_10121");
+  const coreRecovery = readFieldText(fields, "customfield_12400");
+  const requirementReleased = readFieldText(fields, "customfield_15603");
 
   const mappedIssue: JiraIssue = {
     key: sanitizeText(key),
     summary: sanitizeText(summary),
     labels: readStringArray(fields, "labels"),
+    affectedVersions: readNamedArray(fields, "versions"),
+    fixVersions: readNamedArray(fields, "fixVersions"),
     attachments,
     ...(description !== undefined ? { description } : {}),
+    ...(issueType !== undefined ? { issueType } : {}),
     ...(status !== undefined ? { status } : {}),
     ...(assignee !== undefined ? { assignee } : {}),
     ...(priority !== undefined ? { priority } : {}),
     ...(project !== undefined ? { project } : {}),
+    ...(created !== undefined ? { created } : {}),
+    ...(updated !== undefined ? { updated } : {}),
+    ...(dueDate !== undefined ? { dueDate } : {}),
+    ...(targetVersion !== undefined ? { targetVersion } : {}),
+    ...(productModule !== undefined ? { productModule } : {}),
+    ...(defectCategory !== undefined ? { defectCategory } : {}),
+    ...(issueCategory !== undefined ? { issueCategory } : {}),
+    ...(projectSource !== undefined ? { projectSource } : {}),
+    ...(coreRecovery !== undefined ? { coreRecovery } : {}),
+    ...(requirementReleased !== undefined ? { requirementReleased } : {}),
+    ...(timeTracking !== undefined ? { timeTracking } : {}),
   };
 
   return mappedIssue;
@@ -321,6 +346,106 @@ function readNestedName(
   }
 
   return readSanitizedString(value, "name");
+}
+
+function readNamedArray(
+  record: Record<string, unknown>,
+  key: string,
+): readonly string[] {
+  const value = record[key];
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .map((item) => readFieldTextValue(item))
+    .filter((item): item is string => item !== undefined);
+}
+
+function readFieldText(
+  record: Record<string, unknown>,
+  key: string,
+): string | undefined {
+  return readFieldTextValue(record[key]);
+}
+
+function readFieldTextValue(value: unknown): string | undefined {
+  if (typeof value === "string") {
+    return sanitizeFieldValueText(value);
+  }
+
+  if (typeof value === "number" || typeof value === "boolean") {
+    return sanitizeFieldValueText(String(value));
+  }
+
+  if (Array.isArray(value)) {
+    const items = value
+      .map((item) => readFieldTextValue(item))
+      .filter((item): item is string => item !== undefined);
+    return items.length > 0 ? items.join("、") : undefined;
+  }
+
+  if (!isRecord(value)) {
+    return undefined;
+  }
+
+  return (
+    readFieldValueString(value, "value") ??
+    readFieldValueString(value, "name") ??
+    readFieldValueString(value, "displayName") ??
+    readFieldValueString(value, "key")
+  );
+}
+
+function readFieldValueString(
+  record: Record<string, unknown>,
+  key: string,
+): string | undefined {
+  const value = readString(record, key);
+  return value === undefined ? undefined : sanitizeFieldValueText(value);
+}
+
+function sanitizeFieldValueText(value: string): string {
+  return isDottedVersion(value) ? value : sanitizeText(value);
+}
+
+function isDottedVersion(value: string): boolean {
+  return /^\d+(?:\.\d+){1,3}$/.test(value);
+}
+
+function readTimeTracking(
+  fields: Record<string, unknown>,
+): JiraIssue["timeTracking"] | undefined {
+  const rawTimeTracking = isRecord(fields.timetracking)
+    ? fields.timetracking
+    : {};
+  const originalEstimateSeconds =
+    readNumber(rawTimeTracking, "originalEstimateSeconds") ??
+    readNumber(fields, "timeoriginalestimate");
+  const remainingEstimateSeconds =
+    readNumber(rawTimeTracking, "remainingEstimateSeconds") ??
+    readNumber(fields, "timeestimate");
+  const timeSpentSeconds =
+    readNumber(rawTimeTracking, "timeSpentSeconds") ??
+    readNumber(fields, "timespent");
+
+  if (
+    originalEstimateSeconds === undefined &&
+    remainingEstimateSeconds === undefined &&
+    timeSpentSeconds === undefined
+  ) {
+    return undefined;
+  }
+
+  return {
+    ...(originalEstimateSeconds !== undefined
+      ? { originalEstimateSeconds }
+      : {}),
+    ...(remainingEstimateSeconds !== undefined
+      ? { remainingEstimateSeconds }
+      : {}),
+    ...(timeSpentSeconds !== undefined ? { timeSpentSeconds } : {}),
+  };
 }
 
 function readStringArray(

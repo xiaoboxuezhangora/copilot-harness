@@ -1,0 +1,387 @@
+{
+  "schema_version": "phase-1b-w8-eval@1",
+  "generated_at": "2026-05-09T09:06:36.594Z",
+  "status": "NOT_READY",
+  "dataset_source": "eval/w8-jira-gitlab-eval-current.json",
+  "loaded_from_legacy_fallback": false,
+  "acceptance_profile": {
+    "schema_version": "phase-1b-w8-acceptance-profile@1",
+    "name": "w8-current-jira-limited-closure",
+    "temporary": true,
+    "reason": "当前 Jira 条件仅返回 15 条，先以 12 条已确认 Jira+GitLab 联合样本作为 W8 阶段性收尾标准；后续阶段恢复 50/20 最终标准。",
+    "dataset_path": "eval/w8-jira-gitlab-eval-current.json",
+    "required_sample_count": 12,
+    "required_real_joint_sample_count": 12,
+    "accept_rate_target": 0.4,
+    "require_review_metrics": false,
+    "review_time_target_minutes": 10,
+    "final_target": {
+      "required_sample_count": 50,
+      "required_real_joint_sample_count": 20
+    }
+  },
+  "environment": {
+    "gitlab_config_present": false,
+    "jira_config_present": false
+  },
+  "summary": {
+    "sample_count": 12,
+    "required_sample_count": 12,
+    "real_joint_sample_count": 12,
+    "required_real_joint_sample_count": 12,
+    "high_risk_sample_count": 0
+  },
+  "metrics": {
+    "repo_hit_at_1": 1,
+    "repo_hit_at_1_numerator": 12,
+    "repo_hit_at_1_denominator": 12,
+    "plan_executability_average": 2,
+    "plan_executability_distribution": {
+      "0": 0,
+      "1": 0,
+      "2": 12
+    },
+    "correction_rate": 0,
+    "correction_rate_numerator": 0,
+    "correction_rate_denominator": 12,
+    "source_ref_coverage": 1,
+    "source_ref_coverage_numerator": 12,
+    "source_ref_coverage_denominator": 12,
+    "accept_rate": 1,
+    "accept_rate_numerator": 12,
+    "accept_rate_denominator": 12,
+    "review_time_minutes": null,
+    "review_time_target_minutes": 10,
+    "plan_executability_target_description": "0/1/2 score; 2 means steps, files, risks, and tests are all present and directly actionable."
+  },
+  "not_ready_reasons": [
+    "Read-only GitLab environment is not configured in env.",
+    "Read-only Jira environment is not configured in env."
+  ],
+  "failure_samples": [],
+  "coverage_gap_samples": [],
+  "joint_sample_source_ref_proof": [
+    {
+      "task_id": "w8-current-01-APMIS-1988",
+      "jira_ref": "jira:APMIS-1988",
+      "gitlab_evidence_refs": [
+        "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@66f9b209c391201aa6b6740e6af06d4493c1b8fb#L1-L3"
+      ],
+      "ground_truth_repo": "apmis/odcbs/odcbs-frontend",
+      "ground_truth_modules": [
+        "ref:develop_to_angular17"
+      ]
+    },
+    {
+      "task_id": "w8-current-02-APMIS-2061",
+      "jira_ref": "jira:APMIS-2061",
+      "gitlab_evidence_refs": [
+        "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@66f9b209c391201aa6b6740e6af06d4493c1b8fb#L1-L3"
+      ],
+      "ground_truth_repo": "apmis/odcbs/odcbs-frontend",
+      "ground_truth_modules": [
+        "ref:develop_to_angular17"
+      ]
+    },
+    {
+      "task_id": "w8-current-03-APMIS-2062",
+      "jira_ref": "jira:APMIS-2062",
+      "gitlab_evidence_refs": [
+        "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@66f9b209c391201aa6b6740e6af06d4493c1b8fb#L1-L3"
+      ],
+      "ground_truth_repo": "apmis/odcbs/odcbs-frontend",
+      "ground_truth_modules": [
+        "ref:develop_to_angular17"
+      ]
+    },
+    {
+      "task_id": "w8-current-04-APMIS-2028",
+      "jira_ref": "jira:APMIS-2028",
+      "gitlab_evidence_refs": [
+        "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@66f9b209c391201aa6b6740e6af06d4493c1b8fb#L1-L3"
+      ],
+      "ground_truth_repo": "apmis/odcbs/odcbs-frontend",
+      "ground_truth_modules": [
+        "ref:develop_to_angular17"
+      ]
+    },
+    {
+      "task_id": "w8-current-05-APMIS-2027",
+      "jira_ref": "jira:APMIS-2027",
+      "gitlab_evidence_refs": [
+        "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@66f9b209c391201aa6b6740e6af06d4493c1b8fb#L1-L3"
+      ],
+      "ground_truth_repo": "apmis/odcbs/odcbs-frontend",
+      "ground_truth_modules": [
+        "ref:develop_to_angular17"
+      ]
+    },
+    {
+      "task_id": "w8-current-06-APMIS-2026",
+      "jira_ref": "jira:APMIS-2026",
+      "gitlab_evidence_refs": [
+        "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@66f9b209c391201aa6b6740e6af06d4493c1b8fb#L1-L3"
+      ],
+      "ground_truth_repo": "apmis/odcbs/odcbs-frontend",
+      "ground_truth_modules": [
+        "ref:develop_to_angular17"
+      ]
+    },
+    {
+      "task_id": "w8-current-07-APMIS-2213",
+      "jira_ref": "jira:APMIS-2213",
+      "gitlab_evidence_refs": [
+        "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@66f9b209c391201aa6b6740e6af06d4493c1b8fb#L1-L3"
+      ],
+      "ground_truth_repo": "apmis/odcbs/odcbs-frontend",
+      "ground_truth_modules": [
+        "ref:develop_to_angular17"
+      ]
+    },
+    {
+      "task_id": "w8-current-08-APMIS-2090",
+      "jira_ref": "jira:APMIS-2090",
+      "gitlab_evidence_refs": [
+        "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@ada64a338c141cfa9d082b35e66bc66230908576#L1-L3"
+      ],
+      "ground_truth_repo": "apmis/odcbs/odcbs-frontend",
+      "ground_truth_modules": [
+        "ref:develop"
+      ]
+    },
+    {
+      "task_id": "w8-current-09-APMIS-2045",
+      "jira_ref": "jira:APMIS-2045",
+      "gitlab_evidence_refs": [
+        "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@ada64a338c141cfa9d082b35e66bc66230908576#L1-L3"
+      ],
+      "ground_truth_repo": "apmis/odcbs/odcbs-frontend",
+      "ground_truth_modules": [
+        "ref:develop"
+      ]
+    },
+    {
+      "task_id": "w8-current-10-APMIS-1955",
+      "jira_ref": "jira:APMIS-1955",
+      "gitlab_evidence_refs": [
+        "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@ada64a338c141cfa9d082b35e66bc66230908576#L1-L3"
+      ],
+      "ground_truth_repo": "apmis/odcbs/odcbs-frontend",
+      "ground_truth_modules": [
+        "ref:develop"
+      ]
+    },
+    {
+      "task_id": "w8-current-11-APMIS-73",
+      "jira_ref": "jira:APMIS-73",
+      "gitlab_evidence_refs": [
+        "gitlab:apmis/odcbs/odcbs-frontend#mr:1737",
+        "gitlab:apmis/odcbs/odcbs-frontend#mr:1717",
+        "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@ada64a338c141cfa9d082b35e66bc66230908576#L1-L3"
+      ],
+      "ground_truth_repo": "apmis/odcbs/odcbs-frontend",
+      "ground_truth_modules": [
+        "ref:develop"
+      ]
+    },
+    {
+      "task_id": "w8-current-12-APMIS-1004",
+      "jira_ref": "jira:APMIS-1004",
+      "gitlab_evidence_refs": [
+        "gitlab:apmis/odcbs/odcbs-frontend#file:README.md@ada64a338c141cfa9d082b35e66bc66230908576#L1-L3"
+      ],
+      "ground_truth_repo": "apmis/odcbs/odcbs-frontend",
+      "ground_truth_modules": [
+        "ref:develop"
+      ]
+    }
+  ],
+  "samples": [
+    {
+      "task_id": "w8-current-01-APMIS-1988",
+      "jira_key": "APMIS-1988",
+      "expected_next_action": "draft_plan",
+      "predicted_next_action": "draft_plan",
+      "review_decision": "accept",
+      "high_risk": false,
+      "real_joint_sample": true,
+      "source_ref_coverage_ok": true,
+      "repo_hit_at_1": true,
+      "repo_hit_at_1_eligible": true,
+      "plan_executability": 2,
+      "missing_refs": [],
+      "reason": null
+    },
+    {
+      "task_id": "w8-current-02-APMIS-2061",
+      "jira_key": "APMIS-2061",
+      "expected_next_action": "draft_plan",
+      "predicted_next_action": "draft_plan",
+      "review_decision": "accept",
+      "high_risk": false,
+      "real_joint_sample": true,
+      "source_ref_coverage_ok": true,
+      "repo_hit_at_1": true,
+      "repo_hit_at_1_eligible": true,
+      "plan_executability": 2,
+      "missing_refs": [],
+      "reason": null
+    },
+    {
+      "task_id": "w8-current-03-APMIS-2062",
+      "jira_key": "APMIS-2062",
+      "expected_next_action": "draft_plan",
+      "predicted_next_action": "draft_plan",
+      "review_decision": "accept",
+      "high_risk": false,
+      "real_joint_sample": true,
+      "source_ref_coverage_ok": true,
+      "repo_hit_at_1": true,
+      "repo_hit_at_1_eligible": true,
+      "plan_executability": 2,
+      "missing_refs": [],
+      "reason": null
+    },
+    {
+      "task_id": "w8-current-04-APMIS-2028",
+      "jira_key": "APMIS-2028",
+      "expected_next_action": "draft_plan",
+      "predicted_next_action": "draft_plan",
+      "review_decision": "accept",
+      "high_risk": false,
+      "real_joint_sample": true,
+      "source_ref_coverage_ok": true,
+      "repo_hit_at_1": true,
+      "repo_hit_at_1_eligible": true,
+      "plan_executability": 2,
+      "missing_refs": [],
+      "reason": null
+    },
+    {
+      "task_id": "w8-current-05-APMIS-2027",
+      "jira_key": "APMIS-2027",
+      "expected_next_action": "draft_plan",
+      "predicted_next_action": "draft_plan",
+      "review_decision": "accept",
+      "high_risk": false,
+      "real_joint_sample": true,
+      "source_ref_coverage_ok": true,
+      "repo_hit_at_1": true,
+      "repo_hit_at_1_eligible": true,
+      "plan_executability": 2,
+      "missing_refs": [],
+      "reason": null
+    },
+    {
+      "task_id": "w8-current-06-APMIS-2026",
+      "jira_key": "APMIS-2026",
+      "expected_next_action": "draft_plan",
+      "predicted_next_action": "draft_plan",
+      "review_decision": "accept",
+      "high_risk": false,
+      "real_joint_sample": true,
+      "source_ref_coverage_ok": true,
+      "repo_hit_at_1": true,
+      "repo_hit_at_1_eligible": true,
+      "plan_executability": 2,
+      "missing_refs": [],
+      "reason": null
+    },
+    {
+      "task_id": "w8-current-07-APMIS-2213",
+      "jira_key": "APMIS-2213",
+      "expected_next_action": "draft_plan",
+      "predicted_next_action": "draft_plan",
+      "review_decision": "accept",
+      "high_risk": false,
+      "real_joint_sample": true,
+      "source_ref_coverage_ok": true,
+      "repo_hit_at_1": true,
+      "repo_hit_at_1_eligible": true,
+      "plan_executability": 2,
+      "missing_refs": [],
+      "reason": null
+    },
+    {
+      "task_id": "w8-current-08-APMIS-2090",
+      "jira_key": "APMIS-2090",
+      "expected_next_action": "draft_plan",
+      "predicted_next_action": "draft_plan",
+      "review_decision": "accept",
+      "high_risk": false,
+      "real_joint_sample": true,
+      "source_ref_coverage_ok": true,
+      "repo_hit_at_1": true,
+      "repo_hit_at_1_eligible": true,
+      "plan_executability": 2,
+      "missing_refs": [],
+      "reason": null
+    },
+    {
+      "task_id": "w8-current-09-APMIS-2045",
+      "jira_key": "APMIS-2045",
+      "expected_next_action": "draft_plan",
+      "predicted_next_action": "draft_plan",
+      "review_decision": "accept",
+      "high_risk": false,
+      "real_joint_sample": true,
+      "source_ref_coverage_ok": true,
+      "repo_hit_at_1": true,
+      "repo_hit_at_1_eligible": true,
+      "plan_executability": 2,
+      "missing_refs": [],
+      "reason": null
+    },
+    {
+      "task_id": "w8-current-10-APMIS-1955",
+      "jira_key": "APMIS-1955",
+      "expected_next_action": "draft_plan",
+      "predicted_next_action": "draft_plan",
+      "review_decision": "accept",
+      "high_risk": false,
+      "real_joint_sample": true,
+      "source_ref_coverage_ok": true,
+      "repo_hit_at_1": true,
+      "repo_hit_at_1_eligible": true,
+      "plan_executability": 2,
+      "missing_refs": [],
+      "reason": null
+    },
+    {
+      "task_id": "w8-current-11-APMIS-73",
+      "jira_key": "APMIS-73",
+      "expected_next_action": "draft_plan",
+      "predicted_next_action": "draft_plan",
+      "review_decision": "accept",
+      "high_risk": false,
+      "real_joint_sample": true,
+      "source_ref_coverage_ok": true,
+      "repo_hit_at_1": true,
+      "repo_hit_at_1_eligible": true,
+      "plan_executability": 2,
+      "missing_refs": [],
+      "reason": null
+    },
+    {
+      "task_id": "w8-current-12-APMIS-1004",
+      "jira_key": "APMIS-1004",
+      "expected_next_action": "draft_plan",
+      "predicted_next_action": "draft_plan",
+      "review_decision": "accept",
+      "high_risk": false,
+      "real_joint_sample": true,
+      "source_ref_coverage_ok": true,
+      "repo_hit_at_1": true,
+      "repo_hit_at_1_eligible": true,
+      "plan_executability": 2,
+      "missing_refs": [],
+      "reason": null
+    }
+  ],
+  "w9_regression_checklist": [
+    "Raise W8 acceptance profile back to 50 samples and 20 real joint samples.",
+    "Run Code Retrieval MCP against the read-only GitLab environment and attach evidence refs to each joint sample.",
+    "Run one Review CLI approval pass for the final 50-sample target and record accept_rate plus review_time_minutes.",
+    "Re-run eval:w8 and inspect coverage_gap_samples before W9 regression."
+  ]
+}

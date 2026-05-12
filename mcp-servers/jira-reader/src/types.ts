@@ -25,15 +25,35 @@ export interface JiraAttachment {
   readonly created?: string;
 }
 
+export interface JiraTimeTracking {
+  readonly originalEstimateSeconds?: number;
+  readonly remainingEstimateSeconds?: number;
+  readonly timeSpentSeconds?: number;
+}
+
 export interface JiraIssue {
   readonly key: string;
   readonly summary: string;
   readonly description?: string;
+  readonly issueType?: string;
   readonly status?: string;
   readonly assignee?: JiraUser;
   readonly priority?: string;
   readonly labels: readonly string[];
   readonly project?: JiraProject;
+  readonly affectedVersions?: readonly string[];
+  readonly fixVersions?: readonly string[];
+  readonly created?: string;
+  readonly updated?: string;
+  readonly dueDate?: string;
+  readonly targetVersion?: string;
+  readonly productModule?: string;
+  readonly defectCategory?: string;
+  readonly issueCategory?: string;
+  readonly projectSource?: string;
+  readonly coreRecovery?: string;
+  readonly requirementReleased?: string;
+  readonly timeTracking?: JiraTimeTracking;
   readonly attachments: readonly JiraAttachment[];
 }
 

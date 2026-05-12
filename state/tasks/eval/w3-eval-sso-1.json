@@ -1,0 +1,41 @@
+{
+  "taskId": "w3-eval-sso-1",
+  "turn_state": "await_human",
+  "execution_mode": "eval",
+  "role": "investigator",
+  "prompt_version": "jira-analysis-prompt@0.1",
+  "model": "gpt-5-mini",
+  "runtime": "eval_fixture",
+  "evidence_pack_size": 2,
+  "memory_hit_count": 0,
+  "evidencePack": {
+    "taskId": "w3-eval-sso-1",
+    "intent": "Jira requirement analysis eval sample sso-1",
+    "evidences": [
+      {
+        "source_ref": "jira://SSO-101",
+        "content": "SSO-101 SSO login failure on mobile",
+        "tool": "jira-eval-fixture"
+      },
+      {
+        "source_ref": "eval:sso-1#prediction",
+        "content": "Predicted conclusion: await_human; executable_score=0.6499999999999999.",
+        "tool": "jira-requirement-analysis"
+      }
+    ],
+    "assumptions": [
+      {
+        "statement": "Eval prediction did not match W3 ground truth: conclusion_mismatch.",
+        "confidence": 0.45
+      }
+    ],
+    "confidence": 0.52
+  },
+  "closure": {
+    "generated_at": "2026-05-07T05:45:07.249Z",
+    "snapshot_date": "2026-05-07",
+    "data_origin": "orchestrator/eval/report.json",
+    "domain": "SSO",
+    "passed": false
+  }
+}

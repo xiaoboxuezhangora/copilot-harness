@@ -1,0 +1,41 @@
+{
+  "taskId": "w3-eval-pda-1",
+  "turn_state": "done",
+  "execution_mode": "eval",
+  "role": "investigator",
+  "prompt_version": "jira-analysis-prompt@0.1",
+  "model": "gpt-5-mini",
+  "runtime": "eval_fixture",
+  "evidence_pack_size": 2,
+  "memory_hit_count": 0,
+  "evidencePack": {
+    "taskId": "w3-eval-pda-1",
+    "intent": "Jira requirement analysis eval sample pda-1",
+    "evidences": [
+      {
+        "source_ref": "jira://PDA-401",
+        "content": "PDA-401 PDA 扫码失败重试",
+        "tool": "jira-eval-fixture"
+      },
+      {
+        "source_ref": "eval:pda-1#prediction",
+        "content": "Predicted conclusion: needs cross-module investigation; executable_score=0.575.",
+        "tool": "jira-requirement-analysis"
+      }
+    ],
+    "assumptions": [
+      {
+        "statement": "Eval prediction matched the W3 ground truth.",
+        "confidence": 0.8
+      }
+    ],
+    "confidence": 0.82
+  },
+  "closure": {
+    "generated_at": "2026-05-07T05:45:07.251Z",
+    "snapshot_date": "2026-05-07",
+    "data_origin": "orchestrator/eval/report.json",
+    "domain": "PDA",
+    "passed": true
+  }
+}

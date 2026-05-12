@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Phase 1b W8 Review Metrics",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source",
+    "reviewed_count",
+    "accepted_count",
+    "edit_accepted_count",
+    "rejected_count",
+    "major_edit_count",
+    "skipped_count",
+    "review_time_minutes"
+  ],
+  "properties": {
+    "schema_version": { "const": "phase-1b-w8-review-metrics@1" },
+    "source": { "type": "string", "minLength": 1 },
+    "reviewed_count": { "type": "integer", "minimum": 0 },
+    "accepted_count": { "type": "integer", "minimum": 0 },
+    "edit_accepted_count": { "type": "integer", "minimum": 0 },
+    "rejected_count": { "type": "integer", "minimum": 0 },
+    "major_edit_count": { "type": "integer", "minimum": 0 },
+    "skipped_count": { "type": "integer", "minimum": 0 },
+    "review_time_minutes": { "type": "number", "minimum": 0 }
+  }
+}

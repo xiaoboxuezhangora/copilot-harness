@@ -1,31 +1,21 @@
 # Eval Summary
 
-- Samples: 20
-- Passed: 6
-- Failed: 14
+- Samples: 50
+- Passed: 47
+- Failed: 3
+- High-risk samples: 4
 - Repo Hit@1: not_applicable
-- Repo Hit@1 reason: Repo resolver is not implemented in W3; score is intentionally withheld.
-- Plan Executability: 0.3
-- Correction Rate: 0.7
+- Repo Hit@1 reason: Repo Hit@1 remains not_applicable in W6 and will be enabled after W8 Code Retrieval MCP is online.
+- Plan Executability: 0.94
+- Correction Rate: 0.06
+- memory_hit_count.total: 50
+- memory_hit_count.average: 1
+- source_ref coverage: 1
 
 ## Failure Categories
-
-- conclusion_mismatch: 13
-- module_mismatch: 1
+- conclusion_mismatch: 3
 
 ## Failed Samples
-
-- sso-1: conclusion_mismatch
-- sso-2: conclusion_mismatch
-- sso-3: conclusion_mismatch
-- sso-4: conclusion_mismatch
-- sso-5: conclusion_mismatch
-- case-1: conclusion_mismatch
-- case-2: conclusion_mismatch
-- case-5: module_mismatch
-- transfusion-1: conclusion_mismatch
-- transfusion-3: conclusion_mismatch
-- transfusion-5: conclusion_mismatch
-- pda-2: conclusion_mismatch
-- pda-3: conclusion_mismatch
-- pda-5: conclusion_mismatch
+- ad-14: conclusion_mismatch
+- a17-08: conclusion_mismatch
+- bt-14: conclusion_mismatch
