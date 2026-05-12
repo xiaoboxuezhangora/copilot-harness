@@ -6,17 +6,23 @@ import { describe, expect, it } from 'vitest';
 
 import { AuditLogger } from '../audit/index.js';
 import {
+  BLOOD_TRANSFUSION_SKILL_NAME,
   createSkillAgentSessionConfig,
   INVESTIGATOR_ALLOWED_TOOLS,
+  INVESTIGATOR_SKILL_NAME,
   loadInvestigatorPrompt,
-  resolveRepoRoot
+  resolveInvestigatorSkills,
+  resolveRepoRoot,
+  shouldLoadBloodTransfusionSkill
 } from './skillAgentLoader.js';
 import {
   CopilotCliAdapter,
+  CopilotCliRuntime,
   CopilotSdkAdapter,
   CopilotSdkRuntime,
   createCopilotSdkSessionConfig,
-  parseCliNdjsonOutput
+  parseCliNdjsonOutput,
+  RuntimeCapabilityUnsupportedError
 } from './index.js';
 import type {
   AgentTask,
@@ -95,6 +101,76 @@ describe('runtime adapters', () => {
     }
   });
 
+  it('returns auditable unsupported capability details for SDK fanout and resume gaps', async () => {
+    const runtime = new CopilotSdkRuntime({
+      adapter: new FakeRuntimeAdapter('copilot_sdk')
+    });
+
+    await expect(runtime.spawn(5)).rejects.toMatchObject({
+      name: 'RuntimeCapabilityUnsupportedError',
+      details: {
+        schema_version: 'phase-1c-w9-runtime-unsupported-capability@1',
+        capability: 'spawn',
+        runtime: {
+          name: 'copilot_sdk'
+        },
+        requested_count: 5,
+        policy_decision: 'deny',
+        gate: 'BudgetGate'
+      }
+    });
+    await expect(runtime.resumeSession('sdk-session-1')).rejects.toMatchObject({
+      details: {
+        capability: 'resumeSession',
+        runtime: {
+          name: 'copilot_sdk'
+        },
+        session_id: 'sdk-session-1',
+        policy_decision: 'deny',
+        gate: 'AgentRuntimeV1'
+      }
+    });
+
+    try {
+      await runtime.spawn(2);
+      expect.fail('Expected RuntimeCapabilityUnsupportedError');
+    } catch (error: unknown) {
+      expect(error).toBeInstanceOf(RuntimeCapabilityUnsupportedError);
+      expect((error as RuntimeCapabilityUnsupportedError).details.recovery_hint).toContain(
+        'gpt-5-mini'
+      );
+    }
+  });
+
+  it('returns auditable unsupported capability details for CLI fanout and resume gaps', async () => {
+    const runtime = new CopilotCliRuntime({
+      adapter: new FakeRuntimeAdapter('copilot_cli')
+    });
+
+    await expect(runtime.spawn(5)).rejects.toMatchObject({
+      details: {
+        capability: 'spawn',
+        runtime: {
+          name: 'copilot_cli'
+        },
+        requested_count: 5,
+        policy_decision: 'deny',
+        gate: 'BudgetGate'
+      }
+    });
+    await expect(runtime.resumeSession('cli-session-1')).rejects.toMatchObject({
+      details: {
+        capability: 'resumeSession',
+        runtime: {
+          name: 'copilot_cli'
+        },
+        session_id: 'cli-session-1',
+        policy_decision: 'deny',
+        gate: 'AgentRuntimeV1'
+      }
+    });
+  });
+
   it('builds an explicit SDK session config for investigator skill loading', async () => {
     const repoRoot = resolveRepoRoot();
     const skillAgentConfig = await createSkillAgentSessionConfig(repoRoot);
@@ -140,6 +216,24 @@ describe('runtime adapters', () => {
       permissionDecision: 'deny',
       permissionDecisionReason: 'Denied by W3 investigator tool allowlist: shell'
     });
+  });
+
+  it('adds blood-transfusion only when task description hits transfusion domain', async () => {
+    const repoRoot = resolveRepoRoot();
+    const defaultConfig = await createSkillAgentSessionConfig(repoRoot);
+    const transfusionConfig = await createSkillAgentSessionConfig(repoRoot, {
+      taskDescription: '分析 BIZ857 备改输平台推送失败，检查 bloodTransfusionCode 链路'
+    });
+
+    expect(resolveInvestigatorSkills('普通 Jira 需求分析')).toEqual([INVESTIGATOR_SKILL_NAME]);
+    expect(shouldLoadBloodTransfusionSkill('输血前双人核对页面修复')).toBe(true);
+    expect(shouldLoadBloodTransfusionSkill('SSO token 刷新问题')).toBe(false);
+    expect(
+      defaultConfig.customAgents.find((agent) => agent.name === 'investigator')?.skills
+    ).toEqual([INVESTIGATOR_SKILL_NAME]);
+    expect(
+      transfusionConfig.customAgents.find((agent) => agent.name === 'investigator')?.skills
+    ).toEqual([INVESTIGATOR_SKILL_NAME, BLOOD_TRANSFUSION_SKILL_NAME]);
   });
 });
 

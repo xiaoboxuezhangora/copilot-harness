@@ -1,5 +1,6 @@
 import { AuditLogger } from '../audit/index.js';
 import type { AgentResult, AgentRuntime, AgentTask, ToolCallHook, TurnEndHook } from './types.js';
+import { createRuntimeUnsupportedCapabilityError } from './types.js';
 import { CopilotCliAdapter } from './adapters/copilotCliAdapter.js';
 import type { RuntimeAdapter } from './adapters/types.js';
 import {
@@ -63,8 +64,20 @@ export class CopilotCliRuntime implements AgentRuntime {
     return result;
   }
 
-  spawn(_count: number): Promise<readonly AgentResult[]> {
-    throw new Error('CopilotCliRuntime.spawn is gated by BudgetGate and not implemented in W2.');
+  spawn(count: number): Promise<readonly AgentResult[]> {
+    return Promise.reject(
+      createRuntimeUnsupportedCapabilityError({
+        capability: 'spawn',
+        runtime: {
+          name: 'copilot_cli'
+        },
+        reason: 'W9 AgentRuntimeV1 keeps real fanout disabled until BudgetGate and W8 evidence pass.',
+        recoveryHint:
+          'Run a single gpt-5-mini turn or return a blocked partial result; any fanout enablement requires ADR approval.',
+        gate: 'BudgetGate',
+        requestedCount: count
+      })
+    );
   }
 
   onTurnEnd(hook: TurnEndHook): void {
@@ -75,7 +88,19 @@ export class CopilotCliRuntime implements AgentRuntime {
     this.toolCallHooks.push(hook);
   }
 
-  resumeSession(_sessionId: string): Promise<AgentResult> {
-    throw new Error('CopilotCliRuntime.resumeSession is not implemented in W2.');
+  resumeSession(sessionId: string): Promise<AgentResult> {
+    return Promise.reject(
+      createRuntimeUnsupportedCapabilityError({
+        capability: 'resumeSession',
+        runtime: {
+          name: 'copilot_cli'
+        },
+        reason: 'W9 AgentRuntimeV1 has no audited CLI resume adapter contract yet.',
+        recoveryHint:
+          'Start a new gpt-5-mini turn with explicit evidence context; resume semantics must be added through ADR.',
+        gate: 'AgentRuntimeV1',
+        sessionId
+      })
+    );
   }
 }

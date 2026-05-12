@@ -3,16 +3,25 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "bin": {
+    "automemory-review": "bin/automemory-review"
+  },
   "packageManager": "pnpm@10.6.2",
   "scripts": {
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "automemory-review": "tsx src/automemory/reviewCli.ts",
     "eval": "tsx src/eval.ts",
+    "eval:w8": "tsx src/w8Eval.ts",
+    "eval:harvester": "tsx src/automemory/evalHarvester.ts",
     "smoke": "tsx src/smoke.ts",
+    "w10:fleet-smoke": "tsx src/fleet/smoke.ts",
+    "w9:budget-pressure": "tsx src/gates/budgetPressure.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "prepare": "husky"
+    "prepare": "husky",
+    "automemory-review:metrics": "tsx src/automemory/reviewMetrics.ts"
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",
@@ -28,6 +37,7 @@
     "vitest": "^3.0.8"
   },
   "dependencies": {
+    "@opentelemetry/api": "^1.9.0",
     "@github/copilot-sdk": "0.3.0",
     "@modelcontextprotocol/sdk": "1.29.0"
   }

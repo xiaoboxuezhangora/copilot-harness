@@ -10,6 +10,7 @@ stages:
   - lint
   - typecheck
   - test
+  - eval
 
 default:
   cache:
@@ -40,3 +41,14 @@ test:
   stage: test
   script:
     - pnpm test
+
+eval-harvester-mock:
+  stage: eval
+  script:
+    - pnpm --filter @copilot-harness/orchestrator eval:harvester -- --mode=mock --enforce-thresholds
+  artifacts:
+    when: always
+    paths:
+      - orchestrator/eval/harvester-report.json
+      - orchestrator/eval/harvester-report.md
+      - orchestrator/eval/harvester/

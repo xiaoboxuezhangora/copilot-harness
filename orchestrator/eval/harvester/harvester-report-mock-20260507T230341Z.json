@@ -1,0 +1,63 @@
+{
+  "generatedAt": "2026-05-07T23:03:41.971Z",
+  "mode": "mock",
+  "evidencePolicy": "regression_only",
+  "acceptanceNote": "mock 模式仅用于离线回归，不可作为最终验收证据。",
+  "datasetPath": "/Users/wangbo/own/copilot-harness/orchestrator/eval/jira-eval-20.json",
+  "sampleCount": 20,
+  "baseline": {
+    "arm": "A-baseline",
+    "sampleCount": 20,
+    "summaryCount": 20,
+    "harvestErrorCount": 0,
+    "candidateTotal": 0,
+    "pendingWrittenTotal": 0,
+    "gateBlockedTotal": 0,
+    "redlineBlockedTotal": 0,
+    "missingSourceRefTotal": 0,
+    "pendingFiles": 0,
+    "pendingDir": "/Users/wangbo/own/copilot-harness/.memory/pending/a-baseline",
+    "auditLogPath": "/Users/wangbo/own/copilot-harness/reports/automemory-a-baseline.audit.log"
+  },
+  "candidate": {
+    "arm": "B-harvester",
+    "sampleCount": 20,
+    "summaryCount": 20,
+    "harvestErrorCount": 0,
+    "candidateTotal": 40,
+    "pendingWrittenTotal": 7,
+    "gateBlockedTotal": 28,
+    "redlineBlockedTotal": 5,
+    "missingSourceRefTotal": 0,
+    "pendingFiles": 7,
+    "pendingDir": "/Users/wangbo/own/copilot-harness/.memory/pending/b-harvester",
+    "auditLogPath": "/Users/wangbo/own/copilot-harness/reports/automemory-b-harvester.audit.log"
+  },
+  "delta": {
+    "pendingWritten": 7,
+    "gateBlocked": 28,
+    "redlineBlocked": 5,
+    "missingSourceRef": 0
+  },
+  "thresholds": {
+    "expectedSampleCount": 20,
+    "expectedHarvestErrorCount": 0,
+    "expectedPendingWrittenMin": 5,
+    "expectedPendingWrittenMax": 15,
+    "enforced": true,
+    "passed": true,
+    "failures": []
+  },
+  "reportFiles": {
+    "json": [
+      "/Users/wangbo/own/copilot-harness/orchestrator/eval/harvester-report.json",
+      "/Users/wangbo/own/copilot-harness/orchestrator/eval/harvester/harvester-report-mock-latest.json",
+      "/Users/wangbo/own/copilot-harness/orchestrator/eval/harvester/harvester-report-mock-20260507T230341Z.json"
+    ],
+    "markdown": [
+      "/Users/wangbo/own/copilot-harness/orchestrator/eval/harvester-report.md",
+      "/Users/wangbo/own/copilot-harness/orchestrator/eval/harvester/harvester-report-mock-latest.md",
+      "/Users/wangbo/own/copilot-harness/orchestrator/eval/harvester/harvester-report-mock-20260507T230341Z.md"
+    ]
+  }
+}

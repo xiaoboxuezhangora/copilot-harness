@@ -2,6 +2,8 @@ export { CopilotCliRuntime } from './copilotCliRuntime.js';
 export type { CopilotCliRuntimeOptions } from './copilotCliRuntime.js';
 export { CopilotSdkRuntime } from './copilotSdkRuntime.js';
 export type { CopilotSdkRuntimeOptions } from './copilotSdkRuntime.js';
+export { createBootstrappedRuntime } from './bootstrap.js';
+export type { RuntimeBootstrapAutoMemoryOptions, RuntimeBootstrapInput } from './bootstrap.js';
 export {
   CopilotCliAdapter,
   mapCliReasoningEffort,
@@ -20,6 +22,13 @@ export type {
   RuntimeAdapterResponse
 } from './adapters/types.js';
 export { DEFAULT_MODEL, DEFAULT_RUN_OPTIONS } from './types.js';
+export {
+  createRuntimeUnsupportedCapabilityError,
+  fromEvidencePackV1,
+  isRuntimeCapabilityUnsupportedError,
+  RuntimeCapabilityUnsupportedError,
+  toEvidencePackV1
+} from './types.js';
 
 export type {
   AgentCapabilityFlags,
@@ -31,10 +40,15 @@ export type {
   Evidence,
   EvidenceAssumption,
   EvidencePack,
+  EvidencePackV1,
   ReasoningEffort,
   RunOptions,
   RuntimeIdentity,
+  RuntimeGateSemantic,
   RuntimeModel,
+  RuntimeUnsupportedCapability,
+  RuntimeUnsupportedCapabilityInput,
+  RuntimeUnsupportedCapabilityV1,
   TokenUsage,
   ToolCallDecision,
   ToolCallHook,
