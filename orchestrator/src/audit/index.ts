@@ -2,9 +2,10 @@ import { appendFile, mkdir } from 'node:fs/promises';
 import { dirname } from 'node:path';
 
 import type { AgentResult } from '../runtime/index.js';
-import type { AuditTurnRecord } from './types.js';
+import type { AuditTurnRecord, AuditTurnRecordV1 } from './types.js';
 
 export type { AuditTurnRecord } from './types.js';
+export type { AuditTurnRecordV1 } from './types.js';
 
 export interface ToolCallAuditEvent {
   readonly traceId: string;
@@ -42,6 +43,11 @@ export function toAuditTurnRecord(result: AgentResult): AuditTurnRecord {
   return {
     timestamp: new Date().toISOString(),
     taskId: result.taskId,
+    ...(result.fleetSessionId !== undefined ? { fleetSessionId: result.fleetSessionId } : {}),
+    ...(result.parentTaskId !== undefined ? { parentTaskId: result.parentTaskId } : {}),
+    ...(result.agentRole !== undefined ? { agentRole: result.agentRole } : {}),
+    ...(result.candidateId !== undefined ? { candidateId: result.candidateId } : {}),
+    ...(result.worktreeMode !== undefined ? { worktreeMode: result.worktreeMode } : {}),
     turnState: result.turnState,
     model: result.model,
     runtime: result.runtime,
@@ -59,5 +65,28 @@ export function toAuditTurnRecord(result: AgentResult): AuditTurnRecord {
       'gen_ai.usage.output_tokens': outputTokens,
       'gen_ai.request.reasoning_effort': result.reasoningEffort
     }
+  };
+}
+
+export function toAuditTurnRecordV1(record: AuditTurnRecord): AuditTurnRecordV1 {
+  return {
+    timestamp: record.timestamp,
+    task_id: record.taskId,
+    ...(record.fleetSessionId !== undefined ? { fleet_session_id: record.fleetSessionId } : {}),
+    ...(record.parentTaskId !== undefined ? { parent_task_id: record.parentTaskId } : {}),
+    ...(record.agentRole !== undefined ? { agent_role: record.agentRole } : {}),
+    ...(record.candidateId !== undefined ? { candidate_id: record.candidateId } : {}),
+    ...(record.worktreeMode !== undefined ? { worktree_mode: record.worktreeMode } : {}),
+    turn_state: record.turnState,
+    model: record.model,
+    runtime: record.runtime,
+    tool_calls: record.toolCalls,
+    trace_id: record.traceId,
+    reasoning_effort: record.reasoningEffort,
+    ...(record.policyDecision !== undefined ? { policy_decision: record.policyDecision } : {}),
+    ...(record.budgetUsage !== undefined ? { budget_usage: record.budgetUsage } : {}),
+    prompt_version: record.promptVersion,
+    capabilities: record.capabilities,
+    otel_attributes: record.otelAttributes
   };
 }

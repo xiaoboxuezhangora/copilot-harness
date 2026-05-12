@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { DEFAULT_MODEL, DEFAULT_RUN_OPTIONS } from './types.js';
+import { fromEvidencePackV1, toEvidencePackV1 } from './types.js';
 import type { AgentResult, AgentTask, EvidencePack, ToolCallDecision } from './types.js';
 
 describe('runtime contract', () => {
@@ -31,6 +32,31 @@ describe('runtime contract', () => {
 
     expect(pack.evidences[0]?.source_ref).toBe('W2-A');
     expect(pack.assumptions).toHaveLength(1);
+  });
+
+  it('maps EvidencePack camelCase to snake_case and back for export', () => {
+    const pack: EvidencePack = {
+      taskId: 'task-snake-1',
+      intent: 'mapping test',
+      evidences: [
+        {
+          source_ref: 'jira://TASK-1',
+          content: 'source-linked fact',
+          tool: 'jira-reader'
+        }
+      ],
+      assumptions: [
+        {
+          statement: 'remaining data is stable',
+          confidence: 0.7
+        }
+      ],
+      confidence: 0.8
+    };
+
+    const exported = toEvidencePackV1(pack);
+    expect(exported.task_id).toBe('task-snake-1');
+    expect(fromEvidencePackV1(exported)).toEqual(pack);
   });
 
   it('requires AgentResult audit, runtime, model, reasoning, and capability fields', () => {

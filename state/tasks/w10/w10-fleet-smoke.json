@@ -1,0 +1,70 @@
+{
+  "taskId": "w10-fleet-smoke",
+  "turn_state": "done",
+  "execution_mode": "mock",
+  "role": "fleet",
+  "prompt_version": "fleet-mock-control-plane@0.1",
+  "model": "gpt-5-mini",
+  "runtime": "contract_stub",
+  "fleet_session_id": "fleet-w10-fleet-smoke",
+  "parent_task_id": "w10-fleet-smoke",
+  "agent_role": "reviewer",
+  "worktree_mode": "real_disabled",
+  "evidence_pack_size": 8,
+  "memory_hit_count": 0,
+  "evidencePack": {
+    "taskId": "w10-fleet-smoke",
+    "intent": "W10 fleet smoke",
+    "evidences": [
+      {
+        "source_ref": "fleet://fleet-w10-fleet-smoke/plan",
+        "content": "Planner produced 3 atomic mock steps.",
+        "tool": "fleet-coordinator"
+      },
+      {
+        "source_ref": "fleet://fleet-w10-fleet-smoke/candidate-1",
+        "content": "Mock implementer produced anonymous diff for step-1.",
+        "tool": "fleet-coordinator"
+      },
+      {
+        "source_ref": "fleet://fleet-w10-fleet-smoke/candidate-2",
+        "content": "Mock implementer produced anonymous diff for step-2.",
+        "tool": "fleet-coordinator"
+      },
+      {
+        "source_ref": "fleet://fleet-w10-fleet-smoke/candidate-3",
+        "content": "Mock implementer produced anonymous diff for step-3.",
+        "tool": "fleet-coordinator"
+      },
+      {
+        "source_ref": "fleet://fleet-w10-fleet-smoke/candidate-1/critic",
+        "content": "Blind critic scored candidate-1 without producer identity.",
+        "tool": "fleet-coordinator"
+      },
+      {
+        "source_ref": "fleet://fleet-w10-fleet-smoke/candidate-2/critic",
+        "content": "Blind critic scored candidate-2 without producer identity.",
+        "tool": "fleet-coordinator"
+      },
+      {
+        "source_ref": "fleet://fleet-w10-fleet-smoke/candidate-3/critic",
+        "content": "Blind critic scored candidate-3 without producer identity.",
+        "tool": "fleet-coordinator"
+      },
+      {
+        "source_ref": "fleet://fleet-w10-fleet-smoke/reviewer-draft",
+        "content": "Reviewer produced draft MR artifact only; real MR creation is disabled.",
+        "tool": "fleet-coordinator"
+      }
+    ],
+    "assumptions": [],
+    "confidence": 1
+  },
+  "fleet_session": {
+    "real_fanout": "real_disabled",
+    "real_merge_request": "real_disabled",
+    "candidate_count": 3,
+    "critic_score_count": 3,
+    "selected_candidate_id": "candidate-1"
+  }
+}

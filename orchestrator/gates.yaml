@@ -1,4 +1,5 @@
 maxFanout: 4
+max_fleet_fanout: 5
 maxToolCalls: 8
 maxInputTokens: 10000
 maxOutputTokens: 4000

@@ -12,30 +12,79 @@ export interface GateDecision {
 
 export interface BudgetLimitConfig {
   readonly maxFanout: number;
+  readonly maxFleetFanout?: number;
   readonly maxToolCalls: number;
   readonly maxInputTokens: number;
   readonly maxOutputTokens: number;
   readonly maxPremiumRequests: number;
 }
 
+export type BudgetLimitKey = keyof BudgetLimitConfig;
+
 export interface BudgetGateInput {
   readonly taskId: string;
   readonly usage: BudgetUsage;
   readonly budgetLimit: BudgetLimitConfig;
+  readonly fleetFanout?: number;
+  readonly traceId?: string;
+}
+
+export interface BudgetExceededErrorInput {
+  readonly message: string;
+  readonly taskId: string;
+  readonly policyDecision: 'deny' | 'escalate';
+  readonly budgetUsage: BudgetUsage;
+  readonly budgetLimit: BudgetLimitConfig;
+  readonly fleetFanout?: number;
+  readonly exceededBudget: BudgetLimitKey;
+  readonly recoveryHint: string;
   readonly traceId?: string;
 }
 
 export class BudgetExceededError extends Error {
-  constructor(
-    message: string,
-    public readonly taskId: string,
-    public readonly policyDecision: 'deny' | 'escalate',
-    public readonly budgetUsage: BudgetUsage,
-    public readonly traceId?: string
-  ) {
-    super(message);
+  readonly taskId: string;
+  readonly policyDecision: 'deny' | 'escalate';
+  readonly budgetUsage: BudgetUsage;
+  readonly budgetLimit: BudgetLimitConfig;
+  readonly fleetFanout: number | undefined;
+  readonly exceededBudget: BudgetLimitKey;
+  readonly recoveryHint: string;
+  readonly traceId: string | undefined;
+
+  constructor(input: BudgetExceededErrorInput) {
+    super(input.message);
     this.name = 'BudgetExceededError';
+    this.taskId = input.taskId;
+    this.policyDecision = input.policyDecision;
+    this.budgetUsage = input.budgetUsage;
+    this.budgetLimit = input.budgetLimit;
+    this.fleetFanout = input.fleetFanout;
+    this.exceededBudget = input.exceededBudget;
+    this.recoveryHint = input.recoveryHint;
+    this.traceId = input.traceId;
   }
+}
+
+export interface BudgetPartialResultV1 {
+  readonly summary: string;
+  readonly completed_steps: readonly string[];
+  readonly blocked_reason: string;
+}
+
+export interface BudgetOverrunPartialResultV1 {
+  readonly schema_version: 'phase-1c-w9-budget-overrun-partial-result@1';
+  readonly task_id: string;
+  readonly turn_state: 'blocked';
+  readonly policy_decision: 'deny';
+  readonly exceeded_budget: BudgetLimitKey;
+  readonly exceeded_budget_limit: number;
+  readonly exceeded_budget_actual: number;
+  readonly fleet_fanout?: number;
+  readonly budget_usage: BudgetUsage;
+  readonly budget_limit: BudgetLimitConfig;
+  readonly partial_result: BudgetPartialResultV1;
+  readonly audit_trace_id: string;
+  readonly recovery_hint: string;
 }
 
 export interface BudgetGateResult extends GateDecision {
@@ -93,6 +142,7 @@ export interface Validator {
 
 export interface GatesConfig {
   readonly maxFanout: number;
+  readonly maxFleetFanout: number;
   readonly maxToolCalls: number;
   readonly maxInputTokens: number;
   readonly maxOutputTokens: number;
@@ -101,6 +151,7 @@ export interface GatesConfig {
 
 export const DEFAULT_GATES_CONFIG: GatesConfig = {
   maxFanout: 4,
+  maxFleetFanout: 5,
   maxToolCalls: 8,
   maxInputTokens: 10_000,
   maxOutputTokens: 4_000,
@@ -115,20 +166,35 @@ const ALLOWED_TURN_STATES: readonly TurnState[] = [
   'handoff_needed'
 ];
 
-const ALLOWED_JIRA_READ_ONLY_TOOLS = new Set(['getIssue', 'searchIssues', 'getComments']);
+const ALLOWED_READ_ONLY_TOOLS = new Set([
+  'getIssue',
+  'searchIssues',
+  'getComments',
+  'searchCode',
+  'readFile',
+  'listRepositoryTree',
+  'listMergeRequests',
+  'listCommits',
+  'getDiff',
+  'listPipelines'
+]);
 
 export class DefaultBudgetGate implements BudgetGate {
   evaluate(input: BudgetGateInput): BudgetGateResult {
-    const { budgetLimit, usage, taskId, traceId } = input;
-    const exceedReason = firstExceededBudgetReason(budgetLimit, usage);
+    const { budgetLimit, usage, taskId, traceId, fleetFanout } = input;
+    const exceedReason = firstExceededBudgetReason(budgetLimit, usage, fleetFanout);
     if (exceedReason !== undefined) {
-      throw new BudgetExceededError(
-        `Budget exceeded for ${taskId}: ${exceedReason}`,
+      throw new BudgetExceededError({
+        message: `Budget exceeded for ${taskId}: ${exceedReason}`,
         taskId,
-        'deny',
-        usage,
-        traceId
-      );
+        policyDecision: 'deny',
+        budgetUsage: usage,
+        budgetLimit,
+        ...(fleetFanout !== undefined ? { fleetFanout } : {}),
+        exceededBudget: exceedReason,
+        recoveryHint: recoveryHintForBudget(exceedReason),
+        ...(traceId !== undefined ? { traceId } : {})
+      });
     }
 
     return {
@@ -162,11 +228,11 @@ export class DefaultPolicyGate implements PolicyGate {
 
     const descriptor = input.toolDescriptor;
     const policyLevel = input.policyLevel ?? descriptor?.level ?? 'L0';
-    if (!ALLOWED_JIRA_READ_ONLY_TOOLS.has(input.toolName)) {
+    if (!ALLOWED_READ_ONLY_TOOLS.has(input.toolName)) {
       return {
         allowed: false,
         decision: policyLevel === 'L2' || policyLevel === 'L3' ? 'escalate' : 'deny',
-        reason: `Tool ${input.toolName} is outside the Jira Reader read-only whitelist`
+        reason: `Tool ${input.toolName} is outside the read-only tool allowlist`
       };
     }
 
@@ -236,6 +302,7 @@ export async function loadGatesConfig(configPath: string): Promise<GatesConfig> 
   const parsed = parseSimpleYaml(raw);
   return {
     maxFanout: parsed.maxFanout ?? DEFAULT_GATES_CONFIG.maxFanout,
+    maxFleetFanout: parsed.maxFleetFanout ?? DEFAULT_GATES_CONFIG.maxFleetFanout,
     maxToolCalls: parsed.maxToolCalls ?? DEFAULT_GATES_CONFIG.maxToolCalls,
     maxInputTokens: parsed.maxInputTokens ?? DEFAULT_GATES_CONFIG.maxInputTokens,
     maxOutputTokens: parsed.maxOutputTokens ?? DEFAULT_GATES_CONFIG.maxOutputTokens,
@@ -250,13 +317,48 @@ export function toBudgetExceededAuditRecord(
   taskId: string;
   policyDecision: 'deny' | 'escalate';
   budgetUsage: BudgetUsage;
+  exceededBudget: BudgetLimitKey;
+  fleetFanout?: number;
+  recoveryHint: string;
   traceId: string;
 }> {
   return {
     taskId: error.taskId,
     policyDecision: error.policyDecision,
     budgetUsage: error.budgetUsage,
+    exceededBudget: error.exceededBudget,
+    ...(error.fleetFanout !== undefined ? { fleetFanout: error.fleetFanout } : {}),
+    recoveryHint: error.recoveryHint,
     traceId
+  };
+}
+
+export function toBudgetOverrunPartialResultV1(
+  error: BudgetExceededError,
+  partialResult: BudgetPartialResultV1 = {
+    summary: 'BudgetGate denied execution before additional work could start.',
+    completed_steps: ['budget_gate_evaluated'],
+    blocked_reason: error.message
+  }
+): BudgetOverrunPartialResultV1 {
+  return {
+    schema_version: 'phase-1c-w9-budget-overrun-partial-result@1',
+    task_id: error.taskId,
+    turn_state: 'blocked',
+    policy_decision: 'deny',
+    exceeded_budget: error.exceededBudget,
+    exceeded_budget_limit: budgetLimitValue(error.exceededBudget, error.budgetLimit),
+    exceeded_budget_actual: budgetUsageValue(
+      error.exceededBudget,
+      error.budgetUsage,
+      error.fleetFanout
+    ),
+    ...(error.fleetFanout !== undefined ? { fleet_fanout: error.fleetFanout } : {}),
+    budget_usage: error.budgetUsage,
+    budget_limit: error.budgetLimit,
+    partial_result: partialResult,
+    audit_trace_id: error.traceId ?? `${error.taskId}-budget-overrun`,
+    recovery_hint: error.recoveryHint
   };
 }
 
@@ -266,14 +368,65 @@ export function isGatesConfigFile(path: string): boolean {
 
 function firstExceededBudgetReason(
   budgetLimit: BudgetLimitConfig,
-  usage: BudgetUsage
-): string | undefined {
+  usage: BudgetUsage,
+  fleetFanout: number | undefined
+): BudgetLimitKey | undefined {
+  if (fleetFanout !== undefined && fleetFanout > maxFleetFanoutLimit(budgetLimit)) {
+    return 'maxFleetFanout';
+  }
   if (usage.fanout > budgetLimit.maxFanout) return 'maxFanout';
   if (usage.toolCalls > budgetLimit.maxToolCalls) return 'maxToolCalls';
   if (usage.inputTokens > budgetLimit.maxInputTokens) return 'maxInputTokens';
   if (usage.outputTokens > budgetLimit.maxOutputTokens) return 'maxOutputTokens';
   if (usage.premiumRequests > budgetLimit.maxPremiumRequests) return 'maxPremiumRequests';
   return undefined;
+}
+
+function recoveryHintForBudget(exceededBudget: BudgetLimitKey): string {
+  switch (exceededBudget) {
+    case 'maxFanout':
+      return 'Reduce fanout to one gpt-5-mini turn or wait for ADR-approved fanout enablement.';
+    case 'maxFleetFanout':
+      return 'Reduce /fleet mock fanout to five or fewer candidates; real fanout remains disabled.';
+    case 'maxToolCalls':
+      return 'Stop additional tool calls and return a blocked partial result with existing evidence.';
+    case 'maxInputTokens':
+      return 'Trim context with hot_index summaries and lazy-load details only after approval.';
+    case 'maxOutputTokens':
+      return 'Return a shorter partial result and ask for a follow-up turn if more detail is needed.';
+    case 'maxPremiumRequests':
+      return 'Keep the default gpt-5-mini path and do not spend additional premium requests.';
+  }
+}
+
+function budgetLimitValue(key: BudgetLimitKey, limit: BudgetLimitConfig): number {
+  if (key === 'maxFleetFanout') return maxFleetFanoutLimit(limit);
+  return limit[key];
+}
+
+function budgetUsageValue(
+  key: BudgetLimitKey,
+  usage: BudgetUsage,
+  fleetFanout: number | undefined
+): number {
+  switch (key) {
+    case 'maxFleetFanout':
+      return fleetFanout ?? usage.fleetFanout ?? usage.fanout;
+    case 'maxFanout':
+      return usage.fanout;
+    case 'maxToolCalls':
+      return usage.toolCalls;
+    case 'maxInputTokens':
+      return usage.inputTokens;
+    case 'maxOutputTokens':
+      return usage.outputTokens;
+    case 'maxPremiumRequests':
+      return usage.premiumRequests;
+  }
+}
+
+function maxFleetFanoutLimit(limit: BudgetLimitConfig): number {
+  return Math.min(limit.maxFleetFanout ?? DEFAULT_GATES_CONFIG.maxFleetFanout, 5);
 }
 
 function validateEvidencePack(evidencePack: EvidencePack): ValidationIssue[] {
@@ -377,12 +530,15 @@ function parseSimpleYaml(raw: string): Partial<GatesConfig> {
     if (!Number.isFinite(parsed)) continue;
     if (
       key === 'maxFanout' ||
+      key === 'maxFleetFanout' ||
+      key === 'max_fleet_fanout' ||
       key === 'maxToolCalls' ||
       key === 'maxInputTokens' ||
       key === 'maxOutputTokens' ||
       key === 'maxPremiumRequests'
     ) {
-      result[key] = parsed;
+      const normalizedKey = key === 'max_fleet_fanout' ? 'maxFleetFanout' : key;
+      result[normalizedKey] = parsed;
     }
   }
   return result;

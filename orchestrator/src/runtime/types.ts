@@ -33,6 +33,7 @@ export interface BudgetLimit {
 
 export interface BudgetUsage {
   readonly fanout: number;
+  readonly fleetFanout?: number;
   readonly toolCalls: number;
   readonly inputTokens: number;
   readonly outputTokens: number;
@@ -72,9 +73,98 @@ export interface EvidencePack {
   readonly confidence: number;
 }
 
+export interface EvidencePackV1 {
+  readonly task_id: string;
+  readonly intent: string;
+  readonly evidences: readonly Evidence[];
+  readonly assumptions: readonly EvidenceAssumption[];
+  readonly confidence: number;
+}
+
+export function toEvidencePackV1(pack: EvidencePack): EvidencePackV1 {
+  return {
+    task_id: pack.taskId,
+    intent: pack.intent,
+    evidences: pack.evidences,
+    assumptions: pack.assumptions,
+    confidence: pack.confidence
+  };
+}
+
+export function fromEvidencePackV1(pack: EvidencePackV1): EvidencePack {
+  return {
+    taskId: pack.task_id,
+    intent: pack.intent,
+    evidences: pack.evidences,
+    assumptions: pack.assumptions,
+    confidence: pack.confidence
+  };
+}
+
 export interface RuntimeIdentity {
   readonly name: 'copilot_sdk' | 'copilot_cli' | 'contract_stub';
   readonly version?: string;
+}
+
+export type RuntimeUnsupportedCapability = 'spawn' | 'resumeSession';
+
+export type RuntimeGateSemantic = 'AgentRuntimeV1' | 'BudgetGate' | 'ReleaseGate';
+
+export interface RuntimeUnsupportedCapabilityV1 {
+  readonly schema_version: 'phase-1c-w9-runtime-unsupported-capability@1';
+  readonly capability: RuntimeUnsupportedCapability;
+  readonly runtime: RuntimeIdentity;
+  readonly reason: string;
+  readonly recovery_hint: string;
+  readonly policy_decision: 'deny';
+  readonly gate: RuntimeGateSemantic;
+  readonly requested_count?: number;
+  readonly session_id?: string;
+  readonly audit_trace_id?: string;
+}
+
+export interface RuntimeUnsupportedCapabilityInput {
+  readonly capability: RuntimeUnsupportedCapability;
+  readonly runtime: RuntimeIdentity;
+  readonly reason: string;
+  readonly recoveryHint: string;
+  readonly gate: RuntimeGateSemantic;
+  readonly requestedCount?: number;
+  readonly sessionId?: string;
+  readonly auditTraceId?: string;
+}
+
+export class RuntimeCapabilityUnsupportedError extends Error {
+  readonly details: RuntimeUnsupportedCapabilityV1;
+
+  constructor(details: RuntimeUnsupportedCapabilityV1) {
+    super(`${details.runtime.name}.${details.capability} denied: ${details.reason}`);
+    this.name = 'RuntimeCapabilityUnsupportedError';
+    this.details = details;
+  }
+}
+
+export function createRuntimeUnsupportedCapabilityError(
+  input: RuntimeUnsupportedCapabilityInput
+): RuntimeCapabilityUnsupportedError {
+  return new RuntimeCapabilityUnsupportedError({
+    schema_version: 'phase-1c-w9-runtime-unsupported-capability@1',
+    capability: input.capability,
+    runtime: input.runtime,
+    reason: input.reason,
+    recovery_hint: input.recoveryHint,
+    policy_decision: 'deny',
+    gate: input.gate,
+    ...(input.requestedCount !== undefined ? { requested_count: input.requestedCount } : {}),
+    ...(input.sessionId !== undefined ? { session_id: input.sessionId } : {}),
+    ...(input.auditTraceId !== undefined ? { audit_trace_id: input.auditTraceId } : {})
+  });
+}
+
+export function isRuntimeCapabilityUnsupportedError(
+  error: unknown
+): error is RuntimeCapabilityUnsupportedError {
+  return error instanceof RuntimeCapabilityUnsupportedError;
 }
 
 export interface AgentCapabilityFlags {
@@ -119,6 +209,11 @@ export interface TurnContext {
 
 export interface AgentResult {
   readonly taskId: string;
+  readonly fleetSessionId?: string;
+  readonly parentTaskId?: string;
+  readonly agentRole?: string;
+  readonly candidateId?: string;
+  readonly worktreeMode?: 'mock' | 'real_disabled';
   readonly turnState: TurnState;
   readonly output: string;
   readonly evidencePack: EvidencePack;
@@ -128,13 +223,7 @@ export interface AgentResult {
   readonly reasoningEffort: ReasoningEffort;
   readonly promptVersion: string;
   readonly policyDecision?: 'deny' | 'allow' | 'escalate';
-  readonly budgetUsage?: {
-    readonly fanout: number;
-    readonly toolCalls: number;
-    readonly inputTokens: number;
-    readonly outputTokens: number;
-    readonly premiumRequests: number;
-  };
+  readonly budgetUsage?: BudgetUsage;
   readonly capabilities: AgentCapabilityFlags;
   readonly toolCalls: readonly ToolCallRecord[];
   readonly tokenUsage?: TokenUsage;

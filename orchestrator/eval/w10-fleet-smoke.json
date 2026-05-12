@@ -1,0 +1,69 @@
+{
+  "schema_version": "phase-2-w10-fleet-smoke@1",
+  "version": 1,
+  "generated_at": "2026-05-12T01:22:10.042Z",
+  "status": "pass",
+  "mode": "mock",
+  "real_fanout": "real_disabled",
+  "real_merge_request": "real_disabled",
+  "fleet_session_id": "fleet-w10-fleet-smoke",
+  "agent_roles": [
+    "planner",
+    "implementer",
+    "critic",
+    "reviewer"
+  ],
+  "candidate_count": 3,
+  "critic_score_count": 3,
+  "selected_candidate_id": "candidate-1",
+  "reviewer_draft": {
+    "pushed": false,
+    "merge_request_created": false
+  },
+  "audit_log_path": "/Users/wangbo/own/copilot-harness/reports/audit.log",
+  "task_state_path": "/Users/wangbo/own/copilot-harness/state/tasks/w10/w10-fleet-smoke.json",
+  "snapshot_path": "/Users/wangbo/own/copilot-harness/reports/showcase/2026-05-12/snapshot.json",
+  "mirrored_snapshot_path": "/Users/wangbo/own/copilot-harness/apps/showcase/src/generated/snapshot.json",
+  "checks": [
+    {
+      "name": "fleet session completed",
+      "passed": true,
+      "detail": "turn_state=done"
+    },
+    {
+      "name": "real fanout disabled",
+      "passed": true,
+      "detail": "real_fanout=real_disabled"
+    },
+    {
+      "name": "real merge request disabled",
+      "passed": true,
+      "detail": "real_merge_request=real_disabled"
+    },
+    {
+      "name": "candidate count is three",
+      "passed": true,
+      "detail": "candidate_count=3"
+    },
+    {
+      "name": "critic score count is three",
+      "passed": true,
+      "detail": "critic_score_count=3"
+    },
+    {
+      "name": "reviewer selected a candidate",
+      "passed": true,
+      "detail": "selected_candidate_id=candidate-1"
+    },
+    {
+      "name": "reviewer draft has no real write",
+      "passed": true,
+      "detail": "pushed=false; merge_request_created=false; worktree_mode=real_disabled"
+    },
+    {
+      "name": "audit contains all fleet roles",
+      "passed": true,
+      "detail": "audited_roles=critic,implementer,planner,reviewer"
+    }
+  ]
+}
