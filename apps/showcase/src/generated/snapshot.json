@@ -1,0 +1,3846 @@
+{
+  "schemaVersion": "ShowcaseSnapshotV1",
+  "metadata": {
+    "generatedAt": "2026-05-12T01:22:10.090Z",
+    "snapshot_date": "2026-05-12",
+    "sourceFiles": [
+      "orchestrator/eval/report.json",
+      "reports/audit.log",
+      "orchestrator/docs/audit-sample.jsonl",
+      "orchestrator/docs/audit-sample-w3.jsonl",
+      "state/tasks/eval/w3-eval-case-1.json",
+      "state/tasks/eval/w3-eval-case-2.json",
+      "state/tasks/eval/w3-eval-case-3.json",
+      "state/tasks/eval/w3-eval-case-4.json",
+      "state/tasks/eval/w3-eval-case-5.json",
+      "state/tasks/eval/w3-eval-pda-1.json",
+      "state/tasks/eval/w3-eval-pda-2.json",
+      "state/tasks/eval/w3-eval-pda-3.json",
+      "state/tasks/eval/w3-eval-pda-4.json",
+      "state/tasks/eval/w3-eval-pda-5.json",
+      "state/tasks/eval/w3-eval-sso-1.json",
+      "state/tasks/eval/w3-eval-sso-2.json",
+      "state/tasks/eval/w3-eval-sso-3.json",
+      "state/tasks/eval/w3-eval-sso-4.json",
+      "state/tasks/eval/w3-eval-sso-5.json",
+      "state/tasks/eval/w3-eval-transfusion-1.json",
+      "state/tasks/eval/w3-eval-transfusion-2.json",
+      "state/tasks/eval/w3-eval-transfusion-3.json",
+      "state/tasks/eval/w3-eval-transfusion-4.json",
+      "state/tasks/eval/w3-eval-transfusion-5.json",
+      "state/tasks/showcase/w4-evidence-jira-reader-live.json",
+      "state/tasks/showcase/w4-evidence-jira-reader-mock.json",
+      "state/tasks/w10/w10-fleet-smoke.json",
+      "reports/mcp-traces/2026-05-06/jira-reader-trace.jsonl",
+      "reports/mcp-traces/2026-05-07/jira-reader-trace.jsonl"
+    ],
+    "sampleCount": 50,
+    "phase0Readiness": "NOT_READY",
+    "warnings": [
+      "phase0 readiness is NOT_READY"
+    ]
+  },
+  "fieldPresence": {
+    "metadata.generatedAt": {
+      "present": 1,
+      "missing": 0,
+      "coverage": 1,
+      "status": "present"
+    },
+    "metadata.sourceFiles": {
+      "present": 1,
+      "missing": 0,
+      "coverage": 1,
+      "status": "present"
+    },
+    "metadata.sampleCount": {
+      "present": 1,
+      "missing": 0,
+      "coverage": 1,
+      "status": "present"
+    },
+    "metadata.phase0Readiness": {
+      "present": 1,
+      "missing": 0,
+      "coverage": 1,
+      "status": "present"
+    },
+    "metadata.warnings": {
+      "present": 1,
+      "missing": 0,
+      "coverage": 1,
+      "status": "present"
+    },
+    "tasks.fleet_session_id": {
+      "present": 9,
+      "missing": 24,
+      "coverage": 0.273,
+      "status": "partial"
+    },
+    "tasks.parent_task_id": {
+      "present": 9,
+      "missing": 24,
+      "coverage": 0.273,
+      "status": "partial"
+    },
+    "tasks.agent_role": {
+      "present": 9,
+      "missing": 24,
+      "coverage": 0.273,
+      "status": "partial"
+    },
+    "tasks.candidate_id": {
+      "present": 7,
+      "missing": 26,
+      "coverage": 0.212,
+      "status": "partial"
+    },
+    "tasks.worktree_mode": {
+      "present": 9,
+      "missing": 24,
+      "coverage": 0.273,
+      "status": "partial"
+    },
+    "tasks.task_id": {
+      "present": 33,
+      "missing": 0,
+      "coverage": 1,
+      "status": "present"
+    },
+    "tasks.turn_state": {
+      "present": 33,
+      "missing": 0,
+      "coverage": 1,
+      "status": "present"
+    },
+    "tasks.execution_mode": {
+      "present": 23,
+      "missing": 10,
+      "coverage": 0.697,
+      "status": "partial"
+    },
+    "tasks.role": {
+      "present": 23,
+      "missing": 10,
+      "coverage": 0.697,
+      "status": "partial"
+    },
+    "tasks.prompt_version": {
+      "present": 32,
+      "missing": 1,
+      "coverage": 0.97,
+      "status": "partial"
+    },
+    "tasks.model": {
+      "present": 33,
+      "missing": 0,
+      "coverage": 1,
+      "status": "present"
+    },
+    "tasks.runtime": {
+      "present": 33,
+      "missing": 0,
+      "coverage": 1,
+      "status": "present"
+    },
+    "tasks.budget_usage": {
+      "present": 7,
+      "missing": 26,
+      "coverage": 0.212,
+      "status": "partial"
+    },
+    "tasks.tool_policy_hit": {
+      "present": 11,
+      "missing": 22,
+      "coverage": 0.333,
+      "status": "partial"
+    },
+    "tasks.evidence_pack_size": {
+      "present": 33,
+      "missing": 0,
+      "coverage": 1,
+      "status": "present"
+    },
+    "tasks.memory_hit_count": {
+      "present": 23,
+      "missing": 10,
+      "coverage": 0.697,
+      "status": "partial"
+    },
+    "mcpCalls.task_id": {
+      "present": 11,
+      "missing": 0,
+      "coverage": 1,
+      "status": "present"
+    },
+    "mcpCalls.mcp_server_name": {
+      "present": 10,
+      "missing": 1,
+      "coverage": 0.909,
+      "status": "partial"
+    },
+    "mcpCalls.mcp_tool_name": {
+      "present": 11,
+      "missing": 0,
+      "coverage": 1,
+      "status": "present"
+    },
+    "mcpCalls.transport_type": {
+      "present": 6,
+      "missing": 5,
+      "coverage": 0.545,
+      "status": "partial"
+    },
+    "mcpCalls.side_effect_level": {
+      "present": 10,
+      "missing": 1,
+      "coverage": 0.909,
+      "status": "partial"
+    },
+    "mcpCalls.confirm_required": {
+      "present": 6,
+      "missing": 5,
+      "coverage": 0.545,
+      "status": "partial"
+    },
+    "mcpCalls.audit_event_name": {
+      "present": 6,
+      "missing": 5,
+      "coverage": 0.545,
+      "status": "partial"
+    },
+    "mcpCalls.decision": {
+      "present": 11,
+      "missing": 0,
+      "coverage": 1,
+      "status": "present"
+    },
+    "mcpCalls.latency_ms": {
+      "present": 6,
+      "missing": 5,
+      "coverage": 0.545,
+      "status": "partial"
+    },
+    "mcpCalls.success": {
+      "present": 6,
+      "missing": 5,
+      "coverage": 0.545,
+      "status": "partial"
+    },
+    "evidencePacks.task_id": {
+      "present": 33,
+      "missing": 0,
+      "coverage": 1,
+      "status": "present"
+    },
+    "evidencePacks.source_refs": {
+      "present": 23,
+      "missing": 10,
+      "coverage": 0.697,
+      "status": "partial"
+    },
+    "evidencePacks.confidence": {
+      "present": 23,
+      "missing": 10,
+      "coverage": 0.697,
+      "status": "partial"
+    },
+    "evidencePacks.assumptions": {
+      "present": 22,
+      "missing": 11,
+      "coverage": 0.667,
+      "status": "partial"
+    },
+    "evidencePacks.evidence_count": {
+      "present": 33,
+      "missing": 0,
+      "coverage": 1,
+      "status": "present"
+    },
+    "routeChains.task_id": {
+      "present": 33,
+      "missing": 0,
+      "coverage": 1,
+      "status": "present"
+    },
+    "routeChains.task_class": {
+      "present": 33,
+      "missing": 0,
+      "coverage": 1,
+      "status": "present"
+    },
+    "routeChains.execution_mode": {
+      "present": 23,
+      "missing": 10,
+      "coverage": 0.697,
+      "status": "partial"
+    },
+    "routeChains.role": {
+      "present": 23,
+      "missing": 10,
+      "coverage": 0.697,
+      "status": "partial"
+    },
+    "routeChains.model_tier": {
+      "present": 33,
+      "missing": 0,
+      "coverage": 1,
+      "status": "present"
+    },
+    "routeChains.concrete_model": {
+      "present": 33,
+      "missing": 0,
+      "coverage": 1,
+      "status": "present"
+    },
+    "routeChains.route_chain": {
+      "present": 33,
+      "missing": 0,
+      "coverage": 1,
+      "status": "present"
+    },
+    "jiraIssues.key": {
+      "present": 50,
+      "missing": 0,
+      "coverage": 1,
+      "status": "present"
+    },
+    "jiraIssues.summary": {
+      "present": 50,
+      "missing": 0,
+      "coverage": 1,
+      "status": "present"
+    },
+    "jiraIssues.status": {
+      "present": 50,
+      "missing": 0,
+      "coverage": 1,
+      "status": "present"
+    },
+    "jiraIssues.priority": {
+      "present": 50,
+      "missing": 0,
+      "coverage": 1,
+      "status": "present"
+    },
+    "jiraIssues.execution_mode": {
+      "present": 50,
+      "missing": 0,
+      "coverage": 1,
+      "status": "present"
+    }
+  },
+  "tasks": [
+    {
+      "task_id": "w10-fleet-smoke",
+      "fleet_session_id": "fleet-w10-fleet-smoke",
+      "parent_task_id": "w10-fleet-smoke",
+      "agent_role": "reviewer",
+      "candidate_id": null,
+      "worktree_mode": "real_disabled",
+      "turn_state": "done",
+      "execution_mode": "mock",
+      "role": "fleet",
+      "prompt_version": "fleet-mock-control-plane@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "contract_stub",
+      "budget_usage": null,
+      "tool_policy_hit": null,
+      "evidence_pack_size": 8,
+      "memory_hit_count": 0
+    },
+    {
+      "task_id": "w10-fleet-smoke:candidate-1",
+      "fleet_session_id": "fleet-w10-fleet-smoke",
+      "parent_task_id": "w10-fleet-smoke",
+      "agent_role": "implementer",
+      "candidate_id": "candidate-1",
+      "worktree_mode": "mock",
+      "turn_state": "done",
+      "execution_mode": "unknown",
+      "role": "unknown",
+      "prompt_version": "fleet-mock-control-plane@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "contract_stub",
+      "budget_usage": {
+        "fanout": 1,
+        "fleet_fanout": 3,
+        "tool_calls": 0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "premium_requests": 0
+      },
+      "tool_policy_hit": {
+        "decision": "allow",
+        "hit_count": 0
+      },
+      "evidence_pack_size": 0,
+      "memory_hit_count": null
+    },
+    {
+      "task_id": "w10-fleet-smoke:candidate-1:critic",
+      "fleet_session_id": "fleet-w10-fleet-smoke",
+      "parent_task_id": "w10-fleet-smoke",
+      "agent_role": "critic",
+      "candidate_id": "candidate-1",
+      "worktree_mode": "mock",
+      "turn_state": "done",
+      "execution_mode": "unknown",
+      "role": "unknown",
+      "prompt_version": "fleet-mock-control-plane@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "contract_stub",
+      "budget_usage": null,
+      "tool_policy_hit": {
+        "decision": "allow",
+        "hit_count": 0
+      },
+      "evidence_pack_size": 0,
+      "memory_hit_count": null
+    },
+    {
+      "task_id": "w10-fleet-smoke:candidate-2",
+      "fleet_session_id": "fleet-w10-fleet-smoke",
+      "parent_task_id": "w10-fleet-smoke",
+      "agent_role": "implementer",
+      "candidate_id": "candidate-2",
+      "worktree_mode": "mock",
+      "turn_state": "done",
+      "execution_mode": "unknown",
+      "role": "unknown",
+      "prompt_version": "fleet-mock-control-plane@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "contract_stub",
+      "budget_usage": {
+        "fanout": 1,
+        "fleet_fanout": 3,
+        "tool_calls": 0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "premium_requests": 0
+      },
+      "tool_policy_hit": {
+        "decision": "allow",
+        "hit_count": 0
+      },
+      "evidence_pack_size": 0,
+      "memory_hit_count": null
+    },
+    {
+      "task_id": "w10-fleet-smoke:candidate-2:critic",
+      "fleet_session_id": "fleet-w10-fleet-smoke",
+      "parent_task_id": "w10-fleet-smoke",
+      "agent_role": "critic",
+      "candidate_id": "candidate-2",
+      "worktree_mode": "mock",
+      "turn_state": "done",
+      "execution_mode": "unknown",
+      "role": "unknown",
+      "prompt_version": "fleet-mock-control-plane@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "contract_stub",
+      "budget_usage": null,
+      "tool_policy_hit": {
+        "decision": "allow",
+        "hit_count": 0
+      },
+      "evidence_pack_size": 0,
+      "memory_hit_count": null
+    },
+    {
+      "task_id": "w10-fleet-smoke:candidate-3",
+      "fleet_session_id": "fleet-w10-fleet-smoke",
+      "parent_task_id": "w10-fleet-smoke",
+      "agent_role": "implementer",
+      "candidate_id": "candidate-3",
+      "worktree_mode": "mock",
+      "turn_state": "done",
+      "execution_mode": "unknown",
+      "role": "unknown",
+      "prompt_version": "fleet-mock-control-plane@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "contract_stub",
+      "budget_usage": {
+        "fanout": 1,
+        "fleet_fanout": 3,
+        "tool_calls": 0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "premium_requests": 0
+      },
+      "tool_policy_hit": {
+        "decision": "allow",
+        "hit_count": 0
+      },
+      "evidence_pack_size": 0,
+      "memory_hit_count": null
+    },
+    {
+      "task_id": "w10-fleet-smoke:candidate-3:critic",
+      "fleet_session_id": "fleet-w10-fleet-smoke",
+      "parent_task_id": "w10-fleet-smoke",
+      "agent_role": "critic",
+      "candidate_id": "candidate-3",
+      "worktree_mode": "mock",
+      "turn_state": "done",
+      "execution_mode": "unknown",
+      "role": "unknown",
+      "prompt_version": "fleet-mock-control-plane@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "contract_stub",
+      "budget_usage": null,
+      "tool_policy_hit": {
+        "decision": "allow",
+        "hit_count": 0
+      },
+      "evidence_pack_size": 0,
+      "memory_hit_count": null
+    },
+    {
+      "task_id": "w10-fleet-smoke:planner",
+      "fleet_session_id": "fleet-w10-fleet-smoke",
+      "parent_task_id": "w10-fleet-smoke",
+      "agent_role": "planner",
+      "candidate_id": null,
+      "worktree_mode": "mock",
+      "turn_state": "done",
+      "execution_mode": "unknown",
+      "role": "unknown",
+      "prompt_version": "fleet-mock-control-plane@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "contract_stub",
+      "budget_usage": {
+        "fanout": 1,
+        "fleet_fanout": 3,
+        "tool_calls": 0,
+        "input_tokens": 15,
+        "output_tokens": 0,
+        "premium_requests": 0
+      },
+      "tool_policy_hit": {
+        "decision": "allow",
+        "hit_count": 0
+      },
+      "evidence_pack_size": 0,
+      "memory_hit_count": null
+    },
+    {
+      "task_id": "w10-fleet-smoke:reviewer",
+      "fleet_session_id": "fleet-w10-fleet-smoke",
+      "parent_task_id": "w10-fleet-smoke",
+      "agent_role": "reviewer",
+      "candidate_id": "candidate-1",
+      "worktree_mode": "real_disabled",
+      "turn_state": "done",
+      "execution_mode": "unknown",
+      "role": "unknown",
+      "prompt_version": "fleet-mock-control-plane@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "contract_stub",
+      "budget_usage": null,
+      "tool_policy_hit": {
+        "decision": "escalate",
+        "hit_count": 1
+      },
+      "evidence_pack_size": 0,
+      "memory_hit_count": null
+    },
+    {
+      "task_id": "w2-smoke-sdk",
+      "fleet_session_id": null,
+      "parent_task_id": null,
+      "agent_role": null,
+      "candidate_id": null,
+      "worktree_mode": "未接入",
+      "turn_state": "done",
+      "execution_mode": "unknown",
+      "role": "unknown",
+      "prompt_version": null,
+      "model": "gpt-5-mini",
+      "runtime": "copilot_sdk",
+      "budget_usage": null,
+      "tool_policy_hit": null,
+      "evidence_pack_size": 0,
+      "memory_hit_count": null
+    },
+    {
+      "task_id": "w3-eval-case-1",
+      "fleet_session_id": null,
+      "parent_task_id": null,
+      "agent_role": null,
+      "candidate_id": null,
+      "worktree_mode": "未接入",
+      "turn_state": "continue_current",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "prompt_version": "jira-analysis-prompt@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "eval_fixture",
+      "budget_usage": null,
+      "tool_policy_hit": null,
+      "evidence_pack_size": 2,
+      "memory_hit_count": 0
+    },
+    {
+      "task_id": "w3-eval-case-2",
+      "fleet_session_id": null,
+      "parent_task_id": null,
+      "agent_role": null,
+      "candidate_id": null,
+      "worktree_mode": "未接入",
+      "turn_state": "continue_current",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "prompt_version": "jira-analysis-prompt@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "eval_fixture",
+      "budget_usage": null,
+      "tool_policy_hit": null,
+      "evidence_pack_size": 2,
+      "memory_hit_count": 0
+    },
+    {
+      "task_id": "w3-eval-case-3",
+      "fleet_session_id": null,
+      "parent_task_id": null,
+      "agent_role": null,
+      "candidate_id": null,
+      "worktree_mode": "未接入",
+      "turn_state": "done",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "prompt_version": "jira-analysis-prompt@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "eval_fixture",
+      "budget_usage": null,
+      "tool_policy_hit": null,
+      "evidence_pack_size": 2,
+      "memory_hit_count": 0
+    },
+    {
+      "task_id": "w3-eval-case-4",
+      "fleet_session_id": null,
+      "parent_task_id": null,
+      "agent_role": null,
+      "candidate_id": null,
+      "worktree_mode": "未接入",
+      "turn_state": "done",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "prompt_version": "jira-analysis-prompt@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "eval_fixture",
+      "budget_usage": null,
+      "tool_policy_hit": null,
+      "evidence_pack_size": 2,
+      "memory_hit_count": 0
+    },
+    {
+      "task_id": "w3-eval-case-5",
+      "fleet_session_id": null,
+      "parent_task_id": null,
+      "agent_role": null,
+      "candidate_id": null,
+      "worktree_mode": "未接入",
+      "turn_state": "continue_current",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "prompt_version": "jira-analysis-prompt@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "eval_fixture",
+      "budget_usage": null,
+      "tool_policy_hit": null,
+      "evidence_pack_size": 2,
+      "memory_hit_count": 0
+    },
+    {
+      "task_id": "w3-eval-pda-1",
+      "fleet_session_id": null,
+      "parent_task_id": null,
+      "agent_role": null,
+      "candidate_id": null,
+      "worktree_mode": "未接入",
+      "turn_state": "done",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "prompt_version": "jira-analysis-prompt@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "eval_fixture",
+      "budget_usage": null,
+      "tool_policy_hit": null,
+      "evidence_pack_size": 2,
+      "memory_hit_count": 0
+    },
+    {
+      "task_id": "w3-eval-pda-2",
+      "fleet_session_id": null,
+      "parent_task_id": null,
+      "agent_role": null,
+      "candidate_id": null,
+      "worktree_mode": "未接入",
+      "turn_state": "continue_current",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "prompt_version": "jira-analysis-prompt@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "eval_fixture",
+      "budget_usage": null,
+      "tool_policy_hit": null,
+      "evidence_pack_size": 2,
+      "memory_hit_count": 0
+    },
+    {
+      "task_id": "w3-eval-pda-3",
+      "fleet_session_id": null,
+      "parent_task_id": null,
+      "agent_role": null,
+      "candidate_id": null,
+      "worktree_mode": "未接入",
+      "turn_state": "continue_current",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "prompt_version": "jira-analysis-prompt@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "eval_fixture",
+      "budget_usage": null,
+      "tool_policy_hit": null,
+      "evidence_pack_size": 2,
+      "memory_hit_count": 0
+    },
+    {
+      "task_id": "w3-eval-pda-4",
+      "fleet_session_id": null,
+      "parent_task_id": null,
+      "agent_role": null,
+      "candidate_id": null,
+      "worktree_mode": "未接入",
+      "turn_state": "done",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "prompt_version": "jira-analysis-prompt@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "eval_fixture",
+      "budget_usage": null,
+      "tool_policy_hit": null,
+      "evidence_pack_size": 2,
+      "memory_hit_count": 0
+    },
+    {
+      "task_id": "w3-eval-pda-5",
+      "fleet_session_id": null,
+      "parent_task_id": null,
+      "agent_role": null,
+      "candidate_id": null,
+      "worktree_mode": "未接入",
+      "turn_state": "continue_current",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "prompt_version": "jira-analysis-prompt@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "eval_fixture",
+      "budget_usage": null,
+      "tool_policy_hit": null,
+      "evidence_pack_size": 2,
+      "memory_hit_count": 0
+    },
+    {
+      "task_id": "w3-eval-sample",
+      "fleet_session_id": null,
+      "parent_task_id": null,
+      "agent_role": null,
+      "candidate_id": null,
+      "worktree_mode": "未接入",
+      "turn_state": "done",
+      "execution_mode": "unknown",
+      "role": "unknown",
+      "prompt_version": "jira-analysis-prompt@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "copilot_sdk",
+      "budget_usage": {
+        "fanout": 1,
+        "fleet_fanout": null,
+        "tool_calls": 1,
+        "input_tokens": 18,
+        "output_tokens": 42,
+        "premium_requests": 0
+      },
+      "tool_policy_hit": {
+        "decision": "deny",
+        "hit_count": 1
+      },
+      "evidence_pack_size": 0,
+      "memory_hit_count": null
+    },
+    {
+      "task_id": "w3-eval-sso-1",
+      "fleet_session_id": null,
+      "parent_task_id": null,
+      "agent_role": null,
+      "candidate_id": null,
+      "worktree_mode": "未接入",
+      "turn_state": "await_human",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "prompt_version": "jira-analysis-prompt@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "eval_fixture",
+      "budget_usage": null,
+      "tool_policy_hit": null,
+      "evidence_pack_size": 2,
+      "memory_hit_count": 0
+    },
+    {
+      "task_id": "w3-eval-sso-2",
+      "fleet_session_id": null,
+      "parent_task_id": null,
+      "agent_role": null,
+      "candidate_id": null,
+      "worktree_mode": "未接入",
+      "turn_state": "await_human",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "prompt_version": "jira-analysis-prompt@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "eval_fixture",
+      "budget_usage": null,
+      "tool_policy_hit": null,
+      "evidence_pack_size": 2,
+      "memory_hit_count": 0
+    },
+    {
+      "task_id": "w3-eval-sso-3",
+      "fleet_session_id": null,
+      "parent_task_id": null,
+      "agent_role": null,
+      "candidate_id": null,
+      "worktree_mode": "未接入",
+      "turn_state": "continue_current",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "prompt_version": "jira-analysis-prompt@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "eval_fixture",
+      "budget_usage": null,
+      "tool_policy_hit": null,
+      "evidence_pack_size": 2,
+      "memory_hit_count": 0
+    },
+    {
+      "task_id": "w3-eval-sso-4",
+      "fleet_session_id": null,
+      "parent_task_id": null,
+      "agent_role": null,
+      "candidate_id": null,
+      "worktree_mode": "未接入",
+      "turn_state": "continue_current",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "prompt_version": "jira-analysis-prompt@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "eval_fixture",
+      "budget_usage": null,
+      "tool_policy_hit": null,
+      "evidence_pack_size": 2,
+      "memory_hit_count": 0
+    },
+    {
+      "task_id": "w3-eval-sso-5",
+      "fleet_session_id": null,
+      "parent_task_id": null,
+      "agent_role": null,
+      "candidate_id": null,
+      "worktree_mode": "未接入",
+      "turn_state": "await_human",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "prompt_version": "jira-analysis-prompt@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "eval_fixture",
+      "budget_usage": null,
+      "tool_policy_hit": null,
+      "evidence_pack_size": 2,
+      "memory_hit_count": 0
+    },
+    {
+      "task_id": "w3-eval-transfusion-1",
+      "fleet_session_id": null,
+      "parent_task_id": null,
+      "agent_role": null,
+      "candidate_id": null,
+      "worktree_mode": "未接入",
+      "turn_state": "continue_current",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "prompt_version": "jira-analysis-prompt@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "eval_fixture",
+      "budget_usage": null,
+      "tool_policy_hit": null,
+      "evidence_pack_size": 2,
+      "memory_hit_count": 0
+    },
+    {
+      "task_id": "w3-eval-transfusion-2",
+      "fleet_session_id": null,
+      "parent_task_id": null,
+      "agent_role": null,
+      "candidate_id": null,
+      "worktree_mode": "未接入",
+      "turn_state": "done",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "prompt_version": "jira-analysis-prompt@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "eval_fixture",
+      "budget_usage": null,
+      "tool_policy_hit": null,
+      "evidence_pack_size": 2,
+      "memory_hit_count": 0
+    },
+    {
+      "task_id": "w3-eval-transfusion-3",
+      "fleet_session_id": null,
+      "parent_task_id": null,
+      "agent_role": null,
+      "candidate_id": null,
+      "worktree_mode": "未接入",
+      "turn_state": "continue_current",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "prompt_version": "jira-analysis-prompt@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "eval_fixture",
+      "budget_usage": null,
+      "tool_policy_hit": null,
+      "evidence_pack_size": 2,
+      "memory_hit_count": 0
+    },
+    {
+      "task_id": "w3-eval-transfusion-4",
+      "fleet_session_id": null,
+      "parent_task_id": null,
+      "agent_role": null,
+      "candidate_id": null,
+      "worktree_mode": "未接入",
+      "turn_state": "done",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "prompt_version": "jira-analysis-prompt@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "eval_fixture",
+      "budget_usage": null,
+      "tool_policy_hit": null,
+      "evidence_pack_size": 2,
+      "memory_hit_count": 0
+    },
+    {
+      "task_id": "w3-eval-transfusion-5",
+      "fleet_session_id": null,
+      "parent_task_id": null,
+      "agent_role": null,
+      "candidate_id": null,
+      "worktree_mode": "未接入",
+      "turn_state": "continue_current",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "prompt_version": "jira-analysis-prompt@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "eval_fixture",
+      "budget_usage": null,
+      "tool_policy_hit": null,
+      "evidence_pack_size": 2,
+      "memory_hit_count": 0
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "fleet_session_id": null,
+      "parent_task_id": null,
+      "agent_role": null,
+      "candidate_id": null,
+      "worktree_mode": "未接入",
+      "turn_state": "done",
+      "execution_mode": "live",
+      "role": "investigator",
+      "prompt_version": "jira-analysis-prompt@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "contract_stub",
+      "budget_usage": {
+        "fanout": 1,
+        "fleet_fanout": null,
+        "tool_calls": 3,
+        "input_tokens": 64,
+        "output_tokens": 174,
+        "premium_requests": 0
+      },
+      "tool_policy_hit": {
+        "decision": "allow",
+        "hit_count": 3
+      },
+      "evidence_pack_size": 3,
+      "memory_hit_count": 0
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-mock",
+      "fleet_session_id": null,
+      "parent_task_id": null,
+      "agent_role": null,
+      "candidate_id": null,
+      "worktree_mode": "未接入",
+      "turn_state": "done",
+      "execution_mode": "mock",
+      "role": "investigator",
+      "prompt_version": "jira-analysis-prompt@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "contract_stub",
+      "budget_usage": {
+        "fanout": 1,
+        "fleet_fanout": null,
+        "tool_calls": 3,
+        "input_tokens": 64,
+        "output_tokens": 169,
+        "premium_requests": 0
+      },
+      "tool_policy_hit": {
+        "decision": "allow",
+        "hit_count": 3
+      },
+      "evidence_pack_size": 3,
+      "memory_hit_count": 0
+    }
+  ],
+  "mcpCalls": [
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "mcp_server_name": "jira-reader",
+      "mcp_tool_name": "searchIssues",
+      "transport_type": "in_memory",
+      "side_effect_level": "read",
+      "confirm_required": false,
+      "audit_event_name": "mcp.tool_call",
+      "decision": "allow",
+      "latency_ms": 235,
+      "success": true
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "mcp_server_name": "jira-reader",
+      "mcp_tool_name": "getIssue",
+      "transport_type": "in_memory",
+      "side_effect_level": "read",
+      "confirm_required": false,
+      "audit_event_name": "mcp.tool_call",
+      "decision": "allow",
+      "latency_ms": 163,
+      "success": true
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "mcp_server_name": "jira-reader",
+      "mcp_tool_name": "getComments",
+      "transport_type": "in_memory",
+      "side_effect_level": "read",
+      "confirm_required": false,
+      "audit_event_name": "mcp.tool_call",
+      "decision": "allow",
+      "latency_ms": 51,
+      "success": true
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "mcp_server_name": "jira-reader",
+      "mcp_tool_name": "searchIssues",
+      "transport_type": "in_memory",
+      "side_effect_level": "read",
+      "confirm_required": false,
+      "audit_event_name": "mcp.tool_call",
+      "decision": "allow",
+      "latency_ms": 5423,
+      "success": true
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "mcp_server_name": "jira-reader",
+      "mcp_tool_name": "getIssue",
+      "transport_type": "in_memory",
+      "side_effect_level": "read",
+      "confirm_required": false,
+      "audit_event_name": "mcp.tool_call",
+      "decision": "allow",
+      "latency_ms": 910,
+      "success": true
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "mcp_server_name": "jira-reader",
+      "mcp_tool_name": "getComments",
+      "transport_type": "in_memory",
+      "side_effect_level": "read",
+      "confirm_required": false,
+      "audit_event_name": "mcp.tool_call",
+      "decision": "allow",
+      "latency_ms": 938,
+      "success": true
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-mock",
+      "mcp_server_name": "jira-reader",
+      "mcp_tool_name": "searchIssues",
+      "transport_type": null,
+      "side_effect_level": "read",
+      "confirm_required": null,
+      "audit_event_name": null,
+      "decision": "allow",
+      "latency_ms": null,
+      "success": null
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-mock",
+      "mcp_server_name": "jira-reader",
+      "mcp_tool_name": "getIssue",
+      "transport_type": null,
+      "side_effect_level": "read",
+      "confirm_required": null,
+      "audit_event_name": null,
+      "decision": "allow",
+      "latency_ms": null,
+      "success": null
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-mock",
+      "mcp_server_name": "jira-reader",
+      "mcp_tool_name": "getComments",
+      "transport_type": null,
+      "side_effect_level": "read",
+      "confirm_required": null,
+      "audit_event_name": null,
+      "decision": "allow",
+      "latency_ms": null,
+      "success": null
+    },
+    {
+      "task_id": "w10-fleet-smoke:reviewer",
+      "mcp_server_name": null,
+      "mcp_tool_name": "reviewerDraftArtifact",
+      "transport_type": null,
+      "side_effect_level": "unknown",
+      "confirm_required": null,
+      "audit_event_name": null,
+      "decision": "escalate",
+      "latency_ms": null,
+      "success": null
+    },
+    {
+      "task_id": "w3-eval-sample",
+      "mcp_server_name": "jira-reader",
+      "mcp_tool_name": "getIssue",
+      "transport_type": null,
+      "side_effect_level": "read",
+      "confirm_required": null,
+      "audit_event_name": null,
+      "decision": "allow",
+      "latency_ms": null,
+      "success": null
+    }
+  ],
+  "evidencePacks": [
+    {
+      "task_id": "w10-fleet-smoke",
+      "source_refs": [
+        "fleet://fleet-w10-fleet-smoke/plan",
+        "fleet://fleet-w10-fleet-smoke/candidate-1",
+        "fleet://fleet-w10-fleet-smoke/candidate-2",
+        "fleet://fleet-w10-fleet-smoke/candidate-3",
+        "fleet://fleet-w10-fleet-smoke/candidate-1/critic",
+        "fleet://fleet-w10-fleet-smoke/candidate-2/critic",
+        "fleet://fleet-w10-fleet-smoke/candidate-3/critic",
+        "fleet://fleet-w10-fleet-smoke/reviewer-draft"
+      ],
+      "confidence": 1,
+      "assumptions": [],
+      "evidence_count": 8
+    },
+    {
+      "task_id": "w10-fleet-smoke:candidate-1",
+      "source_refs": [],
+      "confidence": null,
+      "assumptions": [],
+      "evidence_count": 0
+    },
+    {
+      "task_id": "w10-fleet-smoke:candidate-1:critic",
+      "source_refs": [],
+      "confidence": null,
+      "assumptions": [],
+      "evidence_count": 0
+    },
+    {
+      "task_id": "w10-fleet-smoke:candidate-2",
+      "source_refs": [],
+      "confidence": null,
+      "assumptions": [],
+      "evidence_count": 0
+    },
+    {
+      "task_id": "w10-fleet-smoke:candidate-2:critic",
+      "source_refs": [],
+      "confidence": null,
+      "assumptions": [],
+      "evidence_count": 0
+    },
+    {
+      "task_id": "w10-fleet-smoke:candidate-3",
+      "source_refs": [],
+      "confidence": null,
+      "assumptions": [],
+      "evidence_count": 0
+    },
+    {
+      "task_id": "w10-fleet-smoke:candidate-3:critic",
+      "source_refs": [],
+      "confidence": null,
+      "assumptions": [],
+      "evidence_count": 0
+    },
+    {
+      "task_id": "w10-fleet-smoke:planner",
+      "source_refs": [],
+      "confidence": null,
+      "assumptions": [],
+      "evidence_count": 0
+    },
+    {
+      "task_id": "w10-fleet-smoke:reviewer",
+      "source_refs": [],
+      "confidence": null,
+      "assumptions": [],
+      "evidence_count": 0
+    },
+    {
+      "task_id": "w2-smoke-sdk",
+      "source_refs": [],
+      "confidence": null,
+      "assumptions": [],
+      "evidence_count": 0
+    },
+    {
+      "task_id": "w3-eval-case-1",
+      "source_refs": [
+        "jira://CASE-201",
+        "eval:case-1#prediction"
+      ],
+      "confidence": 0.52,
+      "assumptions": [
+        {
+          "statement": "Eval prediction did not match W3 ground truth: conclusion_mismatch.",
+          "confidence": 0.45
+        }
+      ],
+      "evidence_count": 2
+    },
+    {
+      "task_id": "w3-eval-case-2",
+      "source_refs": [
+        "jira://CASE-202",
+        "eval:case-2#prediction"
+      ],
+      "confidence": 0.52,
+      "assumptions": [
+        {
+          "statement": "Eval prediction did not match W3 ground truth: conclusion_mismatch.",
+          "confidence": 0.45
+        }
+      ],
+      "evidence_count": 2
+    },
+    {
+      "task_id": "w3-eval-case-3",
+      "source_refs": [
+        "jira://CASE-203",
+        "eval:case-3#prediction"
+      ],
+      "confidence": 0.82,
+      "assumptions": [
+        {
+          "statement": "Eval prediction matched the W3 ground truth.",
+          "confidence": 0.8
+        }
+      ],
+      "evidence_count": 2
+    },
+    {
+      "task_id": "w3-eval-case-4",
+      "source_refs": [
+        "jira://CASE-204",
+        "eval:case-4#prediction"
+      ],
+      "confidence": 0.82,
+      "assumptions": [
+        {
+          "statement": "Eval prediction matched the W3 ground truth.",
+          "confidence": 0.8
+        }
+      ],
+      "evidence_count": 2
+    },
+    {
+      "task_id": "w3-eval-case-5",
+      "source_refs": [
+        "jira://CASE-205",
+        "eval:case-5#prediction"
+      ],
+      "confidence": 0.52,
+      "assumptions": [
+        {
+          "statement": "Eval prediction did not match W3 ground truth: module_mismatch.",
+          "confidence": 0.45
+        }
+      ],
+      "evidence_count": 2
+    },
+    {
+      "task_id": "w3-eval-pda-1",
+      "source_refs": [
+        "jira://PDA-401",
+        "eval:pda-1#prediction"
+      ],
+      "confidence": 0.82,
+      "assumptions": [
+        {
+          "statement": "Eval prediction matched the W3 ground truth.",
+          "confidence": 0.8
+        }
+      ],
+      "evidence_count": 2
+    },
+    {
+      "task_id": "w3-eval-pda-2",
+      "source_refs": [
+        "jira://PDA-402",
+        "eval:pda-2#prediction"
+      ],
+      "confidence": 0.52,
+      "assumptions": [
+        {
+          "statement": "Eval prediction did not match W3 ground truth: conclusion_mismatch.",
+          "confidence": 0.45
+        }
+      ],
+      "evidence_count": 2
+    },
+    {
+      "task_id": "w3-eval-pda-3",
+      "source_refs": [
+        "jira://PDA-403",
+        "eval:pda-3#prediction"
+      ],
+      "confidence": 0.52,
+      "assumptions": [
+        {
+          "statement": "Eval prediction did not match W3 ground truth: conclusion_mismatch.",
+          "confidence": 0.45
+        }
+      ],
+      "evidence_count": 2
+    },
+    {
+      "task_id": "w3-eval-pda-4",
+      "source_refs": [
+        "jira://PDA-404",
+        "eval:pda-4#prediction"
+      ],
+      "confidence": 0.82,
+      "assumptions": [
+        {
+          "statement": "Eval prediction matched the W3 ground truth.",
+          "confidence": 0.8
+        }
+      ],
+      "evidence_count": 2
+    },
+    {
+      "task_id": "w3-eval-pda-5",
+      "source_refs": [
+        "jira://PDA-405",
+        "eval:pda-5#prediction"
+      ],
+      "confidence": 0.52,
+      "assumptions": [
+        {
+          "statement": "Eval prediction did not match W3 ground truth: conclusion_mismatch.",
+          "confidence": 0.45
+        }
+      ],
+      "evidence_count": 2
+    },
+    {
+      "task_id": "w3-eval-sample",
+      "source_refs": [],
+      "confidence": null,
+      "assumptions": [],
+      "evidence_count": 0
+    },
+    {
+      "task_id": "w3-eval-sso-1",
+      "source_refs": [
+        "jira://SSO-101",
+        "eval:sso-1#prediction"
+      ],
+      "confidence": 0.52,
+      "assumptions": [
+        {
+          "statement": "Eval prediction did not match W3 ground truth: conclusion_mismatch.",
+          "confidence": 0.45
+        }
+      ],
+      "evidence_count": 2
+    },
+    {
+      "task_id": "w3-eval-sso-2",
+      "source_refs": [
+        "jira://SSO-102",
+        "eval:sso-2#prediction"
+      ],
+      "confidence": 0.52,
+      "assumptions": [
+        {
+          "statement": "Eval prediction did not match W3 ground truth: conclusion_mismatch.",
+          "confidence": 0.45
+        }
+      ],
+      "evidence_count": 2
+    },
+    {
+      "task_id": "w3-eval-sso-3",
+      "source_refs": [
+        "jira://SSO-103",
+        "eval:sso-3#prediction"
+      ],
+      "confidence": 0.52,
+      "assumptions": [
+        {
+          "statement": "Eval prediction did not match W3 ground truth: conclusion_mismatch.",
+          "confidence": 0.45
+        }
+      ],
+      "evidence_count": 2
+    },
+    {
+      "task_id": "w3-eval-sso-4",
+      "source_refs": [
+        "jira://SSO-104",
+        "eval:sso-4#prediction"
+      ],
+      "confidence": 0.52,
+      "assumptions": [
+        {
+          "statement": "Eval prediction did not match W3 ground truth: conclusion_mismatch.",
+          "confidence": 0.45
+        }
+      ],
+      "evidence_count": 2
+    },
+    {
+      "task_id": "w3-eval-sso-5",
+      "source_refs": [
+        "jira://SSO-105",
+        "eval:sso-5#prediction"
+      ],
+      "confidence": 0.52,
+      "assumptions": [
+        {
+          "statement": "Eval prediction did not match W3 ground truth: conclusion_mismatch.",
+          "confidence": 0.45
+        }
+      ],
+      "evidence_count": 2
+    },
+    {
+      "task_id": "w3-eval-transfusion-1",
+      "source_refs": [
+        "jira://TX-301",
+        "eval:transfusion-1#prediction"
+      ],
+      "confidence": 0.52,
+      "assumptions": [
+        {
+          "statement": "Eval prediction did not match W3 ground truth: conclusion_mismatch.",
+          "confidence": 0.45
+        }
+      ],
+      "evidence_count": 2
+    },
+    {
+      "task_id": "w3-eval-transfusion-2",
+      "source_refs": [
+        "jira://TX-302",
+        "eval:transfusion-2#prediction"
+      ],
+      "confidence": 0.82,
+      "assumptions": [
+        {
+          "statement": "Eval prediction matched the W3 ground truth.",
+          "confidence": 0.8
+        }
+      ],
+      "evidence_count": 2
+    },
+    {
+      "task_id": "w3-eval-transfusion-3",
+      "source_refs": [
+        "jira://TX-303",
+        "eval:transfusion-3#prediction"
+      ],
+      "confidence": 0.52,
+      "assumptions": [
+        {
+          "statement": "Eval prediction did not match W3 ground truth: conclusion_mismatch.",
+          "confidence": 0.45
+        }
+      ],
+      "evidence_count": 2
+    },
+    {
+      "task_id": "w3-eval-transfusion-4",
+      "source_refs": [
+        "jira://TX-304",
+        "eval:transfusion-4#prediction"
+      ],
+      "confidence": 0.82,
+      "assumptions": [
+        {
+          "statement": "Eval prediction matched the W3 ground truth.",
+          "confidence": 0.8
+        }
+      ],
+      "evidence_count": 2
+    },
+    {
+      "task_id": "w3-eval-transfusion-5",
+      "source_refs": [
+        "jira://TX-305",
+        "eval:transfusion-5#prediction"
+      ],
+      "confidence": 0.52,
+      "assumptions": [
+        {
+          "statement": "Eval prediction did not match W3 ground truth: conclusion_mismatch.",
+          "confidence": 0.45
+        }
+      ],
+      "evidence_count": 2
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9,
+      "assumptions": [
+        {
+          "statement": "Evidence was collected from the configured Jira environment through the JiraReader MCP server.",
+          "confidence": 0.9
+        }
+      ],
+      "evidence_count": 3
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-mock",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-mock-2026-05-06-searchIssues-1",
+        "jira:OPS-1",
+        "jira:OPS-1#comments"
+      ],
+      "confidence": 0.78,
+      "assumptions": [
+        {
+          "statement": "Evidence was collected from the repository mock Jira server through the real JiraReader MCP server path.",
+          "confidence": 0.75
+        }
+      ],
+      "evidence_count": 3
+    }
+  ],
+  "routeChains": [
+    {
+      "task_id": "w10-fleet-smoke",
+      "task_class": "w10",
+      "execution_mode": "mock",
+      "role": "fleet",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w10",
+        "mock",
+        "fleet",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w10-fleet-smoke:candidate-1",
+      "task_class": "w10",
+      "execution_mode": "unknown",
+      "role": "unknown",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w10",
+        "unknown",
+        "unknown",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w10-fleet-smoke:candidate-1:critic",
+      "task_class": "w10",
+      "execution_mode": "unknown",
+      "role": "unknown",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w10",
+        "unknown",
+        "unknown",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w10-fleet-smoke:candidate-2",
+      "task_class": "w10",
+      "execution_mode": "unknown",
+      "role": "unknown",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w10",
+        "unknown",
+        "unknown",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w10-fleet-smoke:candidate-2:critic",
+      "task_class": "w10",
+      "execution_mode": "unknown",
+      "role": "unknown",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w10",
+        "unknown",
+        "unknown",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w10-fleet-smoke:candidate-3",
+      "task_class": "w10",
+      "execution_mode": "unknown",
+      "role": "unknown",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w10",
+        "unknown",
+        "unknown",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w10-fleet-smoke:candidate-3:critic",
+      "task_class": "w10",
+      "execution_mode": "unknown",
+      "role": "unknown",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w10",
+        "unknown",
+        "unknown",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w10-fleet-smoke:planner",
+      "task_class": "w10",
+      "execution_mode": "unknown",
+      "role": "unknown",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w10",
+        "unknown",
+        "unknown",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w10-fleet-smoke:reviewer",
+      "task_class": "w10",
+      "execution_mode": "unknown",
+      "role": "unknown",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w10",
+        "unknown",
+        "unknown",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w2-smoke-sdk",
+      "task_class": "w2",
+      "execution_mode": "unknown",
+      "role": "unknown",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w2",
+        "unknown",
+        "unknown",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w3-eval-case-1",
+      "task_class": "w3",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w3",
+        "eval",
+        "investigator",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w3-eval-case-2",
+      "task_class": "w3",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w3",
+        "eval",
+        "investigator",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w3-eval-case-3",
+      "task_class": "w3",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w3",
+        "eval",
+        "investigator",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w3-eval-case-4",
+      "task_class": "w3",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w3",
+        "eval",
+        "investigator",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w3-eval-case-5",
+      "task_class": "w3",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w3",
+        "eval",
+        "investigator",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w3-eval-pda-1",
+      "task_class": "w3",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w3",
+        "eval",
+        "investigator",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w3-eval-pda-2",
+      "task_class": "w3",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w3",
+        "eval",
+        "investigator",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w3-eval-pda-3",
+      "task_class": "w3",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w3",
+        "eval",
+        "investigator",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w3-eval-pda-4",
+      "task_class": "w3",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w3",
+        "eval",
+        "investigator",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w3-eval-pda-5",
+      "task_class": "w3",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w3",
+        "eval",
+        "investigator",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w3-eval-sample",
+      "task_class": "w3",
+      "execution_mode": "unknown",
+      "role": "unknown",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w3",
+        "unknown",
+        "unknown",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w3-eval-sso-1",
+      "task_class": "w3",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w3",
+        "eval",
+        "investigator",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w3-eval-sso-2",
+      "task_class": "w3",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w3",
+        "eval",
+        "investigator",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w3-eval-sso-3",
+      "task_class": "w3",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w3",
+        "eval",
+        "investigator",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w3-eval-sso-4",
+      "task_class": "w3",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w3",
+        "eval",
+        "investigator",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w3-eval-sso-5",
+      "task_class": "w3",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w3",
+        "eval",
+        "investigator",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w3-eval-transfusion-1",
+      "task_class": "w3",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w3",
+        "eval",
+        "investigator",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w3-eval-transfusion-2",
+      "task_class": "w3",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w3",
+        "eval",
+        "investigator",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w3-eval-transfusion-3",
+      "task_class": "w3",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w3",
+        "eval",
+        "investigator",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w3-eval-transfusion-4",
+      "task_class": "w3",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w3",
+        "eval",
+        "investigator",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w3-eval-transfusion-5",
+      "task_class": "w3",
+      "execution_mode": "eval",
+      "role": "investigator",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w3",
+        "eval",
+        "investigator",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "task_class": "w4",
+      "execution_mode": "live",
+      "role": "investigator",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w4",
+        "live",
+        "investigator",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-mock",
+      "task_class": "w4",
+      "execution_mode": "mock",
+      "role": "investigator",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w4",
+        "mock",
+        "investigator",
+        "mini",
+        "gpt-5-mini"
+      ]
+    }
+  ],
+  "jiraIssues": [
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-1562",
+      "summary": "赣州人民对接AI中台，预测手术时长，辅助手术安排",
+      "description": "1.提供历史数据接口；\r\n2.提供需要预测的手术信息\r\n3、定时任务转换数据\r\n两个接口参考\"原始数据格式\"\r\n\r\nhttps://neusoft.feishu.cn/wiki/XpyKwUVSGiQtaik3v2jcFUoqn8c",
+      "issue_type": "需求",
+      "status": "已挂起",
+      "priority": "中",
+      "assignee": "那旭-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [],
+      "created": "2025-12-12T15:09:12.000+0800",
+      "updated": "2026-05-06T09:36:02.000+0800",
+      "due_date": "2026-01-08",
+      "target_version": "1.0.182.0",
+      "product_module": "手麻",
+      "defect_category": null,
+      "issue_category": "核心",
+      "project_source": "Z总部集成测试",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 28800,
+      "remaining_estimate_seconds": 28800,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-1839",
+      "summary": "【西交大-麻醉患者路径-通知接诊】点击通知接诊，系统报错",
+      "description": "【西交大-麻醉患者路径-通知接诊】点击通知接诊，系统报错",
+      "issue_type": "缺陷",
+      "status": "提交测试",
+      "priority": "中",
+      "assignee": "刘晓欢-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [
+        "7.0.190.0"
+      ],
+      "created": "2026-01-28T16:23:35.000+0800",
+      "updated": "2026-05-06T11:07:51.000+0800",
+      "due_date": "2026-02-03",
+      "target_version": null,
+      "product_module": "手麻",
+      "defect_category": "功能问题",
+      "issue_category": "本地化",
+      "project_source": "Z总部集成测试",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 7200,
+      "remaining_estimate_seconds": 7200,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-1980",
+      "summary": "【工作量统计】页面上方的月份和人员的筛选项中标签文字未在表格中居中显示建议优化",
+      "description": "【工作量统计】页面上方的月份和人员的筛选项中标签文字未在表格中居中显示建议优化",
+      "issue_type": "缺陷",
+      "status": "提交测试",
+      "priority": "低",
+      "assignee": "董嘉宁-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [],
+      "created": "2026-03-09T11:04:50.000+0800",
+      "updated": "2026-05-06T10:22:41.000+0800",
+      "due_date": "2026-04-02",
+      "target_version": "7.0.187.0",
+      "product_module": "手麻",
+      "defect_category": "功能问题",
+      "issue_category": "核心",
+      "project_source": "Z总部集成测试",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 14400,
+      "remaining_estimate_seconds": 14400,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-1988",
+      "summary": "【Angular17-麻醉收费】批量修改的图标，颜色与原系统不一致",
+      "description": "【Angular17-麻醉收费】批量修改的图标，颜色与原系统不一致",
+      "issue_type": "缺陷",
+      "status": "处理中",
+      "priority": "低",
+      "assignee": "王博-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [],
+      "created": "2026-03-09T15:56:10.000+0800",
+      "updated": "2026-05-06T10:01:37.000+0800",
+      "due_date": "2026-04-02",
+      "target_version": "7.0.187.0",
+      "product_module": "手麻",
+      "defect_category": "功能问题",
+      "issue_category": "核心",
+      "project_source": "Z总部集成测试",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 14400,
+      "remaining_estimate_seconds": 14400,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2026",
+      "summary": "【Angular17-大屏】大屏的术间概览中的图标与原系统底色不一致",
+      "description": "【Angular17-大屏】大屏的术间概览中的图标与原系统底色不一致",
+      "issue_type": "缺陷",
+      "status": "处理中",
+      "priority": "中",
+      "assignee": "王博-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [
+        "7.0.186.0"
+      ],
+      "created": "2026-03-17T11:14:47.000+0800",
+      "updated": "2026-05-06T10:01:15.000+0800",
+      "due_date": "2026-03-19",
+      "target_version": "7.0.186.0",
+      "product_module": "手麻",
+      "defect_category": "功能问题",
+      "issue_category": "核心",
+      "project_source": "Z总部集成测试",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 14400,
+      "remaining_estimate_seconds": 14400,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2027",
+      "summary": "【Angular17-大屏】选择查看外屏，页面加载不出来显示为空",
+      "description": "【Angular17-大屏】选择查看外屏，页面加载不出来显示为空",
+      "issue_type": "缺陷",
+      "status": "处理中",
+      "priority": "中",
+      "assignee": "王博-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [
+        "7.0.186.0"
+      ],
+      "created": "2026-03-17T13:14:59.000+0800",
+      "updated": "2026-05-06T10:01:20.000+0800",
+      "due_date": "2026-03-19",
+      "target_version": "7.0.186.0",
+      "product_module": "手麻",
+      "defect_category": "功能问题",
+      "issue_category": "核心",
+      "project_source": "Z总部集成测试",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 14400,
+      "remaining_estimate_seconds": 14400,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2028",
+      "summary": "【Angular17-大屏】大屏的登录页页面布局变形了",
+      "description": "【Angular17-大屏】大屏的登录页页面布局变形了",
+      "issue_type": "缺陷",
+      "status": "处理中",
+      "priority": "中",
+      "assignee": "王博-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [
+        "7.0.186.0"
+      ],
+      "created": "2026-03-17T13:19:17.000+0800",
+      "updated": "2026-05-06T10:01:24.000+0800",
+      "due_date": "2026-03-19",
+      "target_version": "7.0.186.0",
+      "product_module": "手麻",
+      "defect_category": "功能问题",
+      "issue_category": "核心",
+      "project_source": "Z总部集成测试",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 14400,
+      "remaining_estimate_seconds": 14400,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2061",
+      "summary": "【Angular17-系统管理】数据项目维护中，选择编辑单据项目配置，窗口中必填数据显示为空",
+      "description": "【Angular17-系统管理】数据项目维护中，选择编辑单据项目配置，窗口中必填数据显示为空",
+      "issue_type": "缺陷",
+      "status": "处理中",
+      "priority": "中",
+      "assignee": "王博-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [],
+      "created": "2026-03-23T14:39:41.000+0800",
+      "updated": "2026-05-06T10:01:33.000+0800",
+      "due_date": "2026-04-02",
+      "target_version": "7.0.187.0",
+      "product_module": "手麻",
+      "defect_category": "功能问题",
+      "issue_category": "核心",
+      "project_source": "Z总部集成测试",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 14400,
+      "remaining_estimate_seconds": 14400,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2062",
+      "summary": "【Angular17-系统管理】数据项目维护中，选择编辑单据项目配置，窗口中最下方相比原系统缺少一部分数据",
+      "description": "【Angular17-系统管理】数据项目维护中，选择编辑单据项目配置，窗口中最下方相比原系统缺少一部分数据",
+      "issue_type": "缺陷",
+      "status": "处理中",
+      "priority": "中",
+      "assignee": "王博-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [],
+      "created": "2026-03-23T14:42:06.000+0800",
+      "updated": "2026-05-06T10:01:29.000+0800",
+      "due_date": "2026-04-02",
+      "target_version": "7.0.187.0",
+      "product_module": "手麻",
+      "defect_category": "功能问题",
+      "issue_category": "核心",
+      "project_source": "Z总部集成测试",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 14400,
+      "remaining_estimate_seconds": 14400,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2095",
+      "summary": "潍坊市中医院-北京CA",
+      "description": "北京CA的Ukey签名功能，使用批量签名时，如果电脑上插了多个key，会导致批量签名失败",
+      "issue_type": "需求",
+      "status": "提交测试",
+      "priority": "中",
+      "assignee": "董嘉宁-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [],
+      "created": "2026-03-26T15:13:30.000+0800",
+      "updated": "2026-05-06T10:43:55.000+0800",
+      "due_date": "2026-04-16",
+      "target_version": "7.0.188.0",
+      "product_module": "手麻",
+      "defect_category": null,
+      "issue_category": "本地化",
+      "project_source": "W潍坊市中医医院",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 14400,
+      "remaining_estimate_seconds": 14400,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2114",
+      "summary": "潍坊市中医院-CA签名需求调整",
+      "description": "医护签名-Ukey方式需要新增记录密码的功能，当第一次输入密码之后，签名可以在同一台电脑上记录8小时以上，并且医护签名默认选中Ukey方式",
+      "issue_type": "需求",
+      "status": "提交测试",
+      "priority": "中",
+      "assignee": "董嘉宁-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [],
+      "created": "2026-03-31T16:50:55.000+0800",
+      "updated": "2026-05-06T10:43:28.000+0800",
+      "due_date": "2026-04-16",
+      "target_version": "7.0.188.0",
+      "product_module": "手麻",
+      "defect_category": null,
+      "issue_category": "本地化",
+      "project_source": "W潍坊市中医医院",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 57600,
+      "remaining_estimate_seconds": 57600,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2115",
+      "summary": "北京航空总医院ODR系统数据对接",
+      "description": "为保障医院运营数据中心项目建设按期保质完成，实现全面数据治理、数据互联互通，将数据转化为资产并形成价值，服务于管理会计，实现科学智能的运营辅助决策，也是支撑全面数据治理，实现中台战略的重要保障，只有同样数据标准、一致的数据规范，才可使数据中台获取数据可识别、可应用，最终实现资产化数据的全面赋能。\r\n\r\n需求：\r\n\r\n1.我方根据甲方新系统具体要求提供 +镜像库视图的只读权限+，甲方进行定制化开发对接与测试，甲方实现新系统数据的自动关联与导入等功能。\r\n\r\n2.精选库和生产库进行数据同步。\r\n\r\n3.在镜像库建立视图。\r\n\r\n具体视图信息参见附件。",
+      "issue_type": "需求",
+      "status": "提交测试",
+      "priority": "加急",
+      "assignee": "董嘉宁-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [],
+      "created": "2026-03-31T17:13:16.000+0800",
+      "updated": "2026-05-06T10:44:30.000+0800",
+      "due_date": "2026-04-30",
+      "target_version": "7.0.189.0",
+      "product_module": "手麻",
+      "defect_category": null,
+      "issue_category": "本地化",
+      "project_source": "B北京航空总医院",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 57600,
+      "remaining_estimate_seconds": 57600,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2122",
+      "summary": "【省口腔】追溯系统对接",
+      "description": "省口腔器械闭环追溯系统对接\r\n\r\n器械包扫码识别–扫码后弹出包内器械展示，可在该界面一键使用（确认）、作废、追加\r\n\r\n使用成功后，’‘关前核对’‘，’‘关后核对’‘等节点需字段带入包内器械数值，数值需自动带入手术器械清点单（术中追加默认为0）如有术中追加，数值也需要带入手术清点单中。\r\n\r\n（非扫码）普通器械直接在表单上编辑保存\r\n\r\n追溯系统视图账号\r\n\r\n数据库：mysql IP：[redacted-ip] 端口：3306 [redacted-credential]\r\n\r\n ",
+      "issue_type": "需求",
+      "status": "提交测试",
+      "priority": "中",
+      "assignee": "尹卫民-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [
+        "7.0.190.0"
+      ],
+      "created": "2026-04-01T18:47:10.000+0800",
+      "updated": "2026-05-06T16:10:52.000+0800",
+      "due_date": "2026-04-30",
+      "target_version": "7.0.189.0",
+      "product_module": "手麻",
+      "defect_category": null,
+      "issue_category": "本地化",
+      "project_source": "N南京医科大学附属口腔医院",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 57600,
+      "remaining_estimate_seconds": 28800,
+      "time_spent_seconds": 28800,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2142",
+      "summary": "【时间轴】时间轴窗口中的加载中动态标识，未在窗口中居中显示，而是显示在左上角",
+      "description": "【时间轴】时间轴窗口中的加载中动态标识，未在窗口中居中显示，而是显示在左上角",
+      "issue_type": "缺陷",
+      "status": "已关闭",
+      "priority": "低",
+      "assignee": "邓晓榕-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [
+        "7.0.190.0"
+      ],
+      "created": "2026-04-07T14:02:05.000+0800",
+      "updated": "2026-05-06T09:46:09.000+0800",
+      "due_date": "2026-05-21",
+      "target_version": "7.0.190.0",
+      "product_module": "手麻",
+      "defect_category": "功能问题",
+      "issue_category": "核心",
+      "project_source": "Z总部集成测试",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 14400,
+      "remaining_estimate_seconds": 0,
+      "time_spent_seconds": 14400,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2143",
+      "summary": "【湖南医药学院总医院】麻醉工作站添加一个病区的筛选条件",
+      "description": "麻醉工作站添加一个病区的筛选条件",
+      "issue_type": "需求",
+      "status": "已关闭",
+      "priority": "中",
+      "assignee": "邓晓榕-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [
+        "7.0.190.0"
+      ],
+      "created": "2026-04-07T15:27:37.000+0800",
+      "updated": "2026-05-06T14:22:55.000+0800",
+      "due_date": "2026-05-21",
+      "target_version": "7.0.190.0",
+      "product_module": "手麻",
+      "defect_category": null,
+      "issue_category": "核心",
+      "project_source": "H怀化市第一人民医院",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 28800,
+      "remaining_estimate_seconds": 0,
+      "time_spent_seconds": 28800,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2146",
+      "summary": "潍坊市中医院-手术安排分上下午",
+      "description": "手术安排新增上午与下午两个按钮，点上午显示手术预约时间为0-12点的手术，点下午显示则显示预约时间为12-24点的手术，其中12点的手术归下午，24点的手术归上午",
+      "issue_type": "需求",
+      "status": "提交测试",
+      "priority": "高",
+      "assignee": "董嘉宁-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [
+        "7.0.190.0"
+      ],
+      "created": "2026-04-07T22:32:33.000+0800",
+      "updated": "2026-05-06T10:42:47.000+0800",
+      "due_date": "2026-04-30",
+      "target_version": "7.0.189.0",
+      "product_module": "手麻",
+      "defect_category": null,
+      "issue_category": "核心",
+      "project_source": "W潍坊市中医医院",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 28800,
+      "remaining_estimate_seconds": 28800,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2162",
+      "summary": "【专家标识】手术类型添加的专家标识，数据库脚本更新后缺失对应的注释 建议添加",
+      "description": "【专家标识】手术类型添加的专家标识，数据库脚本更新后缺失对应的注释 建议添加",
+      "issue_type": "缺陷",
+      "status": "处理中",
+      "priority": "低",
+      "assignee": "邓晓榕-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [],
+      "created": "2026-04-13T10:16:03.000+0800",
+      "updated": "2026-05-06T09:27:38.000+0800",
+      "due_date": "2026-04-14",
+      "target_version": null,
+      "product_module": "手麻",
+      "defect_category": "功能问题",
+      "issue_category": "核心",
+      "project_source": "Z总部集成测试",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 3600,
+      "remaining_estimate_seconds": 3600,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2163",
+      "summary": "【省口腔】追溯系统对接",
+      "description": "省口腔器械闭环追溯系统对接\r\n\r\n器械包扫码识别–扫码后弹出包内器械展示，可在该界面一键使用（确认）、作废、追加\r\n\r\n使用成功后，’‘关前核对’‘，’‘关后核对’‘等节点需字段带入包内器械数值，数值需自动带入手术器械清点单（术中追加默认为0）如有术中追加，数值也需要带入手术清点单中。\r\n\r\n（非扫码）普通器械直接在表单上编辑保存\r\n\r\n追溯系统视图账号\r\n\r\n数据库：mysql IP：[redacted-ip] 端口：3306 [redacted-credential]\r\n\r\n ",
+      "issue_type": "需求",
+      "status": "提交测试",
+      "priority": "中",
+      "assignee": "王云峰-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [],
+      "created": "2026-04-13T13:19:49.000+0800",
+      "updated": "2026-05-06T10:29:36.000+0800",
+      "due_date": "2026-04-30",
+      "target_version": "7.0.189.0",
+      "product_module": "手麻",
+      "defect_category": null,
+      "issue_category": "本地化",
+      "project_source": "N南京医科大学附属口腔医院",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 57600,
+      "remaining_estimate_seconds": 28800,
+      "time_spent_seconds": 28800,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2169",
+      "summary": "【襄阳市中心医院】高值耗材需要分两个类型，来区分开立科室。",
+      "description": "高值耗材分为高值寄售（患者所在科室），高值管理（哪个科室用哪个科室收），护理收费时需要区分高值耗材由患者所在科室收还是使用科室收。需要在bs_non_drug_fee添加字段来同步his的数据。 \r\n1.若为高值寄售，收费项目科室是开立科室，默认患者所在科室是所属科室。 \r\n2.为高值管理时，收费项目科室也是开立科室，默认使用登陆人所在科室。 \r\n高值寄售和高值管理的具体编码为：1是高值寄售，0是高值管理， 住院科室和平台科室就是患者所在科室、使用科室。\r\n\r\n!image-2026-04-14-17-57-37-741.png!",
+      "issue_type": "需求",
+      "status": "处理中",
+      "priority": "加急",
+      "assignee": "尹卫民-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [],
+      "created": "2026-04-14T17:59:06.000+0800",
+      "updated": "2026-05-06T10:29:43.000+0800",
+      "due_date": "2026-05-21",
+      "target_version": "7.0.190.0",
+      "product_module": "手麻",
+      "defect_category": null,
+      "issue_category": "本地化",
+      "project_source": "X襄阳中心医院",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 57600,
+      "remaining_estimate_seconds": 57600,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2170",
+      "summary": "【襄阳市中心医院】患者页面的收费单功能，收费项目全部提交完才打√",
+      "description": "患者页面的收费单功能要在收费项目全部提交后才打√，有部分√也不行。",
+      "issue_type": "需求",
+      "status": "无效驳回",
+      "priority": "加急",
+      "assignee": "李烨-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [],
+      "created": "2026-04-14T18:11:51.000+0800",
+      "updated": "2026-04-30T09:35:02.000+0800",
+      "due_date": null,
+      "target_version": null,
+      "product_module": "手麻",
+      "defect_category": null,
+      "issue_category": "本地化",
+      "project_source": "X襄阳中心医院",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": null,
+      "remaining_estimate_seconds": null,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2172",
+      "summary": "【襄阳市中心医院】患者收费单功能保存项目后删除项目数量为0的项目",
+      "description": "用患者页面的收费单功能收费时，需要保存时把收费项目数量为0的项目删除，护士长认为his能做到，需要手麻也能支持。 \r\n还有一个小改动是输入数量时，按↑和↓可以直接输入收费项目的数量，不用手动点击才能改数量。",
+      "issue_type": "需求",
+      "status": "处理中",
+      "priority": "加急",
+      "assignee": "尹卫民-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [],
+      "created": "2026-04-15T10:15:59.000+0800",
+      "updated": "2026-05-06T09:45:08.000+0800",
+      "due_date": "2026-05-21",
+      "target_version": "7.0.190.0",
+      "product_module": "手麻",
+      "defect_category": null,
+      "issue_category": "核心",
+      "project_source": "X襄阳中心医院",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 57600,
+      "remaining_estimate_seconds": 43200,
+      "time_spent_seconds": 14400,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2178",
+      "summary": "【麻醉记录-体征检测快速录入】BIS的项目点击添加列表内容显示不全",
+      "description": "【麻醉记录-体征检测快速录入】BIS的项目点击添加列表内容显示不全",
+      "issue_type": "缺陷",
+      "status": "已关闭",
+      "priority": "低",
+      "assignee": "高宪卓-手麻研发",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [
+        "7.0.190.0"
+      ],
+      "created": "2026-04-16T08:53:54.000+0800",
+      "updated": "2026-05-06T14:23:44.000+0800",
+      "due_date": "2026-05-21",
+      "target_version": "7.0.190.0",
+      "product_module": "手麻",
+      "defect_category": "功能问题",
+      "issue_category": "核心",
+      "project_source": "Z总部集成测试",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 14400,
+      "remaining_estimate_seconds": 14400,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2184",
+      "summary": "【汕头人民医院】手术名称需要加前后缀",
+      "description": "原来手术申请接口没有取前后缀，现在需要加进去",
+      "issue_type": "需求",
+      "status": "处理中",
+      "priority": "中",
+      "assignee": "王云峰-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [],
+      "created": "2026-04-20T11:08:13.000+0800",
+      "updated": "2026-04-30T09:35:38.000+0800",
+      "due_date": "2026-05-07",
+      "target_version": "7.0.191.0",
+      "product_module": "手麻",
+      "defect_category": null,
+      "issue_category": "本地化",
+      "project_source": "SH汕头市人民医院",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 14400,
+      "remaining_estimate_seconds": 14400,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2187",
+      "summary": "麻醉工作站和护理工作站预览界面增加是否临床路径列",
+      "description": "麻醉工作站和护理工作站预览界面增加是否临床路径列的配置，从his取值后存储在相关key值中，该值取值位置各个医院有所不同，做成key存储，可以修改初始值，方便修改配置。\r\n\r\n下图中所展示的字段添加到手麻预览界面中。",
+      "issue_type": "需求",
+      "status": "待处理",
+      "priority": "中",
+      "assignee": "李烨-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [],
+      "created": "2026-04-21T14:51:19.000+0800",
+      "updated": "2026-05-07T09:09:48.000+0800",
+      "due_date": null,
+      "target_version": null,
+      "product_module": "手麻",
+      "defect_category": null,
+      "issue_category": "本地化",
+      "project_source": "X西安医学院第一附属医院",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": null,
+      "remaining_estimate_seconds": null,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2189",
+      "summary": "【黄埔中山肿瘤医院】次强密码规则提示需要修改，目前格式为附件，需修改为描述内的内容",
+      "description": "系统检测到您当前密码为弱密码，请修改密码后重新登录，新密码规则：需包含数字和字母，长度至少6-20位，且仅允许数字和字母",
+      "issue_type": "需求",
+      "status": "提交测试",
+      "priority": "加急",
+      "assignee": "刘晓欢-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [
+        "7.0.190.0"
+      ],
+      "created": "2026-04-21T17:07:04.000+0800",
+      "updated": "2026-05-06T11:29:46.000+0800",
+      "due_date": "2026-05-21",
+      "target_version": "7.0.190.0",
+      "product_module": "手麻",
+      "defect_category": null,
+      "issue_category": "核心",
+      "project_source": "Z总部集成测试",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 14400,
+      "remaining_estimate_seconds": 14400,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2197",
+      "summary": "【襄阳市中心医院】器械清点功能",
+      "description": "1.IsUrgentPackage可以写死。\r\n2.器械包内明细数量不需要二次合并，不同的包通过条码区分。\r\n3.使用登记无法二次使用，二次调用会返回该包已使用，取消使用登记需要在厂商系统操作。\r\n第三点和科室确认过，可以这样搞，已使用的不能删除。\r\n\r\n4.器械的名称都是唯一的，有相同器械名称的可以直接合并求和。",
+      "issue_type": "需求",
+      "status": "处理中",
+      "priority": "加急",
+      "assignee": "尹卫民-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [],
+      "created": "2026-04-24T12:50:01.000+0800",
+      "updated": "2026-05-06T18:52:14.000+0800",
+      "due_date": "2026-05-21",
+      "target_version": "7.0.191.0",
+      "product_module": "手麻",
+      "defect_category": null,
+      "issue_category": "本地化",
+      "project_source": "X襄阳中心医院",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 86400,
+      "remaining_estimate_seconds": 86400,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2199",
+      "summary": "【襄阳市中心医院】补录时间需要做校验",
+      "description": "补录时间要做校验，不能早于手术结束时间，手术结束后才能拉取全收费相关项目，所以科室提出需要加收费补录时间在患者手术结束时间之后",
+      "issue_type": "需求",
+      "status": "处理中",
+      "priority": "加急",
+      "assignee": "尹卫民-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [],
+      "created": "2026-04-27T10:37:09.000+0800",
+      "updated": "2026-04-30T09:38:51.000+0800",
+      "due_date": "2026-05-21",
+      "target_version": "7.0.191.0",
+      "product_module": "手麻",
+      "defect_category": null,
+      "issue_category": "本地化",
+      "project_source": "X襄阳中心医院",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 28800,
+      "remaining_estimate_seconds": 28800,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2200",
+      "summary": "【关键时间点管理】修改内容后，未保存的情况下切换其他菜单，弹出窗口中选择放弃更改，窗口仍维持在原地，未切换到其他页面",
+      "description": "【关键时间点管理】修改内容后，未保存的情况下切换其他菜单，弹出窗口中选择放弃更改，窗口仍维持在原地，未切换到其他页面",
+      "issue_type": "缺陷",
+      "status": "处理中",
+      "priority": "中",
+      "assignee": "尹卫民-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [],
+      "created": "2026-04-27T10:55:18.000+0800",
+      "updated": "2026-04-30T09:46:09.000+0800",
+      "due_date": "2026-05-21",
+      "target_version": "7.0.190.0",
+      "product_module": "手麻",
+      "defect_category": "功能问题",
+      "issue_category": "核心",
+      "project_source": "Z总部集成测试",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 14400,
+      "remaining_estimate_seconds": 14400,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2201",
+      "summary": "【盛京医院】器材清点存在手术开始时间并且小于当前时间，器材包不可以再点击使用，只能使用追加",
+      "description": "存在手术开始时间，并且手术开始时间小于当前时间，在器材使用的时候，就不让点使用，必须点追加。",
+      "issue_type": "需求",
+      "status": "提交测试",
+      "priority": "高",
+      "assignee": "尹卫民-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [
+        "7.0.190.0"
+      ],
+      "created": "2026-04-27T14:22:02.000+0800",
+      "updated": "2026-04-29T17:48:35.000+0800",
+      "due_date": "2026-05-08",
+      "target_version": "7.0.190.0",
+      "product_module": "手麻",
+      "defect_category": null,
+      "issue_category": "核心",
+      "project_source": "SH盛京医院",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 14400,
+      "remaining_estimate_seconds": 0,
+      "time_spent_seconds": 14400,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2202",
+      "summary": "【盛京医院】麻醉收费增加根据年龄获取不同的非药品收费项目",
+      "description": "麻醉收费增加根据年龄获取不同的非药品收费项目",
+      "issue_type": "需求",
+      "status": "处理中",
+      "priority": "高",
+      "assignee": "那旭-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [],
+      "created": "2026-04-27T15:18:37.000+0800",
+      "updated": "2026-04-30T09:46:33.000+0800",
+      "due_date": "2026-05-21",
+      "target_version": "7.0.190.0",
+      "product_module": "手麻",
+      "defect_category": null,
+      "issue_category": "核心",
+      "project_source": "SH盛京医院",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 14400,
+      "remaining_estimate_seconds": 14400,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2204",
+      "summary": "【广医五院】处方单管理功能增加筛选条件",
+      "description": "需求：1.处方单管理可以选择时间段进行筛选。2.处方单管理可以按药品进行筛选",
+      "issue_type": "需求",
+      "status": "处理中",
+      "priority": "高",
+      "assignee": "高宪卓-手麻研发",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [],
+      "created": "2026-04-27T18:03:46.000+0800",
+      "updated": "2026-04-30T09:57:57.000+0800",
+      "due_date": "2026-06-04",
+      "target_version": "7.0.191.0",
+      "product_module": "手麻",
+      "defect_category": null,
+      "issue_category": "核心",
+      "project_source": "G广州医科大学附属第五医院",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 201600,
+      "remaining_estimate_seconds": 201600,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2205",
+      "summary": "【广医五院】处方生成带入批号",
+      "description": "场景：配置处方自动生成后，麻醉记录填写药品写上批号后，处方生成有带入批号，镇痛表单上使用的‘镇痛模板’组件填写的药品写上批号后，处方有生成药品对应的处方单，没用带入批号\r\n\r\n需求：术后镇痛单用药生成的处方单需要能带入批号",
+      "issue_type": "需求",
+      "status": "处理中",
+      "priority": "高",
+      "assignee": "高宪卓-手麻研发",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [],
+      "created": "2026-04-27T18:07:07.000+0800",
+      "updated": "2026-04-30T09:55:08.000+0800",
+      "due_date": "2026-05-21",
+      "target_version": "7.0.191.0",
+      "product_module": "手麻",
+      "defect_category": null,
+      "issue_category": "核心",
+      "project_source": "G广州医科大学附属第五医院",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 28800,
+      "remaining_estimate_seconds": 28800,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2206",
+      "summary": "【省口腔】追溯系统扫码接口对接",
+      "description": "在扫码枪扫描追溯码的时候,通过接口获取到追溯码贴纸上的信息,并将获取的信息按照顺序显示在护理记录单第二页上\r\n\r\n!image-2026-04-27-18-31-10-223.png|width=237,height=425!",
+      "issue_type": "需求",
+      "status": "无效驳回",
+      "priority": "中",
+      "assignee": "李烨-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [],
+      "created": "2026-04-27T18:34:47.000+0800",
+      "updated": "2026-04-30T09:54:42.000+0800",
+      "due_date": null,
+      "target_version": null,
+      "product_module": "手麻",
+      "defect_category": null,
+      "issue_category": "本地化",
+      "project_source": "N南京医科大学附属口腔医院",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": null,
+      "remaining_estimate_seconds": null,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2207",
+      "summary": "【省口腔】图特物资系统接口对接",
+      "description": "图特物资系统接口对接",
+      "issue_type": "需求",
+      "status": "无效驳回",
+      "priority": "中",
+      "assignee": "李烨-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [],
+      "created": "2026-04-27T18:40:53.000+0800",
+      "updated": "2026-04-30T09:54:29.000+0800",
+      "due_date": null,
+      "target_version": null,
+      "product_module": "手麻",
+      "defect_category": null,
+      "issue_category": "本地化",
+      "project_source": "N南京医科大学附属口腔医院",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": null,
+      "remaining_estimate_seconds": null,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2208",
+      "summary": "【省口腔】短信平台接口对接",
+      "description": "短信平台接口对接",
+      "issue_type": "需求",
+      "status": "无效驳回",
+      "priority": "中",
+      "assignee": "李烨-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [],
+      "created": "2026-04-27T18:45:26.000+0800",
+      "updated": "2026-04-30T09:53:55.000+0800",
+      "due_date": null,
+      "target_version": null,
+      "product_module": "手麻",
+      "defect_category": null,
+      "issue_category": "本地化",
+      "project_source": "N南京医科大学附属口腔医院",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": null,
+      "remaining_estimate_seconds": null,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2209",
+      "summary": "【襄阳市中心医院】大屏开机后不到两天就会白屏及需要免登录",
+      "description": "1.大屏开机后一至三天就会白屏，医生们每次都得联系信息科，意见很大。\r\n\r\n2.需要大屏的免登录，能直接看页面，不用登录。",
+      "issue_type": "需求",
+      "status": "提交测试",
+      "priority": "加急",
+      "assignee": "李烨-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [],
+      "created": "2026-04-28T09:51:57.000+0800",
+      "updated": "2026-04-30T09:53:32.000+0800",
+      "due_date": "2026-04-30",
+      "target_version": "7.0.189.0",
+      "product_module": "手麻",
+      "defect_category": null,
+      "issue_category": "本地化",
+      "project_source": "X襄阳中心医院",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 14400,
+      "remaining_estimate_seconds": 14400,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2211",
+      "summary": "天津空港肿瘤医院-麻醉记录出量部分，直接拖动线的话，结束时间需要校验离室时间，如果晚于离室时间需要给予提示",
+      "description": "天津空港肿瘤医院-麻醉记录出量部分，直接拖动线的话，结束时间需要校验离室时间，如果晚于离室时间需要给予提示\"患者已经离室拖拽时间不能晚于离室时间\"",
+      "issue_type": "需求",
+      "status": "提交测试",
+      "priority": "高",
+      "assignee": "高宪卓-手麻研发",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [
+        "7.0.190.0"
+      ],
+      "created": "2026-04-29T09:42:43.000+0800",
+      "updated": "2026-05-06T10:28:33.000+0800",
+      "due_date": "2026-05-21",
+      "target_version": "7.0.190.0",
+      "product_module": "手麻",
+      "defect_category": null,
+      "issue_category": "核心",
+      "project_source": "T天津太山肿瘤医院-YLZB1704403A",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 14400,
+      "remaining_estimate_seconds": 14400,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2212",
+      "summary": "【麻醉记录打印】当开始麻醉时间位于进入手术间之前的麻醉记录，打印文件中备注区域缺少开始麻醉事件的显示",
+      "description": "【麻醉记录打印】当开始麻醉时间位于进入手术间之前的麻醉记录，打印文件中备注区域缺少开始麻醉事件的显示",
+      "issue_type": "缺陷",
+      "status": "处理中",
+      "priority": "中",
+      "assignee": "尹卫民-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [],
+      "created": "2026-04-29T14:29:26.000+0800",
+      "updated": "2026-04-30T09:51:44.000+0800",
+      "due_date": "2026-05-21",
+      "target_version": "7.0.190.0",
+      "product_module": "手麻",
+      "defect_category": "功能问题",
+      "issue_category": "核心",
+      "project_source": "Z总部集成测试",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 14400,
+      "remaining_estimate_seconds": 14400,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2213",
+      "summary": "【Angular17-镇痛管理】选择患者进行配药，页面提示失败",
+      "description": "【Angular17-镇痛管理】选择患者进行配药，页面提示失败",
+      "issue_type": "缺陷",
+      "status": "处理中",
+      "priority": "中",
+      "assignee": "王博-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [],
+      "created": "2026-04-29T15:48:02.000+0800",
+      "updated": "2026-05-06T10:00:46.000+0800",
+      "due_date": "2026-05-21",
+      "target_version": "7.0.190.0",
+      "product_module": "手麻",
+      "defect_category": "功能问题",
+      "issue_category": "核心",
+      "project_source": "Z总部集成测试",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 14400,
+      "remaining_estimate_seconds": 14400,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2214",
+      "summary": "【襄阳市中心医院】器械清点功能",
+      "description": "1.IsUrgentPackage可以写死。\r\n2.器械包内明细数量不需要二次合并，不同的包通过条码区分。\r\n3.使用登记无法二次使用，二次调用会返回该包已使用，取消使用登记需要在厂商系统操作。\r\n第三点和科室确认过，可以这样搞，已使用的不能删除。\r\n\r\n4.器械的名称都是唯一的，有相同器械名称的可以直接合并求和。",
+      "issue_type": "需求",
+      "status": "处理中",
+      "priority": "加急",
+      "assignee": "王云峰-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [],
+      "created": "2026-04-30T09:37:27.000+0800",
+      "updated": "2026-05-07T10:22:32.000+0800",
+      "due_date": "2026-05-21",
+      "target_version": "7.0.191.0",
+      "product_module": "手麻",
+      "defect_category": null,
+      "issue_category": "本地化",
+      "project_source": "X襄阳中心医院",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 86400,
+      "remaining_estimate_seconds": 86400,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2215",
+      "summary": "【博尔塔拉蒙古自州人民医院】开发一套基于海量数据库的GEM5000血气分析仪网口版数据采集程序",
+      "description": "开发一套基于海量数据库版本的GEM5000血气分析仪网口版数据采集程序，实现通过网络采集血气分析数据。",
+      "issue_type": "需求",
+      "status": "无效驳回",
+      "priority": "高",
+      "assignee": "李烨-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [],
+      "created": "2026-04-30T22:23:21.000+0800",
+      "updated": "2026-05-06T09:19:41.000+0800",
+      "due_date": null,
+      "target_version": null,
+      "product_module": "手麻",
+      "defect_category": null,
+      "issue_category": "核心",
+      "project_source": "B博州人民医院",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": null,
+      "remaining_estimate_seconds": null,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2216",
+      "summary": "【襄阳市中心医院】高值耗材需要分两个类型，来区分开立科室。",
+      "description": "高值耗材分为高值寄售（患者所在科室），高值管理（哪个科室用哪个科室收），护理收费时需要区分高值耗材由患者所在科室收还是使用科室收。需要在bs_non_drug_fee添加字段来同步his的数据。 \r\n1.若为高值寄售，收费项目科室是开立科室，默认患者所在科室是所属科室。 \r\n2.为高值管理时，收费项目科室也是开立科室，默认使用登陆人所在科室。 \r\n高值寄售和高值管理的具体编码为：1是高值寄售，0是高值管理， 住院科室和平台科室就是患者所在科室、使用科室。\r\n\r\n!image-2026-04-14-17-57-37-741.png!",
+      "issue_type": "需求",
+      "status": "处理中",
+      "priority": "加急",
+      "assignee": "王云峰-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [],
+      "created": "2026-05-06T10:29:43.000+0800",
+      "updated": "2026-05-06T10:29:53.000+0800",
+      "due_date": "2026-05-21",
+      "target_version": "7.0.190.0",
+      "product_module": "手麻",
+      "defect_category": null,
+      "issue_category": "本地化",
+      "project_source": "X襄阳中心医院",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 57600,
+      "remaining_estimate_seconds": 57600,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2217",
+      "summary": "【麻醉工作站首页】患者右侧的时间轴，点开一直处于加载中，且报客户端一场",
+      "description": "【麻醉工作站首页】患者右侧的时间轴，点开一直处于加载中，且报客户端一场",
+      "issue_type": "缺陷",
+      "status": "待处理",
+      "priority": "中",
+      "assignee": "李烨-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [],
+      "created": "2026-05-06T13:23:20.000+0800",
+      "updated": "2026-05-06T13:23:49.000+0800",
+      "due_date": null,
+      "target_version": null,
+      "product_module": "手麻",
+      "defect_category": "功能问题",
+      "issue_category": "核心",
+      "project_source": "Z总部集成测试",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": null,
+      "remaining_estimate_seconds": null,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2218",
+      "summary": "【盛京医院】复苏工作站可不进复苏监护直接进入患者路径",
+      "description": "复苏工作站可不进复苏监护直接进入患者路径",
+      "issue_type": "需求",
+      "status": "提交测试",
+      "priority": "高",
+      "assignee": "测试-华成宝",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [
+        "7.0.190.0"
+      ],
+      "created": "2026-05-06T15:23:37.000+0800",
+      "updated": "2026-05-07T13:26:51.000+0800",
+      "due_date": "2026-05-21",
+      "target_version": "7.0.190.0",
+      "product_module": "手麻",
+      "defect_category": null,
+      "issue_category": "核心",
+      "project_source": "SH盛京医院",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 7200,
+      "remaining_estimate_seconds": 7200,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2219",
+      "summary": "【盛京医院】术中病理需求",
+      "description": "1.签名确认处可以按登录账号或检品搜索\r\n\r\n2.病理系统返回报错需要正确展示出来",
+      "issue_type": "需求",
+      "status": "提交测试",
+      "priority": "高",
+      "assignee": "刘晓欢-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [
+        "7.0.190.0"
+      ],
+      "created": "2026-05-06T15:25:50.000+0800",
+      "updated": "2026-05-07T10:04:30.000+0800",
+      "due_date": "2026-05-21",
+      "target_version": "7.0.190.0",
+      "product_module": "手麻",
+      "defect_category": null,
+      "issue_category": "核心",
+      "project_source": "SH盛京医院",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 14400,
+      "remaining_estimate_seconds": 14400,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2220",
+      "summary": "【盛京医院】手麻高值条码号查询非药品收费项目接口",
+      "description": "手麻高值条码号查询非药品收费项目接口",
+      "issue_type": "需求",
+      "status": "无效驳回",
+      "priority": "高",
+      "assignee": "李烨-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [],
+      "created": "2026-05-06T17:30:43.000+0800",
+      "updated": "2026-05-06T17:38:04.000+0800",
+      "due_date": null,
+      "target_version": null,
+      "product_module": "手麻",
+      "defect_category": null,
+      "issue_category": "核心",
+      "project_source": "SH盛京医院",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": null,
+      "remaining_estimate_seconds": null,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2221",
+      "summary": "【盛京医院】隐藏麻醉和复苏血气按钮",
+      "description": "隐藏麻醉和复苏血气按钮",
+      "issue_type": "需求",
+      "status": "提交测试",
+      "priority": "高",
+      "assignee": "测试-华成宝",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [
+        "7.0.190.0"
+      ],
+      "created": "2026-05-07T10:27:14.000+0800",
+      "updated": "2026-05-07T13:26:00.000+0800",
+      "due_date": "2026-05-21",
+      "target_version": "7.0.190.0",
+      "product_module": "手麻",
+      "defect_category": null,
+      "issue_category": "核心",
+      "project_source": "SH盛京医院",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 7200,
+      "remaining_estimate_seconds": 7200,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2222",
+      "summary": "北京玉泉医院-收费功能调整",
+      "description": "北京玉泉医院-收费功能的维护界面有个特殊条件，条件里有个危重症，目前系统判断asa分级是4,5算危重症，需要调整，北京医保规定asa分级为3,4,5级的患者算危重症，医保文件见附件",
+      "issue_type": "需求",
+      "status": "待处理",
+      "priority": "高",
+      "assignee": "李烨-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [],
+      "created": "2026-05-07T11:04:00.000+0800",
+      "updated": "2026-05-07T11:04:00.000+0800",
+      "due_date": null,
+      "target_version": null,
+      "product_module": "手麻",
+      "defect_category": null,
+      "issue_category": "核心",
+      "project_source": "B北京玉泉项目",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": null,
+      "remaining_estimate_seconds": null,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-2223",
+      "summary": "【襄阳市中心医院】三方核查单9次签名，需要每次都扫码签名",
+      "description": "医务科要求三方核查单单独出来，9次签名，每次都要扫码，来确保医生们执行核查",
+      "issue_type": "需求",
+      "status": "待处理",
+      "priority": "加急",
+      "assignee": "李烨-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [],
+      "fix_versions": [],
+      "created": "2026-05-07T13:34:08.000+0800",
+      "updated": "2026-05-07T13:34:08.000+0800",
+      "due_date": null,
+      "target_version": null,
+      "product_module": "手麻",
+      "defect_category": null,
+      "issue_category": "本地化",
+      "project_source": "X襄阳中心医院",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": null,
+      "remaining_estimate_seconds": null,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "task_id": "w4-evidence-jira-reader-live",
+      "key": "APMIS-511",
+      "summary": "【手术安排】总务、带教、白班等非洗手巡回护士在轮值排班设置“白班”，在手术安排的护士列仍能显示出来",
+      "description": "前置条件：\r\n浏览器：谷歌 137.0.7151.56（正式版本）\r\n网址：http://[redacted-private-ip]\r\n用户名/[redacted-credential]\r\n测试步骤：\r\n1.登录系统\r\n2.进入护理轮值排班\r\n3.选择手术护士80（总务护士），设置为白班\r\n4.进入手术安排护士列查看\r\n测试结果：总务、带教、白班等非洗手巡回护士在轮值排班设置“白班”，在手术安排的护士列仍能显示出来\r\n期望结果：确认需求，进行优化",
+      "issue_type": "缺陷",
+      "status": "已挂起",
+      "priority": "低",
+      "assignee": "刘晓欢-麻醉",
+      "project": "APMIS",
+      "project_name": "新手麻",
+      "affected_versions": [
+        "1.0.168.0"
+      ],
+      "fix_versions": [],
+      "created": "2025-06-11T10:11:35.000+0800",
+      "updated": "2026-05-06T14:08:12.000+0800",
+      "due_date": "2025-08-14",
+      "target_version": "1.0.172.0",
+      "product_module": "手麻",
+      "defect_category": "功能问题",
+      "issue_category": "核心",
+      "project_source": "Z总部集成测试",
+      "core_recovery": "未分析未回收",
+      "requirement_released": "是",
+      "original_estimate_seconds": 14400,
+      "remaining_estimate_seconds": 14400,
+      "time_spent_seconds": null,
+      "labels": [],
+      "execution_mode": "live",
+      "source_refs": [
+        "mcp:jira-reader.searchIssues#showcase-live-2026-05-07-searchIssues-1",
+        "jira:APMIS-2223",
+        "jira:APMIS-2223#comments"
+      ],
+      "confidence": 0.9
+    }
+  ]
+}

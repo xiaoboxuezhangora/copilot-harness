@@ -1,0 +1,172 @@
+{
+  "name": "Neusoft Calf Mascot Asset Pack",
+  "version": "2026-05-05",
+  "format": "png",
+  "canvas": {
+    "width": 512,
+    "height": 512,
+    "background": "#EDF6FF"
+  },
+  "defaultUsage": {
+    "strategyAssistant": "cow-chief-presenter.png",
+    "jiraDecision": "cow-clipboard-reviewer.png",
+    "runtimeFlow": "cow-runtime-presenter.png",
+    "memoryPanel": "cow-memory-reader.png",
+    "riskGate": "cow-policy-inspector.png",
+    "workbenchGuide": "cow-hook-guide.png"
+  },
+  "assets": [
+    {
+      "id": "briefing-newcomer",
+      "file": "cow-briefing-newcomer.png",
+      "scene": "任务简报",
+      "role": "需求理解与任务澄清",
+      "source": "ChatGPT Image 2026年5月5日 08_21_09.png",
+      "crop": { "x": 130, "y": 210, "width": 210, "height": 160 }
+    },
+    {
+      "id": "context-reader",
+      "file": "cow-context-reader.png",
+      "scene": "上下文阅读",
+      "role": "资料研读与规则沉淀",
+      "source": "ChatGPT Image 2026年5月5日 08_21_09.png",
+      "crop": { "x": 130, "y": 390, "width": 210, "height": 160 }
+    },
+    {
+      "id": "harness-reviewer",
+      "file": "cow-harness-reviewer.png",
+      "scene": "治理复核",
+      "role": "安全规程与人工拍板",
+      "source": "ChatGPT Image 2026年5月5日 08_21_09.png",
+      "crop": { "x": 130, "y": 560, "width": 215, "height": 165 }
+    },
+    {
+      "id": "orchestrator-presenter",
+      "file": "cow-orchestrator-presenter.png",
+      "scene": "编排中枢",
+      "role": "流水线讲解与分派提示",
+      "source": "ChatGPT Image 2026年5月5日 08_31_19.png",
+      "crop": { "x": 925, "y": 100, "width": 230, "height": 155 }
+    },
+    {
+      "id": "runtime-coder",
+      "file": "cow-runtime-coder.png",
+      "scene": "代码执行",
+      "role": "运行时与仓库任务处理",
+      "source": "ChatGPT Image 2026年5月5日 08_31_19.png",
+      "crop": { "x": 95, "y": 300, "width": 205, "height": 155 }
+    },
+    {
+      "id": "context-puzzle",
+      "file": "cow-context-puzzle.png",
+      "scene": "上下文拼装",
+      "role": "EvidencePack 与 Skill 组合",
+      "source": "ChatGPT Image 2026年5月5日 08_31_19.png",
+      "crop": { "x": 575, "y": 350, "width": 170, "height": 145 }
+    },
+    {
+      "id": "memory-reader",
+      "file": "cow-memory-reader.png",
+      "scene": "Memory 阅读",
+      "role": "知识沉淀与规则查阅",
+      "source": "ChatGPT Image 2026年5月5日 08_31_19.png",
+      "crop": { "x": 1360, "y": 285, "width": 165, "height": 170 }
+    },
+    {
+      "id": "budget-gatekeeper",
+      "file": "cow-budget-gatekeeper.png",
+      "scene": "BudgetGate",
+      "role": "预算阈值与任务熔断",
+      "source": "ChatGPT Image 2026年5月5日 08_31_19.png",
+      "crop": { "x": 420, "y": 625, "width": 160, "height": 145 }
+    },
+    {
+      "id": "validator-reviewer",
+      "file": "cow-validator-reviewer.png",
+      "scene": "Validator",
+      "role": "schema 校验与证据复核",
+      "source": "ChatGPT Image 2026年5月5日 08_31_19.png",
+      "crop": { "x": 690, "y": 615, "width": 165, "height": 145 }
+    },
+    {
+      "id": "audit-observer",
+      "file": "cow-audit-observer.png",
+      "scene": "AuditLogger",
+      "role": "审计记录与链路追踪",
+      "source": "ChatGPT Image 2026年5月5日 08_31_19.png",
+      "crop": { "x": 1080, "y": 615, "width": 170, "height": 145 }
+    },
+    {
+      "id": "monitor-analyst",
+      "file": "cow-monitor-analyst.png",
+      "scene": "监控分析",
+      "role": "指标看板与趋势观察",
+      "source": "ChatGPT Image 2026年5月5日 08_31_19.png",
+      "crop": { "x": 1265, "y": 780, "width": 220, "height": 160 }
+    },
+    {
+      "id": "chief-presenter",
+      "file": "cow-chief-presenter.png",
+      "scene": "策略助手",
+      "role": "主管视角讲解与策略提问入口",
+      "source": "ChatGPT Image 2026年5月5日 08_34_34.png",
+      "crop": { "x": 15, "y": 0, "width": 220, "height": 170 }
+    },
+    {
+      "id": "budget-shield",
+      "file": "cow-budget-shield.png",
+      "scene": "预算防护",
+      "role": "成本守护与资源约束",
+      "source": "ChatGPT Image 2026年5月5日 08_34_34.png",
+      "crop": { "x": 555, "y": 275, "width": 155, "height": 165 }
+    },
+    {
+      "id": "policy-inspector",
+      "file": "cow-policy-inspector.png",
+      "scene": "策略检查",
+      "role": "高危工具策略与白名单复核",
+      "source": "ChatGPT Image 2026年5月5日 08_34_34.png",
+      "crop": { "x": 1015, "y": 285, "width": 180, "height": 170 }
+    },
+    {
+      "id": "observability-coder",
+      "file": "cow-observability-coder.png",
+      "scene": "可观测性",
+      "role": "trace、成本、延迟观察",
+      "source": "ChatGPT Image 2026年5月5日 08_34_34.png",
+      "crop": { "x": 45, "y": 620, "width": 190, "height": 185 }
+    },
+    {
+      "id": "evidence-mapper",
+      "file": "cow-evidence-mapper.png",
+      "scene": "证据地图",
+      "role": "仓库证据与依赖路径索引",
+      "source": "ChatGPT Image 2026年5月5日 08_34_34.png",
+      "crop": { "x": 555, "y": 625, "width": 180, "height": 180 }
+    },
+    {
+      "id": "clipboard-reviewer",
+      "file": "cow-clipboard-reviewer.png",
+      "scene": "人工复核",
+      "role": "Review 队列与风险确认",
+      "source": "ChatGPT Image 2026年5月5日 08_34_34.png",
+      "crop": { "x": 1320, "y": 625, "width": 160, "height": 175 }
+    },
+    {
+      "id": "hook-guide",
+      "file": "cow-hook-guide.png",
+      "scene": "四道闸门",
+      "role": "Budget、Policy、Validator、Audit 串行讲解",
+      "source": "generated-image-1777891290480.png",
+      "crop": { "x": 45, "y": 245, "width": 290, "height": 420 }
+    },
+    {
+      "id": "runtime-presenter",
+      "file": "cow-runtime-presenter.png",
+      "scene": "AgentRuntime",
+      "role": "运行时方法与任务分身讲解",
+      "source": "generated-image-1777891290713.png",
+      "crop": { "x": 350, "y": 230, "width": 285, "height": 385 }
+    }
+  ]
+}

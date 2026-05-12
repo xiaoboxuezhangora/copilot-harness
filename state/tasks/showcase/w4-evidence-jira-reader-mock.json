@@ -1,0 +1,45 @@
+{
+  "taskId": "w4-evidence-jira-reader-mock",
+  "turn_state": "done",
+  "execution_mode": "mock",
+  "role": "investigator",
+  "prompt_version": "jira-analysis-prompt@0.1",
+  "model": "gpt-5-mini",
+  "runtime": "contract_stub",
+  "evidence_pack_size": 3,
+  "memory_hit_count": 0,
+  "evidencePack": {
+    "taskId": "w4-evidence-jira-reader-mock",
+    "intent": "P0.5 Showcase evidence closure for JiraReader MCP read-only path",
+    "evidences": [
+      {
+        "source_ref": "mcp:jira-reader.searchIssues#showcase-mock-2026-05-06-searchIssues-1",
+        "content": "JiraReader.searchIssues returned 2/2 issues in mock mode.",
+        "tool": "searchIssues"
+      },
+      {
+        "source_ref": "jira:OPS-1",
+        "content": "OPS-1 OPS-1 summary",
+        "tool": "getIssue"
+      },
+      {
+        "source_ref": "jira:OPS-1#comments",
+        "content": "JiraReader.getComments returned 1 comments.",
+        "tool": "getComments"
+      }
+    ],
+    "assumptions": [
+      {
+        "statement": "Evidence was collected from the repository mock Jira server through the real JiraReader MCP server path.",
+        "confidence": 0.75
+      }
+    ],
+    "confidence": 0.78
+  },
+  "closure": {
+    "generated_at": "2026-05-06T07:32:05.400Z",
+    "snapshot_date": "2026-05-06",
+    "mode": "mock",
+    "trace_file": "reports/mcp-traces/2026-05-06/jira-reader-trace.jsonl"
+  }
+}
