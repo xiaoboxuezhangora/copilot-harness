@@ -1,0 +1,90 @@
+{
+  "schema_version": "phase-1c-w9-runtime-smoke@1",
+  "generated_at": "2026-05-11T13:02:30.000Z",
+  "status": "blocked",
+  "mode": "blocked_live_smoke",
+  "model": "gpt-5-mini",
+  "reasoning_effort": "medium",
+  "live_execution": false,
+  "blocked_reason": "Real SDK/CLI live smoke was not executed because this W9 closeout forbids real LLM calls and network access.",
+  "runtimes": [
+    {
+      "runtime": "copilot_sdk",
+      "sample_count": 20,
+      "pass_count": 0,
+      "blocked_count": 20,
+      "model": "gpt-5-mini",
+      "reasoning_effort": "medium",
+      "capability_supported": false,
+      "unsupported_reasons": [
+        "live SDK smoke blocked by no-real-LLM/no-network constraint",
+        "spawn returns RuntimeCapabilityUnsupportedError with policy_decision=deny",
+        "resumeSession returns RuntimeCapabilityUnsupportedError with policy_decision=deny"
+      ],
+      "audit_trace_coverage": 1,
+      "blocked_sample_trace_ids": [
+        "w9-runtime-sdk-01",
+        "w9-runtime-sdk-02",
+        "w9-runtime-sdk-03",
+        "w9-runtime-sdk-04",
+        "w9-runtime-sdk-05",
+        "w9-runtime-sdk-06",
+        "w9-runtime-sdk-07",
+        "w9-runtime-sdk-08",
+        "w9-runtime-sdk-09",
+        "w9-runtime-sdk-10",
+        "w9-runtime-sdk-11",
+        "w9-runtime-sdk-12",
+        "w9-runtime-sdk-13",
+        "w9-runtime-sdk-14",
+        "w9-runtime-sdk-15",
+        "w9-runtime-sdk-16",
+        "w9-runtime-sdk-17",
+        "w9-runtime-sdk-18",
+        "w9-runtime-sdk-19",
+        "w9-runtime-sdk-20"
+      ]
+    },
+    {
+      "runtime": "copilot_cli",
+      "sample_count": 20,
+      "pass_count": 0,
+      "blocked_count": 20,
+      "model": "gpt-5-mini",
+      "reasoning_effort": "medium",
+      "capability_supported": false,
+      "unsupported_reasons": [
+        "live CLI smoke blocked by no-real-LLM/no-network constraint",
+        "spawn returns RuntimeCapabilityUnsupportedError with policy_decision=deny",
+        "resumeSession returns RuntimeCapabilityUnsupportedError with policy_decision=deny"
+      ],
+      "audit_trace_coverage": 1,
+      "blocked_sample_trace_ids": [
+        "w9-runtime-cli-01",
+        "w9-runtime-cli-02",
+        "w9-runtime-cli-03",
+        "w9-runtime-cli-04",
+        "w9-runtime-cli-05",
+        "w9-runtime-cli-06",
+        "w9-runtime-cli-07",
+        "w9-runtime-cli-08",
+        "w9-runtime-cli-09",
+        "w9-runtime-cli-10",
+        "w9-runtime-cli-11",
+        "w9-runtime-cli-12",
+        "w9-runtime-cli-13",
+        "w9-runtime-cli-14",
+        "w9-runtime-cli-15",
+        "w9-runtime-cli-16",
+        "w9-runtime-cli-17",
+        "w9-runtime-cli-18",
+        "w9-runtime-cli-19",
+        "w9-runtime-cli-20"
+      ]
+    }
+  ],
+  "control_plane_tests": {
+    "command": "pnpm --filter @copilot-harness/orchestrator test -- runtime gates",
+    "runtime_unsupported_capability_tests": "passed"
+  }
+}

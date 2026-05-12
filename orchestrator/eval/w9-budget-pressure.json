@@ -1,0 +1,1080 @@
+{
+  "schema_version": "phase-1c-w9-budget-pressure-report@1",
+  "generated_at": "2026-05-11T13:06:22.674Z",
+  "status": "pass",
+  "harness": "deterministic_mock",
+  "model": "gpt-5-mini",
+  "p95_method": "nearest_rank",
+  "p95_usage": {
+    "fanout": 5,
+    "toolCalls": 12,
+    "inputTokens": 11900,
+    "outputTokens": 2720,
+    "premiumRequests": 1
+  },
+  "suggested_thresholds": {
+    "maxFanout": 6,
+    "maxToolCalls": 15,
+    "maxInputTokens": 14280,
+    "maxOutputTokens": 3264,
+    "maxPremiumRequests": 2
+  },
+  "forced_overrun": {
+    "passed": 5,
+    "total": 5,
+    "cases": [
+      {
+        "schema_version": "phase-1c-w9-budget-pressure-sample@1",
+        "sample_id": "w9-forced-maxFanout",
+        "scenario": "forced_overrun",
+        "usage": {
+          "fanout": 7,
+          "toolCalls": 12,
+          "inputTokens": 11900,
+          "outputTokens": 2720,
+          "premiumRequests": 1
+        },
+        "budget_limit": {
+          "maxFanout": 6,
+          "maxToolCalls": 15,
+          "maxInputTokens": 14280,
+          "maxOutputTokens": 3264,
+          "maxPremiumRequests": 2
+        },
+        "decision": "deny",
+        "audit_trace_id": "w9-forced-maxFanout-trace",
+        "exceeded_budget": "maxFanout",
+        "partial_result": {
+          "schema_version": "phase-1c-w9-budget-overrun-partial-result@1",
+          "task_id": "w9-forced-maxFanout",
+          "turn_state": "blocked",
+          "policy_decision": "deny",
+          "exceeded_budget": "maxFanout",
+          "exceeded_budget_limit": 6,
+          "exceeded_budget_actual": 7,
+          "budget_usage": {
+            "fanout": 7,
+            "toolCalls": 12,
+            "inputTokens": 11900,
+            "outputTokens": 2720,
+            "premiumRequests": 1
+          },
+          "budget_limit": {
+            "maxFanout": 6,
+            "maxToolCalls": 15,
+            "maxInputTokens": 14280,
+            "maxOutputTokens": 3264,
+            "maxPremiumRequests": 2
+          },
+          "partial_result": {
+            "summary": "BudgetGate denied execution before additional work could start.",
+            "completed_steps": [
+              "budget_gate_evaluated"
+            ],
+            "blocked_reason": "Budget exceeded for w9-forced-maxFanout: maxFanout"
+          },
+          "audit_trace_id": "w9-forced-maxFanout-trace",
+          "recovery_hint": "Reduce fanout to one gpt-5-mini turn or wait for ADR-approved fanout enablement."
+        },
+        "notes": [
+          "forced maxFanout overrun"
+        ]
+      },
+      {
+        "schema_version": "phase-1c-w9-budget-pressure-sample@1",
+        "sample_id": "w9-forced-maxToolCalls",
+        "scenario": "forced_overrun",
+        "usage": {
+          "fanout": 5,
+          "toolCalls": 16,
+          "inputTokens": 11900,
+          "outputTokens": 2720,
+          "premiumRequests": 1
+        },
+        "budget_limit": {
+          "maxFanout": 6,
+          "maxToolCalls": 15,
+          "maxInputTokens": 14280,
+          "maxOutputTokens": 3264,
+          "maxPremiumRequests": 2
+        },
+        "decision": "deny",
+        "audit_trace_id": "w9-forced-maxToolCalls-trace",
+        "exceeded_budget": "maxToolCalls",
+        "partial_result": {
+          "schema_version": "phase-1c-w9-budget-overrun-partial-result@1",
+          "task_id": "w9-forced-maxToolCalls",
+          "turn_state": "blocked",
+          "policy_decision": "deny",
+          "exceeded_budget": "maxToolCalls",
+          "exceeded_budget_limit": 15,
+          "exceeded_budget_actual": 16,
+          "budget_usage": {
+            "fanout": 5,
+            "toolCalls": 16,
+            "inputTokens": 11900,
+            "outputTokens": 2720,
+            "premiumRequests": 1
+          },
+          "budget_limit": {
+            "maxFanout": 6,
+            "maxToolCalls": 15,
+            "maxInputTokens": 14280,
+            "maxOutputTokens": 3264,
+            "maxPremiumRequests": 2
+          },
+          "partial_result": {
+            "summary": "BudgetGate denied execution before additional work could start.",
+            "completed_steps": [
+              "budget_gate_evaluated"
+            ],
+            "blocked_reason": "Budget exceeded for w9-forced-maxToolCalls: maxToolCalls"
+          },
+          "audit_trace_id": "w9-forced-maxToolCalls-trace",
+          "recovery_hint": "Stop additional tool calls and return a blocked partial result with existing evidence."
+        },
+        "notes": [
+          "forced maxToolCalls overrun"
+        ]
+      },
+      {
+        "schema_version": "phase-1c-w9-budget-pressure-sample@1",
+        "sample_id": "w9-forced-maxInputTokens",
+        "scenario": "forced_overrun",
+        "usage": {
+          "fanout": 5,
+          "toolCalls": 12,
+          "inputTokens": 14281,
+          "outputTokens": 2720,
+          "premiumRequests": 1
+        },
+        "budget_limit": {
+          "maxFanout": 6,
+          "maxToolCalls": 15,
+          "maxInputTokens": 14280,
+          "maxOutputTokens": 3264,
+          "maxPremiumRequests": 2
+        },
+        "decision": "deny",
+        "audit_trace_id": "w9-forced-maxInputTokens-trace",
+        "exceeded_budget": "maxInputTokens",
+        "partial_result": {
+          "schema_version": "phase-1c-w9-budget-overrun-partial-result@1",
+          "task_id": "w9-forced-maxInputTokens",
+          "turn_state": "blocked",
+          "policy_decision": "deny",
+          "exceeded_budget": "maxInputTokens",
+          "exceeded_budget_limit": 14280,
+          "exceeded_budget_actual": 14281,
+          "budget_usage": {
+            "fanout": 5,
+            "toolCalls": 12,
+            "inputTokens": 14281,
+            "outputTokens": 2720,
+            "premiumRequests": 1
+          },
+          "budget_limit": {
+            "maxFanout": 6,
+            "maxToolCalls": 15,
+            "maxInputTokens": 14280,
+            "maxOutputTokens": 3264,
+            "maxPremiumRequests": 2
+          },
+          "partial_result": {
+            "summary": "BudgetGate denied execution before additional work could start.",
+            "completed_steps": [
+              "budget_gate_evaluated"
+            ],
+            "blocked_reason": "Budget exceeded for w9-forced-maxInputTokens: maxInputTokens"
+          },
+          "audit_trace_id": "w9-forced-maxInputTokens-trace",
+          "recovery_hint": "Trim context with hot_index summaries and lazy-load details only after approval."
+        },
+        "notes": [
+          "forced maxInputTokens overrun"
+        ]
+      },
+      {
+        "schema_version": "phase-1c-w9-budget-pressure-sample@1",
+        "sample_id": "w9-forced-maxOutputTokens",
+        "scenario": "forced_overrun",
+        "usage": {
+          "fanout": 5,
+          "toolCalls": 12,
+          "inputTokens": 11900,
+          "outputTokens": 3265,
+          "premiumRequests": 1
+        },
+        "budget_limit": {
+          "maxFanout": 6,
+          "maxToolCalls": 15,
+          "maxInputTokens": 14280,
+          "maxOutputTokens": 3264,
+          "maxPremiumRequests": 2
+        },
+        "decision": "deny",
+        "audit_trace_id": "w9-forced-maxOutputTokens-trace",
+        "exceeded_budget": "maxOutputTokens",
+        "partial_result": {
+          "schema_version": "phase-1c-w9-budget-overrun-partial-result@1",
+          "task_id": "w9-forced-maxOutputTokens",
+          "turn_state": "blocked",
+          "policy_decision": "deny",
+          "exceeded_budget": "maxOutputTokens",
+          "exceeded_budget_limit": 3264,
+          "exceeded_budget_actual": 3265,
+          "budget_usage": {
+            "fanout": 5,
+            "toolCalls": 12,
+            "inputTokens": 11900,
+            "outputTokens": 3265,
+            "premiumRequests": 1
+          },
+          "budget_limit": {
+            "maxFanout": 6,
+            "maxToolCalls": 15,
+            "maxInputTokens": 14280,
+            "maxOutputTokens": 3264,
+            "maxPremiumRequests": 2
+          },
+          "partial_result": {
+            "summary": "BudgetGate denied execution before additional work could start.",
+            "completed_steps": [
+              "budget_gate_evaluated"
+            ],
+            "blocked_reason": "Budget exceeded for w9-forced-maxOutputTokens: maxOutputTokens"
+          },
+          "audit_trace_id": "w9-forced-maxOutputTokens-trace",
+          "recovery_hint": "Return a shorter partial result and ask for a follow-up turn if more detail is needed."
+        },
+        "notes": [
+          "forced maxOutputTokens overrun"
+        ]
+      },
+      {
+        "schema_version": "phase-1c-w9-budget-pressure-sample@1",
+        "sample_id": "w9-forced-maxPremiumRequests",
+        "scenario": "forced_overrun",
+        "usage": {
+          "fanout": 5,
+          "toolCalls": 12,
+          "inputTokens": 11900,
+          "outputTokens": 2720,
+          "premiumRequests": 3
+        },
+        "budget_limit": {
+          "maxFanout": 6,
+          "maxToolCalls": 15,
+          "maxInputTokens": 14280,
+          "maxOutputTokens": 3264,
+          "maxPremiumRequests": 2
+        },
+        "decision": "deny",
+        "audit_trace_id": "w9-forced-maxPremiumRequests-trace",
+        "exceeded_budget": "maxPremiumRequests",
+        "partial_result": {
+          "schema_version": "phase-1c-w9-budget-overrun-partial-result@1",
+          "task_id": "w9-forced-maxPremiumRequests",
+          "turn_state": "blocked",
+          "policy_decision": "deny",
+          "exceeded_budget": "maxPremiumRequests",
+          "exceeded_budget_limit": 2,
+          "exceeded_budget_actual": 3,
+          "budget_usage": {
+            "fanout": 5,
+            "toolCalls": 12,
+            "inputTokens": 11900,
+            "outputTokens": 2720,
+            "premiumRequests": 3
+          },
+          "budget_limit": {
+            "maxFanout": 6,
+            "maxToolCalls": 15,
+            "maxInputTokens": 14280,
+            "maxOutputTokens": 3264,
+            "maxPremiumRequests": 2
+          },
+          "partial_result": {
+            "summary": "BudgetGate denied execution before additional work could start.",
+            "completed_steps": [
+              "budget_gate_evaluated"
+            ],
+            "blocked_reason": "Budget exceeded for w9-forced-maxPremiumRequests: maxPremiumRequests"
+          },
+          "audit_trace_id": "w9-forced-maxPremiumRequests-trace",
+          "recovery_hint": "Keep the default gpt-5-mini path and do not spend additional premium requests."
+        },
+        "notes": [
+          "forced maxPremiumRequests overrun"
+        ]
+      }
+    ]
+  },
+  "samples": [
+    {
+      "schema_version": "phase-1c-w9-budget-pressure-sample@1",
+      "sample_id": "w9-pressure-01",
+      "scenario": "baseline_single_turn",
+      "usage": {
+        "fanout": 1,
+        "toolCalls": 3,
+        "inputTokens": 2400,
+        "outputTokens": 520,
+        "premiumRequests": 0
+      },
+      "budget_limit": {
+        "maxFanout": 6,
+        "maxToolCalls": 15,
+        "maxInputTokens": 14280,
+        "maxOutputTokens": 3264,
+        "maxPremiumRequests": 2
+      },
+      "decision": "allow",
+      "audit_trace_id": "w9-pressure-01-trace",
+      "notes": [
+        "single gpt-5-mini deterministic sample"
+      ]
+    },
+    {
+      "schema_version": "phase-1c-w9-budget-pressure-sample@1",
+      "sample_id": "w9-pressure-02",
+      "scenario": "fanout_5_auto_memory",
+      "usage": {
+        "fanout": 5,
+        "toolCalls": 7,
+        "inputTokens": 7600,
+        "outputTokens": 1480,
+        "premiumRequests": 1
+      },
+      "budget_limit": {
+        "maxFanout": 6,
+        "maxToolCalls": 15,
+        "maxInputTokens": 14280,
+        "maxOutputTokens": 3264,
+        "maxPremiumRequests": 2
+      },
+      "decision": "allow",
+      "audit_trace_id": "w9-pressure-02-trace",
+      "notes": [
+        "fanout=5 auto-memory deterministic pressure sample"
+      ]
+    },
+    {
+      "schema_version": "phase-1c-w9-budget-pressure-sample@1",
+      "sample_id": "w9-pressure-03",
+      "scenario": "fanout_5_auto_memory",
+      "usage": {
+        "fanout": 5,
+        "toolCalls": 8,
+        "inputTokens": 8100,
+        "outputTokens": 1620,
+        "premiumRequests": 1
+      },
+      "budget_limit": {
+        "maxFanout": 6,
+        "maxToolCalls": 15,
+        "maxInputTokens": 14280,
+        "maxOutputTokens": 3264,
+        "maxPremiumRequests": 2
+      },
+      "decision": "allow",
+      "audit_trace_id": "w9-pressure-03-trace",
+      "notes": [
+        "fanout=5 auto-memory deterministic pressure sample"
+      ]
+    },
+    {
+      "schema_version": "phase-1c-w9-budget-pressure-sample@1",
+      "sample_id": "w9-pressure-04",
+      "scenario": "fanout_5_auto_memory",
+      "usage": {
+        "fanout": 5,
+        "toolCalls": 8,
+        "inputTokens": 8400,
+        "outputTokens": 1680,
+        "premiumRequests": 1
+      },
+      "budget_limit": {
+        "maxFanout": 6,
+        "maxToolCalls": 15,
+        "maxInputTokens": 14280,
+        "maxOutputTokens": 3264,
+        "maxPremiumRequests": 2
+      },
+      "decision": "allow",
+      "audit_trace_id": "w9-pressure-04-trace",
+      "notes": [
+        "fanout=5 auto-memory deterministic pressure sample"
+      ]
+    },
+    {
+      "schema_version": "phase-1c-w9-budget-pressure-sample@1",
+      "sample_id": "w9-pressure-05",
+      "scenario": "baseline_single_turn",
+      "usage": {
+        "fanout": 1,
+        "toolCalls": 4,
+        "inputTokens": 3100,
+        "outputTokens": 610,
+        "premiumRequests": 0
+      },
+      "budget_limit": {
+        "maxFanout": 6,
+        "maxToolCalls": 15,
+        "maxInputTokens": 14280,
+        "maxOutputTokens": 3264,
+        "maxPremiumRequests": 2
+      },
+      "decision": "allow",
+      "audit_trace_id": "w9-pressure-05-trace",
+      "notes": [
+        "single gpt-5-mini deterministic sample"
+      ]
+    },
+    {
+      "schema_version": "phase-1c-w9-budget-pressure-sample@1",
+      "sample_id": "w9-pressure-06",
+      "scenario": "fanout_5_auto_memory",
+      "usage": {
+        "fanout": 5,
+        "toolCalls": 9,
+        "inputTokens": 8900,
+        "outputTokens": 1740,
+        "premiumRequests": 1
+      },
+      "budget_limit": {
+        "maxFanout": 6,
+        "maxToolCalls": 15,
+        "maxInputTokens": 14280,
+        "maxOutputTokens": 3264,
+        "maxPremiumRequests": 2
+      },
+      "decision": "allow",
+      "audit_trace_id": "w9-pressure-06-trace",
+      "notes": [
+        "fanout=5 auto-memory deterministic pressure sample"
+      ]
+    },
+    {
+      "schema_version": "phase-1c-w9-budget-pressure-sample@1",
+      "sample_id": "w9-pressure-07",
+      "scenario": "fanout_5_auto_memory",
+      "usage": {
+        "fanout": 5,
+        "toolCalls": 9,
+        "inputTokens": 9200,
+        "outputTokens": 1860,
+        "premiumRequests": 1
+      },
+      "budget_limit": {
+        "maxFanout": 6,
+        "maxToolCalls": 15,
+        "maxInputTokens": 14280,
+        "maxOutputTokens": 3264,
+        "maxPremiumRequests": 2
+      },
+      "decision": "allow",
+      "audit_trace_id": "w9-pressure-07-trace",
+      "notes": [
+        "fanout=5 auto-memory deterministic pressure sample"
+      ]
+    },
+    {
+      "schema_version": "phase-1c-w9-budget-pressure-sample@1",
+      "sample_id": "w9-pressure-08",
+      "scenario": "fanout_5_auto_memory",
+      "usage": {
+        "fanout": 5,
+        "toolCalls": 10,
+        "inputTokens": 9500,
+        "outputTokens": 1920,
+        "premiumRequests": 1
+      },
+      "budget_limit": {
+        "maxFanout": 6,
+        "maxToolCalls": 15,
+        "maxInputTokens": 14280,
+        "maxOutputTokens": 3264,
+        "maxPremiumRequests": 2
+      },
+      "decision": "allow",
+      "audit_trace_id": "w9-pressure-08-trace",
+      "notes": [
+        "fanout=5 auto-memory deterministic pressure sample"
+      ]
+    },
+    {
+      "schema_version": "phase-1c-w9-budget-pressure-sample@1",
+      "sample_id": "w9-pressure-09",
+      "scenario": "baseline_single_turn",
+      "usage": {
+        "fanout": 1,
+        "toolCalls": 5,
+        "inputTokens": 3400,
+        "outputTokens": 700,
+        "premiumRequests": 0
+      },
+      "budget_limit": {
+        "maxFanout": 6,
+        "maxToolCalls": 15,
+        "maxInputTokens": 14280,
+        "maxOutputTokens": 3264,
+        "maxPremiumRequests": 2
+      },
+      "decision": "allow",
+      "audit_trace_id": "w9-pressure-09-trace",
+      "notes": [
+        "single gpt-5-mini deterministic sample"
+      ]
+    },
+    {
+      "schema_version": "phase-1c-w9-budget-pressure-sample@1",
+      "sample_id": "w9-pressure-10",
+      "scenario": "fanout_5_auto_memory",
+      "usage": {
+        "fanout": 5,
+        "toolCalls": 10,
+        "inputTokens": 9800,
+        "outputTokens": 2020,
+        "premiumRequests": 1
+      },
+      "budget_limit": {
+        "maxFanout": 6,
+        "maxToolCalls": 15,
+        "maxInputTokens": 14280,
+        "maxOutputTokens": 3264,
+        "maxPremiumRequests": 2
+      },
+      "decision": "allow",
+      "audit_trace_id": "w9-pressure-10-trace",
+      "notes": [
+        "fanout=5 auto-memory deterministic pressure sample"
+      ]
+    },
+    {
+      "schema_version": "phase-1c-w9-budget-pressure-sample@1",
+      "sample_id": "w9-pressure-11",
+      "scenario": "fanout_5_auto_memory",
+      "usage": {
+        "fanout": 5,
+        "toolCalls": 10,
+        "inputTokens": 10100,
+        "outputTokens": 2140,
+        "premiumRequests": 1
+      },
+      "budget_limit": {
+        "maxFanout": 6,
+        "maxToolCalls": 15,
+        "maxInputTokens": 14280,
+        "maxOutputTokens": 3264,
+        "maxPremiumRequests": 2
+      },
+      "decision": "allow",
+      "audit_trace_id": "w9-pressure-11-trace",
+      "notes": [
+        "fanout=5 auto-memory deterministic pressure sample"
+      ]
+    },
+    {
+      "schema_version": "phase-1c-w9-budget-pressure-sample@1",
+      "sample_id": "w9-pressure-12",
+      "scenario": "fanout_5_auto_memory",
+      "usage": {
+        "fanout": 5,
+        "toolCalls": 11,
+        "inputTokens": 10400,
+        "outputTokens": 2260,
+        "premiumRequests": 1
+      },
+      "budget_limit": {
+        "maxFanout": 6,
+        "maxToolCalls": 15,
+        "maxInputTokens": 14280,
+        "maxOutputTokens": 3264,
+        "maxPremiumRequests": 2
+      },
+      "decision": "allow",
+      "audit_trace_id": "w9-pressure-12-trace",
+      "notes": [
+        "fanout=5 auto-memory deterministic pressure sample"
+      ]
+    },
+    {
+      "schema_version": "phase-1c-w9-budget-pressure-sample@1",
+      "sample_id": "w9-pressure-13",
+      "scenario": "baseline_single_turn",
+      "usage": {
+        "fanout": 1,
+        "toolCalls": 5,
+        "inputTokens": 3800,
+        "outputTokens": 780,
+        "premiumRequests": 0
+      },
+      "budget_limit": {
+        "maxFanout": 6,
+        "maxToolCalls": 15,
+        "maxInputTokens": 14280,
+        "maxOutputTokens": 3264,
+        "maxPremiumRequests": 2
+      },
+      "decision": "allow",
+      "audit_trace_id": "w9-pressure-13-trace",
+      "notes": [
+        "single gpt-5-mini deterministic sample"
+      ]
+    },
+    {
+      "schema_version": "phase-1c-w9-budget-pressure-sample@1",
+      "sample_id": "w9-pressure-14",
+      "scenario": "fanout_5_auto_memory",
+      "usage": {
+        "fanout": 5,
+        "toolCalls": 11,
+        "inputTokens": 10700,
+        "outputTokens": 2360,
+        "premiumRequests": 1
+      },
+      "budget_limit": {
+        "maxFanout": 6,
+        "maxToolCalls": 15,
+        "maxInputTokens": 14280,
+        "maxOutputTokens": 3264,
+        "maxPremiumRequests": 2
+      },
+      "decision": "allow",
+      "audit_trace_id": "w9-pressure-14-trace",
+      "notes": [
+        "fanout=5 auto-memory deterministic pressure sample"
+      ]
+    },
+    {
+      "schema_version": "phase-1c-w9-budget-pressure-sample@1",
+      "sample_id": "w9-pressure-15",
+      "scenario": "fanout_5_auto_memory",
+      "usage": {
+        "fanout": 5,
+        "toolCalls": 11,
+        "inputTokens": 11000,
+        "outputTokens": 2440,
+        "premiumRequests": 1
+      },
+      "budget_limit": {
+        "maxFanout": 6,
+        "maxToolCalls": 15,
+        "maxInputTokens": 14280,
+        "maxOutputTokens": 3264,
+        "maxPremiumRequests": 2
+      },
+      "decision": "allow",
+      "audit_trace_id": "w9-pressure-15-trace",
+      "notes": [
+        "fanout=5 auto-memory deterministic pressure sample"
+      ]
+    },
+    {
+      "schema_version": "phase-1c-w9-budget-pressure-sample@1",
+      "sample_id": "w9-pressure-16",
+      "scenario": "fanout_5_auto_memory",
+      "usage": {
+        "fanout": 5,
+        "toolCalls": 12,
+        "inputTokens": 11300,
+        "outputTokens": 2520,
+        "premiumRequests": 1
+      },
+      "budget_limit": {
+        "maxFanout": 6,
+        "maxToolCalls": 15,
+        "maxInputTokens": 14280,
+        "maxOutputTokens": 3264,
+        "maxPremiumRequests": 2
+      },
+      "decision": "allow",
+      "audit_trace_id": "w9-pressure-16-trace",
+      "notes": [
+        "fanout=5 auto-memory deterministic pressure sample"
+      ]
+    },
+    {
+      "schema_version": "phase-1c-w9-budget-pressure-sample@1",
+      "sample_id": "w9-pressure-17",
+      "scenario": "baseline_single_turn",
+      "usage": {
+        "fanout": 1,
+        "toolCalls": 6,
+        "inputTokens": 4200,
+        "outputTokens": 860,
+        "premiumRequests": 0
+      },
+      "budget_limit": {
+        "maxFanout": 6,
+        "maxToolCalls": 15,
+        "maxInputTokens": 14280,
+        "maxOutputTokens": 3264,
+        "maxPremiumRequests": 2
+      },
+      "decision": "allow",
+      "audit_trace_id": "w9-pressure-17-trace",
+      "notes": [
+        "single gpt-5-mini deterministic sample"
+      ]
+    },
+    {
+      "schema_version": "phase-1c-w9-budget-pressure-sample@1",
+      "sample_id": "w9-pressure-18",
+      "scenario": "fanout_5_auto_memory",
+      "usage": {
+        "fanout": 5,
+        "toolCalls": 12,
+        "inputTokens": 11600,
+        "outputTokens": 2620,
+        "premiumRequests": 1
+      },
+      "budget_limit": {
+        "maxFanout": 6,
+        "maxToolCalls": 15,
+        "maxInputTokens": 14280,
+        "maxOutputTokens": 3264,
+        "maxPremiumRequests": 2
+      },
+      "decision": "allow",
+      "audit_trace_id": "w9-pressure-18-trace",
+      "notes": [
+        "fanout=5 auto-memory deterministic pressure sample"
+      ]
+    },
+    {
+      "schema_version": "phase-1c-w9-budget-pressure-sample@1",
+      "sample_id": "w9-pressure-19",
+      "scenario": "fanout_5_auto_memory",
+      "usage": {
+        "fanout": 5,
+        "toolCalls": 12,
+        "inputTokens": 11900,
+        "outputTokens": 2720,
+        "premiumRequests": 1
+      },
+      "budget_limit": {
+        "maxFanout": 6,
+        "maxToolCalls": 15,
+        "maxInputTokens": 14280,
+        "maxOutputTokens": 3264,
+        "maxPremiumRequests": 2
+      },
+      "decision": "allow",
+      "audit_trace_id": "w9-pressure-19-trace",
+      "notes": [
+        "fanout=5 auto-memory deterministic pressure sample"
+      ]
+    },
+    {
+      "schema_version": "phase-1c-w9-budget-pressure-sample@1",
+      "sample_id": "w9-pressure-20",
+      "scenario": "fanout_5_auto_memory",
+      "usage": {
+        "fanout": 5,
+        "toolCalls": 13,
+        "inputTokens": 12100,
+        "outputTokens": 2840,
+        "premiumRequests": 1
+      },
+      "budget_limit": {
+        "maxFanout": 6,
+        "maxToolCalls": 15,
+        "maxInputTokens": 14280,
+        "maxOutputTokens": 3264,
+        "maxPremiumRequests": 2
+      },
+      "decision": "allow",
+      "audit_trace_id": "w9-pressure-20-trace",
+      "notes": [
+        "fanout=5 auto-memory deterministic pressure sample"
+      ]
+    },
+    {
+      "schema_version": "phase-1c-w9-budget-pressure-sample@1",
+      "sample_id": "w9-forced-maxFanout",
+      "scenario": "forced_overrun",
+      "usage": {
+        "fanout": 7,
+        "toolCalls": 12,
+        "inputTokens": 11900,
+        "outputTokens": 2720,
+        "premiumRequests": 1
+      },
+      "budget_limit": {
+        "maxFanout": 6,
+        "maxToolCalls": 15,
+        "maxInputTokens": 14280,
+        "maxOutputTokens": 3264,
+        "maxPremiumRequests": 2
+      },
+      "decision": "deny",
+      "audit_trace_id": "w9-forced-maxFanout-trace",
+      "exceeded_budget": "maxFanout",
+      "partial_result": {
+        "schema_version": "phase-1c-w9-budget-overrun-partial-result@1",
+        "task_id": "w9-forced-maxFanout",
+        "turn_state": "blocked",
+        "policy_decision": "deny",
+        "exceeded_budget": "maxFanout",
+        "exceeded_budget_limit": 6,
+        "exceeded_budget_actual": 7,
+        "budget_usage": {
+          "fanout": 7,
+          "toolCalls": 12,
+          "inputTokens": 11900,
+          "outputTokens": 2720,
+          "premiumRequests": 1
+        },
+        "budget_limit": {
+          "maxFanout": 6,
+          "maxToolCalls": 15,
+          "maxInputTokens": 14280,
+          "maxOutputTokens": 3264,
+          "maxPremiumRequests": 2
+        },
+        "partial_result": {
+          "summary": "BudgetGate denied execution before additional work could start.",
+          "completed_steps": [
+            "budget_gate_evaluated"
+          ],
+          "blocked_reason": "Budget exceeded for w9-forced-maxFanout: maxFanout"
+        },
+        "audit_trace_id": "w9-forced-maxFanout-trace",
+        "recovery_hint": "Reduce fanout to one gpt-5-mini turn or wait for ADR-approved fanout enablement."
+      },
+      "notes": [
+        "forced maxFanout overrun"
+      ]
+    },
+    {
+      "schema_version": "phase-1c-w9-budget-pressure-sample@1",
+      "sample_id": "w9-forced-maxToolCalls",
+      "scenario": "forced_overrun",
+      "usage": {
+        "fanout": 5,
+        "toolCalls": 16,
+        "inputTokens": 11900,
+        "outputTokens": 2720,
+        "premiumRequests": 1
+      },
+      "budget_limit": {
+        "maxFanout": 6,
+        "maxToolCalls": 15,
+        "maxInputTokens": 14280,
+        "maxOutputTokens": 3264,
+        "maxPremiumRequests": 2
+      },
+      "decision": "deny",
+      "audit_trace_id": "w9-forced-maxToolCalls-trace",
+      "exceeded_budget": "maxToolCalls",
+      "partial_result": {
+        "schema_version": "phase-1c-w9-budget-overrun-partial-result@1",
+        "task_id": "w9-forced-maxToolCalls",
+        "turn_state": "blocked",
+        "policy_decision": "deny",
+        "exceeded_budget": "maxToolCalls",
+        "exceeded_budget_limit": 15,
+        "exceeded_budget_actual": 16,
+        "budget_usage": {
+          "fanout": 5,
+          "toolCalls": 16,
+          "inputTokens": 11900,
+          "outputTokens": 2720,
+          "premiumRequests": 1
+        },
+        "budget_limit": {
+          "maxFanout": 6,
+          "maxToolCalls": 15,
+          "maxInputTokens": 14280,
+          "maxOutputTokens": 3264,
+          "maxPremiumRequests": 2
+        },
+        "partial_result": {
+          "summary": "BudgetGate denied execution before additional work could start.",
+          "completed_steps": [
+            "budget_gate_evaluated"
+          ],
+          "blocked_reason": "Budget exceeded for w9-forced-maxToolCalls: maxToolCalls"
+        },
+        "audit_trace_id": "w9-forced-maxToolCalls-trace",
+        "recovery_hint": "Stop additional tool calls and return a blocked partial result with existing evidence."
+      },
+      "notes": [
+        "forced maxToolCalls overrun"
+      ]
+    },
+    {
+      "schema_version": "phase-1c-w9-budget-pressure-sample@1",
+      "sample_id": "w9-forced-maxInputTokens",
+      "scenario": "forced_overrun",
+      "usage": {
+        "fanout": 5,
+        "toolCalls": 12,
+        "inputTokens": 14281,
+        "outputTokens": 2720,
+        "premiumRequests": 1
+      },
+      "budget_limit": {
+        "maxFanout": 6,
+        "maxToolCalls": 15,
+        "maxInputTokens": 14280,
+        "maxOutputTokens": 3264,
+        "maxPremiumRequests": 2
+      },
+      "decision": "deny",
+      "audit_trace_id": "w9-forced-maxInputTokens-trace",
+      "exceeded_budget": "maxInputTokens",
+      "partial_result": {
+        "schema_version": "phase-1c-w9-budget-overrun-partial-result@1",
+        "task_id": "w9-forced-maxInputTokens",
+        "turn_state": "blocked",
+        "policy_decision": "deny",
+        "exceeded_budget": "maxInputTokens",
+        "exceeded_budget_limit": 14280,
+        "exceeded_budget_actual": 14281,
+        "budget_usage": {
+          "fanout": 5,
+          "toolCalls": 12,
+          "inputTokens": 14281,
+          "outputTokens": 2720,
+          "premiumRequests": 1
+        },
+        "budget_limit": {
+          "maxFanout": 6,
+          "maxToolCalls": 15,
+          "maxInputTokens": 14280,
+          "maxOutputTokens": 3264,
+          "maxPremiumRequests": 2
+        },
+        "partial_result": {
+          "summary": "BudgetGate denied execution before additional work could start.",
+          "completed_steps": [
+            "budget_gate_evaluated"
+          ],
+          "blocked_reason": "Budget exceeded for w9-forced-maxInputTokens: maxInputTokens"
+        },
+        "audit_trace_id": "w9-forced-maxInputTokens-trace",
+        "recovery_hint": "Trim context with hot_index summaries and lazy-load details only after approval."
+      },
+      "notes": [
+        "forced maxInputTokens overrun"
+      ]
+    },
+    {
+      "schema_version": "phase-1c-w9-budget-pressure-sample@1",
+      "sample_id": "w9-forced-maxOutputTokens",
+      "scenario": "forced_overrun",
+      "usage": {
+        "fanout": 5,
+        "toolCalls": 12,
+        "inputTokens": 11900,
+        "outputTokens": 3265,
+        "premiumRequests": 1
+      },
+      "budget_limit": {
+        "maxFanout": 6,
+        "maxToolCalls": 15,
+        "maxInputTokens": 14280,
+        "maxOutputTokens": 3264,
+        "maxPremiumRequests": 2
+      },
+      "decision": "deny",
+      "audit_trace_id": "w9-forced-maxOutputTokens-trace",
+      "exceeded_budget": "maxOutputTokens",
+      "partial_result": {
+        "schema_version": "phase-1c-w9-budget-overrun-partial-result@1",
+        "task_id": "w9-forced-maxOutputTokens",
+        "turn_state": "blocked",
+        "policy_decision": "deny",
+        "exceeded_budget": "maxOutputTokens",
+        "exceeded_budget_limit": 3264,
+        "exceeded_budget_actual": 3265,
+        "budget_usage": {
+          "fanout": 5,
+          "toolCalls": 12,
+          "inputTokens": 11900,
+          "outputTokens": 3265,
+          "premiumRequests": 1
+        },
+        "budget_limit": {
+          "maxFanout": 6,
+          "maxToolCalls": 15,
+          "maxInputTokens": 14280,
+          "maxOutputTokens": 3264,
+          "maxPremiumRequests": 2
+        },
+        "partial_result": {
+          "summary": "BudgetGate denied execution before additional work could start.",
+          "completed_steps": [
+            "budget_gate_evaluated"
+          ],
+          "blocked_reason": "Budget exceeded for w9-forced-maxOutputTokens: maxOutputTokens"
+        },
+        "audit_trace_id": "w9-forced-maxOutputTokens-trace",
+        "recovery_hint": "Return a shorter partial result and ask for a follow-up turn if more detail is needed."
+      },
+      "notes": [
+        "forced maxOutputTokens overrun"
+      ]
+    },
+    {
+      "schema_version": "phase-1c-w9-budget-pressure-sample@1",
+      "sample_id": "w9-forced-maxPremiumRequests",
+      "scenario": "forced_overrun",
+      "usage": {
+        "fanout": 5,
+        "toolCalls": 12,
+        "inputTokens": 11900,
+        "outputTokens": 2720,
+        "premiumRequests": 3
+      },
+      "budget_limit": {
+        "maxFanout": 6,
+        "maxToolCalls": 15,
+        "maxInputTokens": 14280,
+        "maxOutputTokens": 3264,
+        "maxPremiumRequests": 2
+      },
+      "decision": "deny",
+      "audit_trace_id": "w9-forced-maxPremiumRequests-trace",
+      "exceeded_budget": "maxPremiumRequests",
+      "partial_result": {
+        "schema_version": "phase-1c-w9-budget-overrun-partial-result@1",
+        "task_id": "w9-forced-maxPremiumRequests",
+        "turn_state": "blocked",
+        "policy_decision": "deny",
+        "exceeded_budget": "maxPremiumRequests",
+        "exceeded_budget_limit": 2,
+        "exceeded_budget_actual": 3,
+        "budget_usage": {
+          "fanout": 5,
+          "toolCalls": 12,
+          "inputTokens": 11900,
+          "outputTokens": 2720,
+          "premiumRequests": 3
+        },
+        "budget_limit": {
+          "maxFanout": 6,
+          "maxToolCalls": 15,
+          "maxInputTokens": 14280,
+          "maxOutputTokens": 3264,
+          "maxPremiumRequests": 2
+        },
+        "partial_result": {
+          "summary": "BudgetGate denied execution before additional work could start.",
+          "completed_steps": [
+            "budget_gate_evaluated"
+          ],
+          "blocked_reason": "Budget exceeded for w9-forced-maxPremiumRequests: maxPremiumRequests"
+        },
+        "audit_trace_id": "w9-forced-maxPremiumRequests-trace",
+        "recovery_hint": "Keep the default gpt-5-mini path and do not spend additional premium requests."
+      },
+      "notes": [
+        "forced maxPremiumRequests overrun"
+      ]
+    }
+  ]
+}
