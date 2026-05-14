@@ -7,10 +7,12 @@ import { describe, expect, it } from 'vitest';
 import { AuditLogger } from '../audit/index.js';
 import {
   FleetCoordinator,
+  LlmShadowArenaScorer,
   MockArenaScorer,
   SqliteArenaStore,
   type ArenaMockScoreInput,
   type ArenaMockScoreResult,
+  type ArenaScoreDimensions,
   type ArenaScorer
 } from './index.js';
 import { buildW10FleetSmokeReport } from './smoke.js';
@@ -55,7 +57,14 @@ describe('FleetCoordinator', () => {
         realScorer: '未接入'
       });
       expect(session.arena?.criticRuns).toHaveLength(6);
+      expect(session.arena?.criticRuns[0]).toMatchObject({
+        rubricVersion: 'w12-arena-rubric@1',
+        judgePromptVersion: 'w12-blind-critic-json@1',
+        hardGatePassed: true
+      });
+      expect(session.arena?.criticRuns[0]?.graderInputHash).toMatch(/^[a-f0-9]{64}$/);
       expect(session.arena?.winner.consistencyPassed).toBe(true);
+      expect(session.arena?.winner.hardGatePassed).toBe(true);
       expect(session.reviewerDraft).toMatchObject({
         isDraft: true,
         pushed: false,
@@ -98,6 +107,45 @@ describe('FleetCoordinator', () => {
       expect(session.evidencePack.evidences[0]?.source_ref).toContain('fanout-policy');
       expect(auditLog).toContain('"policyDecision":"deny"');
     });
+  });
+
+  it('blocks actual candidate count outside the W12 three-to-five range', async () => {
+    const shortDrafts: readonly MockFleetCandidateDraft[] = [
+      {
+        stepId: 'step-1',
+        filesTouched: ['orchestrator/src/fleet/types.ts'],
+        anonymousDiff:
+          'diff --mock a/orchestrator/src/fleet/types.ts b/orchestrator/src/fleet/types.ts',
+        selfTest: {
+          command: 'mock-self-test 1',
+          passed: true,
+          summary: 'passed'
+        }
+      },
+      {
+        stepId: 'step-2',
+        filesTouched: ['orchestrator/src/fleet/coordinator.ts'],
+        anonymousDiff:
+          'diff --mock a/orchestrator/src/fleet/coordinator.ts b/orchestrator/src/fleet/coordinator.ts',
+        selfTest: {
+          command: 'mock-self-test 2',
+          passed: true,
+          summary: 'passed'
+        }
+      }
+    ];
+    await withFleetCoordinator(
+      async (coordinator) => {
+        const session = await coordinator.run(baseInput);
+
+        expect(session.turnState).toBe('blocked');
+        expect(session.candidates).toHaveLength(2);
+        expect(session.blockedPartialResult?.blockedReason).toContain('candidate_count=2');
+      },
+      {
+        candidateFactory: () => shortDrafts
+      }
+    );
   });
 
   it('returns blocked partial result when fleet fanout exceeds five', async () => {
@@ -189,17 +237,19 @@ describe('FleetCoordinator', () => {
     await withFleetCoordinator(
       async (coordinator) => {
         const session = await coordinator.run(baseInput);
-        const criticInput = JSON.stringify(
-          session.criticScores.map((score) => score.blindInput)
-        );
+        const criticInput = JSON.stringify(session.criticScores.map((score) => score.blindInput));
 
         expect(criticInput).not.toContain('producer_agent');
         expect(criticInput).not.toContain('worktree-alpha');
         expect(criticInput).not.toContain('candidate-7.ts');
         expect(criticInput).not.toContain('orchestrator/src/fleet');
+        expect(criticInput).not.toContain('implementer-a');
         expect(criticInput).toContain('anonymousDiff');
         expect(criticInput).toContain('selfTest');
         expect(criticInput).toContain('acceptance');
+        expect(criticInput).toContain('rubric');
+        expect(session.arena?.candidateScores[0]?.hardGatePassed).toBe(false);
+        expect(session.arena?.candidateScores[0]?.hardGateFindings[0]?.code).toBe('identity_leak');
       },
       {
         candidateFactory: () => identityLeakDrafts
@@ -207,20 +257,81 @@ describe('FleetCoordinator', () => {
     );
   });
 
+  it('blocks automatic winner selection when all eligible candidates fail hard gates', async () => {
+    const failingDrafts = baseInput.allowedFiles.map(
+      (file, index): MockFleetCandidateDraft => ({
+        stepId: `step-${index + 1}`,
+        filesTouched: [file],
+        anonymousDiff: `diff --mock a/${file} b/${file}\n+ candidate with failing self-test`,
+        selfTest: {
+          command: `mock-self-test ${index + 1}`,
+          passed: false,
+          summary: 'failed'
+        }
+      })
+    );
+    await withFleetCoordinator(
+      async (coordinator) => {
+        const session = await coordinator.run(baseInput);
+
+        expect(session.turnState).toBe('blocked');
+        expect(session.reviewerDraft).toBeUndefined();
+        expect(session.arena?.candidateScores.every((score) => !score.hardGatePassed)).toBe(true);
+        expect(session.blockedPartialResult?.summary).toContain('hard gate blocked');
+      },
+      {
+        candidateFactory: () => failingDrafts
+      }
+    );
+  });
+
+  it('blocks automatic winner selection when double-run dimension delta exceeds threshold', async () => {
+    await withFleetCoordinator(
+      async (coordinator) => {
+        const session = await coordinator.run(baseInput);
+
+        expect(session.turnState).toBe('blocked');
+        expect(session.reviewerDraft).toBeUndefined();
+        expect(session.arena?.candidateScores.every((score) => !score.consistency.passed)).toBe(
+          true
+        );
+        expect(session.arena?.candidateScores[0]?.consistency.delta).toBeGreaterThan(0.5);
+      },
+      {
+        arenaScorer: new UnstableArenaScorer()
+      }
+    );
+  });
+
+  it('records llm_shadow critic runs without changing the mock winner', async () => {
+    await withFleetCoordinator(
+      async (coordinator) => {
+        const session = await coordinator.run(baseInput);
+
+        expect(session.turnState).toBe('done');
+        expect(session.arena?.scorerMode).toBe('mock');
+        expect(session.arena?.shadowCriticRuns).toHaveLength(6);
+        expect(
+          session.arena?.shadowCriticRuns?.every((run) => run.scorerMode === 'llm_shadow')
+        ).toBe(true);
+        expect(session.reviewerDraft?.selectedCandidateId).toBe(session.arena?.winner.candidateId);
+      },
+      {
+        shadowArenaScorer: new LlmShadowArenaScorer()
+      }
+    );
+  });
+
   it('puts only the winner into final Evidence Pack and archives losers', async () => {
     await withFleetCoordinator(async (coordinator) => {
       const session = await coordinator.run(baseInput);
-      const criticInput = JSON.stringify(
-        session.criticScores.map((score) => score.blindInput)
-      );
+      const criticInput = JSON.stringify(session.criticScores.map((score) => score.blindInput));
       const winner = session.arena?.winner.candidateId;
       const loser = session.candidates.find((candidate) => candidate.candidateId !== winner);
       const sourceRefs = session.evidencePack.evidences.map((evidence) => evidence.source_ref);
 
       expect(winner).toBe(session.reviewerDraft?.selectedCandidateId);
-      expect(sourceRefs.some((sourceRef) => sourceRef.includes(`/winner/${winner}`))).toBe(
-        true
-      );
+      expect(sourceRefs.some((sourceRef) => sourceRef.includes(`/winner/${winner}`))).toBe(true);
       expect(JSON.stringify(session.evidencePack)).not.toContain(loser?.candidateId);
       expect(session.arena?.archivePath).toContain(session.fleetSessionId);
       const archiveJson = await readFile(`${session.arena?.archivePath}/session.json`, 'utf8');
@@ -333,5 +444,37 @@ class CountingArenaScorer implements ArenaScorer {
   scoreCandidate(input: ArenaMockScoreInput): ArenaMockScoreResult {
     this.calls += 1;
     return this.delegate.scoreCandidate(input);
+  }
+}
+
+class UnstableArenaScorer implements ArenaScorer {
+  private readonly delegate = new MockArenaScorer();
+
+  scoreCandidate(input: ArenaMockScoreInput): ArenaMockScoreResult {
+    const result = this.delegate.scoreCandidate(input);
+    const firstRun = result.runs[0];
+    const secondRun = result.runs[1];
+    if (firstRun === undefined || secondRun === undefined) return result;
+    const unstableDimensions: ArenaScoreDimensions = {
+      ...secondRun.dimensions,
+      style: Math.max(0, secondRun.dimensions.style - 1)
+    };
+    return {
+      runs: [
+        firstRun,
+        {
+          ...secondRun,
+          dimensions: unstableDimensions
+        }
+      ],
+      candidateScore: {
+        ...result.candidateScore,
+        consistency: {
+          ...result.candidateScore.consistency,
+          delta: 1,
+          passed: false
+        }
+      }
+    };
   }
 }

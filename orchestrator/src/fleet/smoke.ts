@@ -9,7 +9,9 @@ import { SqliteArenaStore } from './arenaStore.js';
 import {
   W10_FLEET_PROMPT_VERSION,
   type AgentRole,
+  type ArenaRealScorerStatus,
   type ArenaScoreDimensions,
+  type ArenaScorerMode,
   type FleetSession,
   type ReviewerDraft
 } from './index.js';
@@ -116,8 +118,8 @@ interface ArenaTaskStateSummary {
   readonly scores: ArenaScoreDimensions;
   readonly consistency_delta: number;
   readonly archive_path: string;
-  readonly scorer_mode: 'mock';
-  readonly real_scorer: '未接入';
+  readonly scorer_mode: ArenaScorerMode;
+  readonly real_scorer: ArenaRealScorerStatus;
 }
 
 export async function runW10FleetSmoke(options: RunSmokeOptions): Promise<W10FleetSmokeRunResult> {

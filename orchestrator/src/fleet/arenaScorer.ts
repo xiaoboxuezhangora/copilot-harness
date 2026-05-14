@@ -1,9 +1,15 @@
+import { createHash } from 'node:crypto';
+
 import type {
+  ArenaAllowedRubric,
   ArenaCandidateScore,
   ArenaConsistency,
   ArenaCriticRun,
+  ArenaHardGateFinding,
   ArenaRealScorerStatus,
+  ArenaSanitizationReport,
   ArenaScoreDimensions,
+  ArenaScoreWeights,
   ArenaScorerMode,
   BlindCriticInput,
   CriticVerdict
@@ -12,12 +18,35 @@ import type {
 export const ARENA_CONSISTENCY_THRESHOLD = 0.5;
 export const ARENA_SCORER_MODE: ArenaScorerMode = 'mock';
 export const ARENA_REAL_SCORER_STATUS: ArenaRealScorerStatus = '未接入';
+export const W12_ARENA_RUBRIC_VERSION = 'w12-arena-rubric@1';
+export const W12_ARENA_JUDGE_PROMPT_VERSION = 'w12-blind-critic-json@1';
+export const W12_ARENA_SCORE_WEIGHTS: ArenaScoreWeights = {
+  correctness: 0.4,
+  testCoverage: 0.25,
+  diffMinimality: 0.2,
+  style: 0.15
+};
+export const W12_ARENA_ALLOWED_RUBRIC: ArenaAllowedRubric = {
+  rubricVersion: W12_ARENA_RUBRIC_VERSION,
+  dimensions: ['correctness', 'style', 'testCoverage', 'diffMinimality'],
+  weights: W12_ARENA_SCORE_WEIGHTS,
+  hardGates: [
+    'schema_invalid',
+    'self_test_failed',
+    'scope_violation',
+    'identity_leak',
+    'sensitive_leak'
+  ]
+};
 
 export interface ArenaMockScoreInput {
   readonly fleetSessionId: string;
   readonly parentTaskId: string;
   readonly candidateId: string;
   readonly blindInput: BlindCriticInput;
+  readonly sanitizationReport?: ArenaSanitizationReport;
+  readonly scorerMode?: ArenaScorerMode;
+  readonly realScorer?: ArenaRealScorerStatus;
 }
 
 export interface ArenaMockScoreResult {
@@ -35,6 +64,16 @@ export class MockArenaScorer implements ArenaScorer {
   }
 }
 
+export class LlmShadowArenaScorer implements ArenaScorer {
+  scoreCandidate(input: ArenaMockScoreInput): ArenaMockScoreResult {
+    return scoreArenaMockCandidate({
+      ...input,
+      scorerMode: 'llm_shadow',
+      realScorer: 'gpt-5-mini-shadow'
+    });
+  }
+}
+
 export function scoreArenaMockCandidate(input: ArenaMockScoreInput): ArenaMockScoreResult {
   const firstRun = buildRun(input, 1);
   const secondRun = buildRun(input, 2);
@@ -44,6 +83,8 @@ export function scoreArenaMockCandidate(input: ArenaMockScoreInput): ArenaMockSc
     candidateId: input.candidateId,
     dimensions,
     overallScore: round2(scoreOverall(dimensions)),
+    hardGateFindings: mergeHardGateFindings(firstRun, secondRun),
+    hardGatePassed: firstRun.hardGatePassed && secondRun.hardGatePassed,
     consistency,
     criticRunIds: [firstRun.runId, secondRun.runId]
   };
@@ -70,14 +111,25 @@ function buildRun(
 ): Omit<ArenaCriticRun, 'evidencePack'> {
   const dimensions = scoreDimensions(input.blindInput, runIndex);
   const overallScore = round2(scoreOverall(dimensions));
+  const sanitizationReport =
+    input.sanitizationReport ?? buildSanitizationReport(JSON.stringify(input.blindInput));
+  const hardGateFindings = buildHardGateFindings(input.blindInput, sanitizationReport);
+  const scorerMode = input.scorerMode ?? ARENA_SCORER_MODE;
+  const realScorer = input.realScorer ?? ARENA_REAL_SCORER_STATUS;
   return {
-    runId: `${input.fleetSessionId}:${input.candidateId}:critic-${runIndex}`,
+    runId: `${input.fleetSessionId}:${input.candidateId}:${scorerMode}:critic-${runIndex}`,
     fleetSessionId: input.fleetSessionId,
     parentTaskId: input.parentTaskId,
     candidateId: input.candidateId,
     runIndex,
-    scorerMode: ARENA_SCORER_MODE,
-    realScorer: ARENA_REAL_SCORER_STATUS,
+    scorerMode,
+    realScorer,
+    rubricVersion: W12_ARENA_RUBRIC_VERSION,
+    judgePromptVersion: W12_ARENA_JUDGE_PROMPT_VERSION,
+    sanitizationReport,
+    graderInputHash: hashGraderInput(input.blindInput),
+    hardGateFindings,
+    hardGatePassed: hardGateFindings.length === 0,
     dimensions,
     overallScore,
     verdict: verdictForOverallScore(overallScore),
@@ -95,9 +147,13 @@ function scoreDimensions(input: BlindCriticInput, runIndex: 1 | 2): ArenaScoreDi
   const hasDiff = input.anonymousDiff.trim().length > 0;
 
   return {
-    correctness: clampScore((input.selfTest.passed ? 4.3 : 2.1) + Math.min(acceptanceCount, 2) * 0.2),
+    correctness: clampScore(
+      (input.selfTest.passed ? 4.3 : 2.1) + Math.min(acceptanceCount, 2) * 0.2
+    ),
     style: clampScore((hasDiff ? 4.0 : 2.0) + rerunJitter),
-    testCoverage: clampScore((input.selfTest.passed ? 4.1 : 1.7) + Math.min(acceptanceCount, 3) * 0.15),
+    testCoverage: clampScore(
+      (input.selfTest.passed ? 4.1 : 1.7) + Math.min(acceptanceCount, 3) * 0.15
+    ),
     diffMinimality: clampScore(diffLineCount <= 6 ? 4.5 : diffLineCount <= 14 ? 3.7 : 2.8)
   };
 }
@@ -143,11 +199,103 @@ function maxDimensionDelta(left: ArenaScoreDimensions, right: ArenaScoreDimensio
 
 function scoreOverall(dimensions: ArenaScoreDimensions): number {
   return (
-    dimensions.correctness +
-    dimensions.style +
-    dimensions.testCoverage +
-    dimensions.diffMinimality
-  ) / 4;
+    dimensions.correctness * W12_ARENA_SCORE_WEIGHTS.correctness +
+    dimensions.testCoverage * W12_ARENA_SCORE_WEIGHTS.testCoverage +
+    dimensions.diffMinimality * W12_ARENA_SCORE_WEIGHTS.diffMinimality +
+    dimensions.style * W12_ARENA_SCORE_WEIGHTS.style
+  );
+}
+
+function buildHardGateFindings(
+  input: BlindCriticInput,
+  report: ArenaSanitizationReport
+): readonly ArenaHardGateFinding[] {
+  const findings: ArenaHardGateFinding[] = [];
+  if (!isValidBlindInput(input)) {
+    findings.push({
+      code: 'schema_invalid',
+      message: 'critic blind input failed W12 JSON shape validation',
+      blocking: true
+    });
+  }
+  if (!input.selfTest.passed) {
+    findings.push({
+      code: 'self_test_failed',
+      message: 'candidate self-test did not pass',
+      blocking: true
+    });
+  }
+  if (report.identityLeakDetected) {
+    findings.push({
+      code: 'identity_leak',
+      message: 'critic input sanitizer detected implementer or worktree identity',
+      blocking: true
+    });
+  }
+  if (report.sensitiveLeakDetected) {
+    findings.push({
+      code: 'sensitive_leak',
+      message: 'critic input sanitizer detected sensitive data',
+      blocking: true
+    });
+  }
+  return findings;
+}
+
+function isValidBlindInput(input: BlindCriticInput): boolean {
+  return (
+    typeof input.anonymousDiff === 'string' &&
+    typeof input.selfTest.command === 'string' &&
+    typeof input.selfTest.passed === 'boolean' &&
+    typeof input.selfTest.summary === 'string' &&
+    input.acceptance.every((item) => typeof item === 'string')
+  );
+}
+
+function mergeHardGateFindings(
+  firstRun: Omit<ArenaCriticRun, 'evidencePack'>,
+  secondRun: Omit<ArenaCriticRun, 'evidencePack'>
+): readonly ArenaHardGateFinding[] {
+  const byCode = new Map<string, ArenaHardGateFinding>();
+  for (const finding of [...firstRun.hardGateFindings, ...secondRun.hardGateFindings]) {
+    byCode.set(finding.code, finding);
+  }
+  return [...byCode.values()];
+}
+
+function buildSanitizationReport(value: string): ArenaSanitizationReport {
+  return {
+    identityLeakDetected: containsIdentityLeak(value),
+    sensitiveLeakDetected: containsSensitiveLeak(value),
+    pathLeakDetected: containsPathLeak(value),
+    redactionCount: countRedactions(value),
+    blockedTerms: []
+  };
+}
+
+export function hashGraderInput(input: BlindCriticInput): string {
+  return createHash('sha256').update(JSON.stringify(input)).digest('hex');
+}
+
+function containsIdentityLeak(value: string): boolean {
+  return /producer_agent|producer[-_ ]?agent|worktree[-_/]?[a-z0-9]/i.test(value);
+}
+
+function containsSensitiveLeak(value: string): boolean {
+  return (
+    /\b(?:token|api[-_ ]?key|secret|authorization)\b/i.test(value) ||
+    /\b(?:10|172\.(?:1[6-9]|2\d|3[01])|192\.168)\.\d{1,3}\.\d{1,3}\b/.test(value) ||
+    /-----BEGIN [A-Z ]*PRIVATE KEY-----/.test(value) ||
+    /\b(?:病案|收费|CA签名|CA signature)\b/i.test(value)
+  );
+}
+
+function containsPathLeak(value: string): boolean {
+  return /(?:[\w.-]+\/)+[\w.-]+(?:\.[A-Za-z0-9]+)?/.test(value);
+}
+
+function countRedactions(value: string): number {
+  return (value.match(/\[redacted_[a-z]+\]/g) ?? []).length;
 }
 
 function clampScore(value: number): number {

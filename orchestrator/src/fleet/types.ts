@@ -2,7 +2,7 @@ import type { EvidencePack, RuntimeModel, TurnState } from '../runtime/index.js'
 
 export type AgentRole = 'planner' | 'implementer' | 'critic' | 'reviewer';
 
-export type FleetWorktreeMode = 'mock' | 'real_disabled';
+export type FleetWorktreeMode = 'mock' | 'isolated_worktree' | 'real_disabled';
 
 export type CriticVerdict = 'accept' | 'revise' | 'reject';
 
@@ -16,11 +16,46 @@ export const W12_ARENA_EVAL_SEED_SCHEMA = 'phase-2-w12-arena-eval-seed-artifact@
 
 export const W12_ARENA_ARCHIVE_SCHEMA = 'phase-2-w12-arena-archive@1';
 
-export type ArenaScorerMode = 'mock';
+export type ArenaScorerMode = 'mock' | 'llm_shadow' | 'llm_gated';
 
-export type ArenaRealScorerStatus = '未接入';
+export type ArenaRealScorerStatus = '未接入' | 'gpt-5-mini-shadow' | 'gpt-5-mini-gated';
 
 export type ArenaArchiveStatus = 'winner' | 'loser';
+
+export type ArenaHardGateCode =
+  | 'schema_invalid'
+  | 'self_test_failed'
+  | 'scope_violation'
+  | 'identity_leak'
+  | 'sensitive_leak';
+
+export interface ArenaHardGateFinding {
+  readonly code: ArenaHardGateCode;
+  readonly message: string;
+  readonly blocking: true;
+}
+
+export interface ArenaSanitizationReport {
+  readonly identityLeakDetected: boolean;
+  readonly sensitiveLeakDetected: boolean;
+  readonly pathLeakDetected: boolean;
+  readonly redactionCount: number;
+  readonly blockedTerms: readonly string[];
+}
+
+export interface ArenaAllowedRubric {
+  readonly rubricVersion: string;
+  readonly dimensions: readonly (keyof ArenaScoreDimensions)[];
+  readonly weights: ArenaScoreWeights;
+  readonly hardGates: readonly ArenaHardGateCode[];
+}
+
+export interface ArenaScoreWeights {
+  readonly correctness: 0.4;
+  readonly testCoverage: 0.25;
+  readonly diffMinimality: 0.2;
+  readonly style: 0.15;
+}
 
 export interface AgentDefinition {
   readonly id: string;
@@ -74,6 +109,7 @@ export interface BlindCriticInput {
   readonly anonymousDiff: string;
   readonly selfTest: FleetCandidateSelfTest;
   readonly acceptance: readonly string[];
+  readonly rubric?: ArenaAllowedRubric;
 }
 
 export interface ArenaScoreDimensions {
@@ -100,6 +136,12 @@ export interface ArenaCriticRun {
   readonly runIndex: 1 | 2;
   readonly scorerMode: ArenaScorerMode;
   readonly realScorer: ArenaRealScorerStatus;
+  readonly rubricVersion: string;
+  readonly judgePromptVersion: string;
+  readonly sanitizationReport: ArenaSanitizationReport;
+  readonly graderInputHash: string;
+  readonly hardGateFindings: readonly ArenaHardGateFinding[];
+  readonly hardGatePassed: boolean;
   readonly dimensions: ArenaScoreDimensions;
   readonly overallScore: number;
   readonly verdict: CriticVerdict;
@@ -111,6 +153,8 @@ export interface ArenaCandidateScore {
   readonly candidateId: string;
   readonly dimensions: ArenaScoreDimensions;
   readonly overallScore: number;
+  readonly hardGateFindings: readonly ArenaHardGateFinding[];
+  readonly hardGatePassed: boolean;
   readonly consistency: ArenaConsistency;
   readonly criticRunIds: readonly string[];
 }
@@ -119,6 +163,8 @@ export interface ArenaWinner {
   readonly candidateId: string;
   readonly dimensions: ArenaScoreDimensions;
   readonly overallScore: number;
+  readonly hardGateFindings: readonly ArenaHardGateFinding[];
+  readonly hardGatePassed: boolean;
   readonly consistencyDelta: number;
   readonly consistencyPassed: boolean;
   readonly criticRunIds: readonly string[];
@@ -134,6 +180,7 @@ export interface ArenaSession {
   readonly candidateCount: number;
   readonly consistencyThreshold: 0.5;
   readonly criticRuns: readonly ArenaCriticRun[];
+  readonly shadowCriticRuns?: readonly ArenaCriticRun[];
   readonly candidateScores: readonly ArenaCandidateScore[];
   readonly winner: ArenaWinner;
   readonly archivePath: string;
@@ -155,6 +202,7 @@ export interface ArenaEvalSeedCandidateSnapshot {
   readonly dimensions: ArenaScoreDimensions;
   readonly overallScore: number;
   readonly consistencyDelta: number;
+  readonly hardGatePassed: boolean;
 }
 
 export interface ArenaEvalSeedSample extends ArenaEvalSeedRecord {
@@ -179,6 +227,8 @@ export interface ArenaArchivedCandidate {
   readonly archiveStatus: ArenaArchiveStatus;
   readonly dimensions: ArenaScoreDimensions;
   readonly overallScore: number;
+  readonly hardGateFindings: readonly ArenaHardGateFinding[];
+  readonly hardGatePassed: boolean;
   readonly consistencyDelta: number;
   readonly evidenceSourceRefs: readonly string[];
 }
@@ -201,6 +251,8 @@ export interface BlindCriticScore {
   readonly score: number;
   readonly verdict: CriticVerdict;
   readonly dimensions: ArenaScoreDimensions;
+  readonly hardGateFindings: readonly ArenaHardGateFinding[];
+  readonly hardGatePassed: boolean;
   readonly consistencyDelta: number;
   readonly consistencyPassed: boolean;
   readonly criticRunIds: readonly string[];

@@ -14,12 +14,7 @@ import {
 import type { EvidencePack } from '../runtime/index.js';
 import { SqliteArenaStore } from './arenaStore.js';
 import { W12_ARENA_SESSION_SCHEMA } from './types.js';
-import type {
-  ArenaCandidateScore,
-  ArenaCriticRun,
-  ArenaSession,
-  FleetCandidate
-} from './index.js';
+import type { ArenaCandidateScore, ArenaCriticRun, ArenaSession, FleetCandidate } from './index.js';
 
 describe('SqliteArenaStore', () => {
   it('persists arena tables and exports pending weekly winner-vs-loser samples', async () => {
@@ -65,9 +60,9 @@ describe('SqliteArenaStore', () => {
         artifact.samples[0]?.loserCandidateId
       );
       expect(JSON.stringify(exported)).toContain('"pending_review"');
-      expect(await readFile(join(tempDir, 'archive', 'fleet-arena-1', 'session.json'), 'utf8')).toContain(
-        '"archiveStatus": "loser"'
-      );
+      expect(
+        await readFile(join(tempDir, 'archive', 'fleet-arena-1', 'session.json'), 'utf8')
+      ).toContain('"archiveStatus": "loser"');
     } finally {
       store.close();
       await rm(tempDir, { recursive: true, force: true });
@@ -75,7 +70,10 @@ describe('SqliteArenaStore', () => {
   });
 });
 
-function buildArenaFixture(sessionId: string, tempDir: string): {
+function buildArenaFixture(
+  sessionId: string,
+  tempDir: string
+): {
   readonly arena: ArenaSession;
   readonly candidates: readonly FleetCandidate[];
 } {
@@ -117,6 +115,8 @@ function buildArenaFixture(sessionId: string, tempDir: string): {
       candidateId: winnerScore.candidateId,
       dimensions: winnerScore.dimensions,
       overallScore: winnerScore.overallScore,
+      hardGateFindings: winnerScore.hardGateFindings,
+      hardGatePassed: winnerScore.hardGatePassed,
       consistencyDelta: winnerScore.consistency.delta,
       consistencyPassed: winnerScore.consistency.passed,
       criticRunIds: winnerScore.criticRunIds

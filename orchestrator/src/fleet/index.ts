@@ -11,7 +11,12 @@ export {
   ARENA_CONSISTENCY_THRESHOLD,
   ARENA_REAL_SCORER_STATUS,
   ARENA_SCORER_MODE,
+  LlmShadowArenaScorer,
   MockArenaScorer,
+  W12_ARENA_ALLOWED_RUBRIC,
+  W12_ARENA_JUDGE_PROMPT_VERSION,
+  W12_ARENA_RUBRIC_VERSION,
+  W12_ARENA_SCORE_WEIGHTS,
   scoreArenaMockCandidate,
   toPercentScore,
   verdictForOverallScore
@@ -22,17 +27,14 @@ export {
   DEFAULT_ARENA_SQLITE_PATH,
   SqliteArenaStore
 } from './arenaStore.js';
-export type {
-  ArenaEvalSeedExportInput,
-  ArenaStore,
-  ArenaStoreSaveInput
-} from './arenaStore.js';
+export type { ArenaEvalSeedExportInput, ArenaStore, ArenaStoreSaveInput } from './arenaStore.js';
 export type {
   AgentDefinition,
   AgentRole,
   ArenaArchiveStatus,
   ArenaArchiveArtifact,
   ArenaArchivedCandidate,
+  ArenaAllowedRubric,
   ArenaCandidateScore,
   ArenaConsistency,
   ArenaCriticRun,
@@ -40,8 +42,12 @@ export type {
   ArenaEvalSeedCandidateSnapshot,
   ArenaEvalSeedRecord,
   ArenaEvalSeedSample,
+  ArenaHardGateCode,
+  ArenaHardGateFinding,
   ArenaRealScorerStatus,
+  ArenaSanitizationReport,
   ArenaScoreDimensions,
+  ArenaScoreWeights,
   ArenaScorerMode,
   ArenaSession,
   ArenaWinner,

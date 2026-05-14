@@ -6,6 +6,7 @@ import { DatabaseSync } from 'node:sqlite';
 import type {
   ArenaArchiveArtifact,
   ArenaCandidateScore,
+  ArenaCriticRun,
   ArenaEvalSeedArtifact,
   ArenaEvalSeedSample,
   ArenaEvalSeedCandidateSnapshot,
@@ -13,15 +14,14 @@ import type {
   FleetCandidate
 } from './types.js';
 import { W12_ARENA_ARCHIVE_SCHEMA, W12_ARENA_EVAL_SEED_SCHEMA } from './types.js';
+import { W12_ARENA_SCORE_WEIGHTS } from './arenaScorer.js';
 
 export const DEFAULT_ARENA_SQLITE_PATH = 'reports/arena.sqlite';
 export const DEFAULT_ARENA_ARCHIVE_PATH = 'reports/arena/archive';
 
 export interface ArenaStore {
   saveArenaSession(_input: ArenaStoreSaveInput): Promise<void>;
-  exportWeeklyEvalSeedArtifact(
-    _input?: ArenaEvalSeedExportInput
-  ): Promise<ArenaEvalSeedArtifact>;
+  exportWeeklyEvalSeedArtifact(_input?: ArenaEvalSeedExportInput): Promise<ArenaEvalSeedArtifact>;
   close?(): void;
 }
 
@@ -127,15 +127,19 @@ export class SqliteArenaStore implements ArenaStore {
       });
     }
 
-    for (const run of input.arena.criticRuns) {
+    for (const run of allCriticRuns(input.arena)) {
       this.db
         .prepare(
           `
           INSERT INTO arena_critic_runs (
             run_id, session_id, candidate_id, run_index, scorer_mode, real_scorer,
+            rubric_version, judge_prompt_version, grader_input_hash,
+            sanitization_report_json, hard_gate_findings_json, hard_gate_passed,
             blind_input_json, scores_json, overall_score, source_ref, evidence_pack_json, created_at
           ) VALUES (
             :run_id, :session_id, :candidate_id, :run_index, :scorer_mode, :real_scorer,
+            :rubric_version, :judge_prompt_version, :grader_input_hash,
+            :sanitization_report_json, :hard_gate_findings_json, :hard_gate_passed,
             :blind_input_json, :scores_json, :overall_score, :source_ref, :evidence_pack_json, :created_at
           )
           ON CONFLICT(run_id) DO UPDATE SET
@@ -144,6 +148,12 @@ export class SqliteArenaStore implements ArenaStore {
             run_index = excluded.run_index,
             scorer_mode = excluded.scorer_mode,
             real_scorer = excluded.real_scorer,
+            rubric_version = excluded.rubric_version,
+            judge_prompt_version = excluded.judge_prompt_version,
+            grader_input_hash = excluded.grader_input_hash,
+            sanitization_report_json = excluded.sanitization_report_json,
+            hard_gate_findings_json = excluded.hard_gate_findings_json,
+            hard_gate_passed = excluded.hard_gate_passed,
             blind_input_json = excluded.blind_input_json,
             scores_json = excluded.scores_json,
             overall_score = excluded.overall_score,
@@ -159,6 +169,12 @@ export class SqliteArenaStore implements ArenaStore {
           run_index: run.runIndex,
           scorer_mode: run.scorerMode,
           real_scorer: run.realScorer,
+          rubric_version: run.rubricVersion,
+          judge_prompt_version: run.judgePromptVersion,
+          grader_input_hash: run.graderInputHash,
+          sanitization_report_json: JSON.stringify(run.sanitizationReport),
+          hard_gate_findings_json: JSON.stringify(run.hardGateFindings),
+          hard_gate_passed: run.hardGatePassed ? 1 : 0,
           blind_input_json: JSON.stringify(run.blindInput),
           scores_json: JSON.stringify(run.dimensions),
           overall_score: run.overallScore,
@@ -307,10 +323,12 @@ export class SqliteArenaStore implements ArenaStore {
         ordinal INTEGER NOT NULL,
         step_id TEXT NOT NULL,
         self_test_passed INTEGER NOT NULL,
-        scores_json TEXT NOT NULL,
-        overall_score REAL NOT NULL,
-        consistency_delta REAL NOT NULL,
-        consistency_passed INTEGER NOT NULL,
+          scores_json TEXT NOT NULL,
+          overall_score REAL NOT NULL,
+          hard_gate_findings_json TEXT NOT NULL DEFAULT '[]',
+          hard_gate_passed INTEGER NOT NULL DEFAULT 1,
+          consistency_delta REAL NOT NULL,
+          consistency_passed INTEGER NOT NULL,
         archive_status TEXT NOT NULL,
         candidate_json TEXT NOT NULL,
         evidence_pack_json TEXT NOT NULL,
@@ -323,9 +341,15 @@ export class SqliteArenaStore implements ArenaStore {
         session_id TEXT NOT NULL,
         candidate_id TEXT NOT NULL,
         run_index INTEGER NOT NULL,
-        scorer_mode TEXT NOT NULL,
-        real_scorer TEXT NOT NULL,
-        blind_input_json TEXT NOT NULL,
+          scorer_mode TEXT NOT NULL,
+          real_scorer TEXT NOT NULL,
+          rubric_version TEXT NOT NULL DEFAULT '',
+          judge_prompt_version TEXT NOT NULL DEFAULT '',
+          grader_input_hash TEXT NOT NULL DEFAULT '',
+          sanitization_report_json TEXT NOT NULL DEFAULT '{}',
+          hard_gate_findings_json TEXT NOT NULL DEFAULT '[]',
+          hard_gate_passed INTEGER NOT NULL DEFAULT 1,
+          blind_input_json TEXT NOT NULL,
         scores_json TEXT NOT NULL,
         overall_score REAL NOT NULL,
         source_ref TEXT NOT NULL,
@@ -355,6 +379,29 @@ export class SqliteArenaStore implements ArenaStore {
         generated_at TEXT NOT NULL
       );
     `);
+    this.ensureColumn('arena_candidates', 'hard_gate_findings_json', "TEXT NOT NULL DEFAULT '[]'");
+    this.ensureColumn('arena_candidates', 'hard_gate_passed', 'INTEGER NOT NULL DEFAULT 1');
+    this.ensureColumn('arena_critic_runs', 'rubric_version', "TEXT NOT NULL DEFAULT ''");
+    this.ensureColumn('arena_critic_runs', 'judge_prompt_version', "TEXT NOT NULL DEFAULT ''");
+    this.ensureColumn('arena_critic_runs', 'grader_input_hash', "TEXT NOT NULL DEFAULT ''");
+    this.ensureColumn(
+      'arena_critic_runs',
+      'sanitization_report_json',
+      "TEXT NOT NULL DEFAULT '{}'"
+    );
+    this.ensureColumn('arena_critic_runs', 'hard_gate_findings_json', "TEXT NOT NULL DEFAULT '[]'");
+    this.ensureColumn('arena_critic_runs', 'hard_gate_passed', 'INTEGER NOT NULL DEFAULT 1');
+  }
+
+  private ensureColumn(tableName: string, columnName: string, definition: string): void {
+    const columns = this.db.prepare(`PRAGMA table_info(${tableName})`).all();
+    const hasColumn = columns.some((column) => {
+      const record = asRecord(column);
+      return record?.name === columnName;
+    });
+    if (!hasColumn) {
+      this.db.exec(`ALTER TABLE ${tableName} ADD COLUMN ${columnName} ${definition}`);
+    }
   }
 
   private upsertCandidate(input: {
@@ -370,11 +417,13 @@ export class SqliteArenaStore implements ArenaStore {
         `
         INSERT INTO arena_candidates (
           session_id, candidate_id, ordinal, step_id, self_test_passed,
-          scores_json, overall_score, consistency_delta, consistency_passed,
+          scores_json, overall_score, hard_gate_findings_json, hard_gate_passed,
+          consistency_delta, consistency_passed,
           archive_status, candidate_json, evidence_pack_json, created_at
         ) VALUES (
           :session_id, :candidate_id, :ordinal, :step_id, :self_test_passed,
-          :scores_json, :overall_score, :consistency_delta, :consistency_passed,
+          :scores_json, :overall_score, :hard_gate_findings_json, :hard_gate_passed,
+          :consistency_delta, :consistency_passed,
           :archive_status, :candidate_json, :evidence_pack_json, :created_at
         )
         ON CONFLICT(session_id, candidate_id) DO UPDATE SET
@@ -383,6 +432,8 @@ export class SqliteArenaStore implements ArenaStore {
           self_test_passed = excluded.self_test_passed,
           scores_json = excluded.scores_json,
           overall_score = excluded.overall_score,
+          hard_gate_findings_json = excluded.hard_gate_findings_json,
+          hard_gate_passed = excluded.hard_gate_passed,
           consistency_delta = excluded.consistency_delta,
           consistency_passed = excluded.consistency_passed,
           archive_status = excluded.archive_status,
@@ -399,6 +450,8 @@ export class SqliteArenaStore implements ArenaStore {
         self_test_passed: input.candidate.selfTest.passed ? 1 : 0,
         scores_json: JSON.stringify(input.score.dimensions),
         overall_score: input.score.overallScore,
+        hard_gate_findings_json: JSON.stringify(input.score.hardGateFindings),
+        hard_gate_passed: input.score.hardGatePassed ? 1 : 0,
         consistency_delta: input.score.consistency.delta,
         consistency_passed: input.score.consistency.passed ? 1 : 0,
         archive_status: input.archiveStatus,
@@ -434,6 +487,8 @@ export class SqliteArenaStore implements ArenaStore {
             candidate.candidateId === input.arena.winner.candidateId ? 'winner' : 'loser',
           dimensions: score.dimensions,
           overallScore: score.overallScore,
+          hardGateFindings: score.hardGateFindings,
+          hardGatePassed: score.hardGatePassed,
           consistencyDelta: score.consistency.delta,
           evidenceSourceRefs: candidate.evidencePack.evidences.map(
             (evidence) => evidence.source_ref
@@ -501,15 +556,15 @@ function readCandidateSnapshot(
 ): ArenaEvalSeedCandidateSnapshot {
   const dimensions = readScoreDimensions(scoresJson);
   const overallScore =
-    (dimensions.correctness +
-      dimensions.style +
-      dimensions.testCoverage +
-      dimensions.diffMinimality) /
-    4;
+    dimensions.correctness * W12_ARENA_SCORE_WEIGHTS.correctness +
+    dimensions.testCoverage * W12_ARENA_SCORE_WEIGHTS.testCoverage +
+    dimensions.diffMinimality * W12_ARENA_SCORE_WEIGHTS.diffMinimality +
+    dimensions.style * W12_ARENA_SCORE_WEIGHTS.style;
   return {
     candidateId,
     dimensions,
     overallScore: round2(overallScore),
+    hardGatePassed: true,
     consistencyDelta
   };
 }
@@ -555,4 +610,8 @@ function requiredNumber(value: unknown, field: string): number {
 
 function round2(value: number): number {
   return Math.round(value * 100) / 100;
+}
+
+function allCriticRuns(arena: ArenaSession): readonly ArenaCriticRun[] {
+  return [...arena.criticRuns, ...(arena.shadowCriticRuns ?? [])];
 }
