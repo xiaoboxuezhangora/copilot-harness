@@ -4,7 +4,11 @@ import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import mascotVirtualAssistant from "./assets/mascot/cow-hook-guide.png";
 import mascotStrategyAssistant from "./assets/mascot/cow-chief-presenter.png";
 import rawSnapshot from "./generated/snapshot.json";
-import type { ShowcaseJiraIssue, ShowcaseSnapshotV1 } from "./types";
+import type {
+  ShowcaseArenaSummary,
+  ShowcaseJiraIssue,
+  ShowcaseSnapshotV1,
+} from "./types";
 
 type Tone = "ok" | "warn" | "danger" | "neutral";
 
@@ -152,6 +156,12 @@ interface FleetAuditTask {
   mode: string;
   fanout: string;
   candidateId: string;
+  arenaCandidateCount: string;
+  winner: string;
+  arenaScores: string;
+  consistencyDelta: string;
+  archivePath: string;
+  scorer: string;
 }
 
 const snapshotData = rawSnapshot as unknown as ShowcaseSnapshotV1;
@@ -393,13 +403,24 @@ const auditRecords = ref<AuditRecord[]>(
 const fleetAuditTasks = computed<FleetAuditTask[]>(() =>
   snapshotData.tasks
     .filter((task) => task.fleet_session_id !== null)
-    .map((task) => ({
-      id: `${task.task_id}-${task.agent_role ?? "unknown"}-${task.candidate_id ?? "none"}`,
-      role: formatIntegrationSignal(task.agent_role),
-      mode: task.worktree_mode ?? "未接入",
-      fanout: formatFleetFanout(task.budget_usage?.fleet_fanout ?? null),
-      candidateId: task.candidate_id ?? "未接入",
-    }))
+    .map((task) => {
+      const arena = task.arena ?? null;
+      return {
+        id: `${task.task_id}-${task.agent_role ?? "unknown"}-${task.candidate_id ?? "none"}`,
+        role: formatIntegrationSignal(task.agent_role),
+        mode: task.worktree_mode ?? "未接入",
+        fanout: formatFleetFanout(task.budget_usage?.fleet_fanout ?? null),
+        candidateId: task.candidate_id ?? "未接入",
+        arenaCandidateCount: formatArenaCandidateCount(
+          arena?.candidate_count,
+        ),
+        winner: arena?.winner ?? "winner 未接入",
+        arenaScores: formatArenaScores(arena?.scores),
+        consistencyDelta: formatArenaDelta(arena?.consistency_delta),
+        archivePath: arena?.archive_path ?? "archive 未接入",
+        scorer: formatArenaScorer(arena),
+      };
+    })
     .slice(0, 6),
 );
 
@@ -1350,6 +1371,32 @@ function formatIntegrationSignal(value: string | null | undefined) {
 function formatFleetFanout(value: number | null | undefined) {
   if (value === undefined || value === null) return "fanout 未接入";
   return `fanout ${value}`;
+}
+
+function formatArenaCandidateCount(value: number | null | undefined) {
+  if (value === undefined || value === null) return "arena 未接入";
+  return `arena ${value}候选`;
+}
+
+function formatArenaScores(
+  scores: ShowcaseArenaSummary["scores"] | null | undefined,
+) {
+  if (scores === undefined || scores === null) return "四维分 未接入";
+  return [
+    `C ${scores.correctness}`,
+    `S ${scores.style}`,
+    `T ${scores.testCoverage}`,
+    `D ${scores.diffMinimality}`,
+  ].join(" / ");
+}
+
+function formatArenaDelta(value: number | null | undefined) {
+  if (value === undefined || value === null) return "delta 未接入";
+  return `delta ${value}`;
+}
+
+function formatArenaScorer(arena: ShowcaseArenaSummary | null) {
+  return `${arena?.scorer_mode ?? "mock"}/${arena?.real_scorer ?? "未接入"}`;
 }
 
 function resolveJiraRiskTone(priority: string): Tone {
@@ -2649,8 +2696,10 @@ function askStrategyAssistant(question?: string) {
               </p>
               <div v-if="fleetAuditTasks.length > 0" class="fleet-status-list">
                 <p v-for="task in fleetAuditTasks" :key="task.id">
-                  <span>{{ task.role }} · {{ task.mode }}</span>
-                  <em>{{ task.fanout }} · {{ task.candidateId }}</em>
+                  <span>{{ task.role }} · {{ task.mode }} · {{ task.scorer }}</span>
+                  <em>{{ task.fanout }} · {{ task.arenaCandidateCount }}</em>
+                  <small>{{ task.winner }} · {{ task.arenaScores }}</small>
+                  <small>{{ task.consistencyDelta }} · {{ task.archivePath }}</small>
                 </p>
               </div>
             </div>

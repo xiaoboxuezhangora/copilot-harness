@@ -1,7 +1,7 @@
 # W10 Fleet Smoke Report
 
 - Schema: `phase-2-w10-fleet-smoke@1`
-- Generated: 2026-05-12T01:22:10.042Z
+- Generated: 2026-05-14T09:30:22.541Z
 - Status: PASS
 - Mode: mock
 - Real /fleet: real_disabled
@@ -15,7 +15,7 @@
 
 - Audit log: `/Users/wangbo/own/copilot-harness/reports/audit.log`
 - Task state: `/Users/wangbo/own/copilot-harness/state/tasks/w10/w10-fleet-smoke.json`
-- Snapshot: `/Users/wangbo/own/copilot-harness/reports/showcase/2026-05-12/snapshot.json`
+- Snapshot: `/Users/wangbo/own/copilot-harness/reports/showcase/2026-05-14/snapshot.json`
 - Showcase mirror: `/Users/wangbo/own/copilot-harness/apps/showcase/src/generated/snapshot.json`
 
 ## Checks

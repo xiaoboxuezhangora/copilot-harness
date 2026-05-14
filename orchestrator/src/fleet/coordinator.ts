@@ -21,6 +21,9 @@ import type {
 import type {
   AgentDefinition,
   AgentRole,
+  ArenaCandidateScore,
+  ArenaCriticRun,
+  ArenaSession,
   BlindCriticInput,
   BlindCriticScore,
   FleetCandidate,
@@ -32,7 +35,20 @@ import type {
   MockFleetCandidateDraft,
   ReviewerDraft
 } from './types.js';
-import { W10_FLEET_PROMPT_VERSION, W10_FLEET_SESSION_SCHEMA } from './types.js';
+import {
+  W10_FLEET_PROMPT_VERSION,
+  W10_FLEET_SESSION_SCHEMA,
+  W12_ARENA_SESSION_SCHEMA
+} from './types.js';
+import {
+  ARENA_CONSISTENCY_THRESHOLD,
+  ARENA_REAL_SCORER_STATUS,
+  ARENA_SCORER_MODE,
+  MockArenaScorer,
+  toPercentScore
+} from './arenaScorer.js';
+import type { ArenaScorer } from './arenaScorer.js';
+import { DEFAULT_ARENA_ARCHIVE_PATH, SqliteArenaStore, type ArenaStore } from './arenaStore.js';
 
 export interface FleetCoordinatorOptions {
   readonly auditLogger: AuditLogger;
@@ -40,6 +56,9 @@ export interface FleetCoordinatorOptions {
   readonly budgetLimit?: BudgetLimitConfig;
   readonly policyGate?: PolicyGate;
   readonly validator?: Validator;
+  readonly arenaScorer?: ArenaScorer;
+  readonly arenaStore?: ArenaStore;
+  readonly arenaArchiveRoot?: string;
   readonly candidateFactory?: (
     plan: FleetPlan,
     fanout: number
@@ -51,6 +70,8 @@ const DEFAULT_ACCEPTANCE: readonly string[] = [
   'candidate diff remains anonymous',
   'reviewer emits draft artifact only'
 ];
+
+const MIN_ARENA_FANOUT = 3;
 
 const MOCK_CAPABILITIES: AgentCapabilityFlags = {
   canSpawn: false,
@@ -81,6 +102,9 @@ export class FleetCoordinator {
   private readonly budgetLimit: BudgetLimitConfig;
   private readonly policyGate: PolicyGate;
   private readonly validator: Validator;
+  private readonly arenaScorer: ArenaScorer;
+  private readonly arenaStore: ArenaStore | undefined;
+  private readonly arenaArchiveRoot: string;
   private readonly candidateFactory:
     | ((plan: FleetPlan, fanout: number) => readonly MockFleetCandidateDraft[])
     | undefined;
@@ -91,6 +115,9 @@ export class FleetCoordinator {
     this.budgetLimit = options.budgetLimit ?? DEFAULT_GATES_CONFIG;
     this.policyGate = options.policyGate ?? new DefaultPolicyGate();
     this.validator = options.validator ?? new DefaultValidator();
+    this.arenaScorer = options.arenaScorer ?? new MockArenaScorer();
+    this.arenaStore = options.arenaStore;
+    this.arenaArchiveRoot = options.arenaArchiveRoot ?? DEFAULT_ARENA_ARCHIVE_PATH;
     this.candidateFactory = options.candidateFactory;
   }
 
@@ -166,6 +193,65 @@ export class FleetCoordinator {
       };
     }
 
+    if (fanout < MIN_ARENA_FANOUT) {
+      const partial = {
+        schema_version: 'phase-2-w12-arena-fanout-policy@1',
+        task_id: input.taskId,
+        turn_state: 'blocked',
+        policy_decision: 'deny',
+        requested_fanout: fanout,
+        min_fanout: MIN_ARENA_FANOUT,
+        max_fanout: this.budgetLimit.maxFleetFanout ?? DEFAULT_GATES_CONFIG.maxFleetFanout,
+        partial_result: {
+          summary: 'W12 Arena requires fanout between three and five candidates.',
+          completed_steps: ['budget_gate_evaluated', 'arena_fanout_policy_evaluated'],
+          blocked_reason: `fanout=${fanout} is below W12 Arena minimum ${MIN_ARENA_FANOUT}`
+        },
+        audit_trace_id: `${fleetSessionId}:fanout-policy`
+      };
+      const evidencePack = createEvidencePack(input.taskId, input.intent, [
+        {
+          source_ref: `arena://${fleetSessionId}/fanout-policy`,
+          content: JSON.stringify(partial),
+          tool: 'fleet-coordinator'
+        }
+      ]);
+      await this.validateAndAudit(
+        buildAgentResult({
+          taskId: input.taskId,
+          parentTaskId,
+          fleetSessionId,
+          agentRole: 'planner',
+          worktreeMode: 'mock',
+          turnState: 'blocked',
+          output: JSON.stringify(partial),
+          evidencePack,
+          auditTraceId: `${fleetSessionId}:fanout-policy`,
+          policyDecision: 'deny',
+          budgetUsage
+        })
+      );
+      return {
+        schemaVersion: W10_FLEET_SESSION_SCHEMA,
+        fleetSessionId,
+        parentTaskId,
+        taskId: input.taskId,
+        turnState: 'blocked',
+        worktreeMode: 'mock',
+        realFanout: 'real_disabled',
+        realMergeRequest: 'real_disabled',
+        candidates: [],
+        criticScores: [],
+        evidencePack,
+        auditTraceId: `${fleetSessionId}:fanout-policy`,
+        blockedPartialResult: {
+          summary: partial.partial_result.summary,
+          completedSteps: partial.partial_result.completed_steps,
+          blockedReason: partial.partial_result.blocked_reason
+        }
+      };
+    }
+
     const plan = this.buildPlan(input, parentTaskId, fleetSessionId, acceptance);
     await this.validateAndAudit(
       buildAgentResult({
@@ -213,17 +299,20 @@ export class FleetCoordinator {
       };
     }
 
-    const criticScores = await this.scoreCandidates(candidates, input.intent);
+    const arena = await this.buildArenaSession(plan, candidates, input.intent);
+    const criticScores = this.toBlindCriticScores(arena);
     const reviewerDraft = await this.buildReviewerDraft(
       plan,
       candidates,
       criticScores,
+      arena,
       input.intent
     );
+    await this.saveArenaSession(arena, candidates);
     const evidencePack = mergeEvidencePacks(input.taskId, input.intent, [
       plan.evidencePack,
-      ...candidates.map((candidate) => candidate.evidencePack),
-      ...criticScores.map((score) => score.evidencePack),
+      findRequiredCandidate(candidates, arena.winner.candidateId).evidencePack,
+      arena.evidencePack,
       reviewerDraft.evidencePack
     ]);
 
@@ -239,6 +328,7 @@ export class FleetCoordinator {
       plan,
       candidates,
       criticScores,
+      arena,
       reviewerDraft,
       evidencePack,
       auditTraceId: `${fleetSessionId}:done`
@@ -353,72 +443,170 @@ export class FleetCoordinator {
     return candidates;
   }
 
-  private async scoreCandidates(
+  private async buildArenaSession(
+    plan: FleetPlan,
     candidates: readonly FleetCandidate[],
     intent: string
-  ): Promise<readonly BlindCriticScore[]> {
-    const scores: BlindCriticScore[] = [];
+  ): Promise<ArenaSession> {
+    const criticRuns: ArenaCriticRun[] = [];
+    const candidateScores: ArenaCandidateScore[] = [];
+
     for (const candidate of candidates) {
-      const blindInput: BlindCriticInput = {
-        candidateId: candidate.candidateId,
-        anonymousDiff: candidate.anonymousDiff,
-        selfTest: candidate.selfTest,
-        acceptance: candidate.acceptance
-      };
-      const score = scoreBlindInput(blindInput);
-      const evidencePack = createEvidencePack(
-        `${candidate.parentTaskId}:${candidate.candidateId}:critic`,
-        intent,
-        [
-          {
-            source_ref: `fleet://${candidate.fleetSessionId}/${candidate.candidateId}/critic`,
-            content: `Blind critic scored ${candidate.candidateId} without producer identity.`,
-            tool: 'fleet-coordinator'
-          }
-        ]
-      );
-      const criticScore: BlindCriticScore = {
+      const blindInput = toBlindCriticInput(candidate);
+      const mockScore = this.arenaScorer.scoreCandidate({
         fleetSessionId: candidate.fleetSessionId,
         parentTaskId: candidate.parentTaskId,
         candidateId: candidate.candidateId,
-        score,
-        verdict: score >= 85 ? 'accept' : score >= 65 ? 'revise' : 'reject',
-        strengths: candidate.selfTest.passed
-          ? ['self_test passed', 'acceptance criteria referenced']
-          : ['acceptance criteria referenced'],
-        risks: candidate.selfTest.passed ? [] : ['self_test did not pass'],
-        blindInput,
-        evidencePack
-      };
-      scores.push(criticScore);
-      await this.validateAndAudit(
-        buildAgentResult({
-          taskId: `${candidate.parentTaskId}:${candidate.candidateId}:critic`,
-          parentTaskId: candidate.parentTaskId,
-          fleetSessionId: candidate.fleetSessionId,
-          agentRole: 'critic',
-          candidateId: candidate.candidateId,
-          worktreeMode: 'mock',
-          turnState: 'done',
-          output: JSON.stringify(criticScore),
-          evidencePack,
-          auditTraceId: `${candidate.fleetSessionId}:${candidate.candidateId}:critic`,
-          policyDecision: 'allow'
-        })
-      );
+        blindInput
+      });
+      candidateScores.push(mockScore.candidateScore);
+
+      for (const run of mockScore.runs) {
+        const evidencePack = createEvidencePack(
+          `${candidate.parentTaskId}:${candidate.candidateId}:critic:${run.runIndex}`,
+          intent,
+          [
+            {
+              source_ref: `arena://${candidate.fleetSessionId}/${candidate.candidateId}/critic/${run.runIndex}`,
+              content: [
+                'Mock Arena critic used sanitized blind input.',
+                `scorer=${run.scorerMode}`,
+                `real_scorer=${run.realScorer}`
+              ].join(' '),
+              tool: 'fleet-coordinator'
+            }
+          ]
+        );
+        const criticRun: ArenaCriticRun = {
+          ...run,
+          evidencePack
+        };
+        criticRuns.push(criticRun);
+        await this.validateAndAudit(
+          buildAgentResult({
+            taskId: `${candidate.parentTaskId}:${candidate.candidateId}:critic:${run.runIndex}`,
+            parentTaskId: candidate.parentTaskId,
+            fleetSessionId: candidate.fleetSessionId,
+            agentRole: 'critic',
+            candidateId: candidate.candidateId,
+            worktreeMode: 'mock',
+            turnState: 'done',
+            output: JSON.stringify(criticRun),
+            evidencePack,
+            auditTraceId: `${candidate.fleetSessionId}:${candidate.candidateId}:critic:${run.runIndex}`,
+            policyDecision: 'allow'
+          })
+        );
+      }
     }
-    return scores.sort(
-      (left, right) => right.score - left.score || left.candidateId.localeCompare(right.candidateId)
-    );
+
+    const winnerScore = selectWinner(candidateScores);
+    const winner: ArenaSession['winner'] = {
+      candidateId: winnerScore.candidateId,
+      dimensions: winnerScore.dimensions,
+      overallScore: winnerScore.overallScore,
+      consistencyDelta: winnerScore.consistency.delta,
+      consistencyPassed: winnerScore.consistency.passed,
+      criticRunIds: winnerScore.criticRunIds
+    };
+    const evidencePack = createEvidencePack(`${plan.taskId}:arena`, intent, [
+      {
+        source_ref: `arena://${plan.fleetSessionId}/winner/${winner.candidateId}`,
+        content: JSON.stringify({
+          schema_version: W12_ARENA_SESSION_SCHEMA,
+          scorer_mode: ARENA_SCORER_MODE,
+          real_scorer: ARENA_REAL_SCORER_STATUS,
+          winner_candidate_id: winner.candidateId,
+          dimensions: winner.dimensions,
+          overall_score: winner.overallScore,
+          consistency_delta: winner.consistencyDelta,
+          consistency_passed: winner.consistencyPassed
+        }),
+        tool: 'fleet-coordinator'
+      }
+    ]);
+
+    return {
+      schemaVersion: W12_ARENA_SESSION_SCHEMA,
+      fleetSessionId: plan.fleetSessionId,
+      parentTaskId: plan.parentTaskId,
+      taskId: plan.taskId,
+      scorerMode: ARENA_SCORER_MODE,
+      realScorer: ARENA_REAL_SCORER_STATUS,
+      candidateCount: candidates.length,
+      consistencyThreshold: ARENA_CONSISTENCY_THRESHOLD,
+      criticRuns,
+      candidateScores,
+      winner,
+      archivePath: `${this.arenaArchiveRoot}/${plan.fleetSessionId}`,
+      evidencePack
+    };
+  }
+
+  private toBlindCriticScores(arena: ArenaSession): readonly BlindCriticScore[] {
+    return arena.candidateScores
+      .map((score): BlindCriticScore => {
+        const runs = arena.criticRuns.filter((run) => run.candidateId === score.candidateId);
+        const firstRun = runs[0];
+        if (firstRun === undefined) {
+          throw new Error(`Arena critic run missing for candidate ${score.candidateId}`);
+        }
+        const evidencePack = mergeEvidencePacks(
+          `${arena.taskId}:${score.candidateId}:critic`,
+          'W12 Arena mock scoring',
+          runs.map((run) => run.evidencePack)
+        );
+        return {
+          fleetSessionId: arena.fleetSessionId,
+          parentTaskId: arena.parentTaskId,
+          candidateId: score.candidateId,
+          score: toPercentScore(score.overallScore),
+          verdict: firstRun.verdict,
+          dimensions: score.dimensions,
+          consistencyDelta: score.consistency.delta,
+          consistencyPassed: score.consistency.passed,
+          criticRunIds: score.criticRunIds,
+          strengths: score.consistency.passed
+            ? ['consistency check passed', 'acceptance criteria referenced']
+            : ['acceptance criteria referenced'],
+          risks: score.consistency.passed ? [] : ['consistency delta exceeded threshold'],
+          blindInput: firstRun.blindInput,
+          evidencePack
+        };
+      })
+      .sort(
+        (left, right) =>
+          Number(right.consistencyPassed) - Number(left.consistencyPassed) ||
+          right.score - left.score ||
+          left.candidateId.localeCompare(right.candidateId)
+      );
+  }
+
+  private async saveArenaSession(
+    arena: ArenaSession,
+    candidates: readonly FleetCandidate[]
+  ): Promise<void> {
+    const store = this.arenaStore ?? new SqliteArenaStore();
+    try {
+      await store.saveArenaSession({
+        arena,
+        candidates
+      });
+    } finally {
+      if (this.arenaStore === undefined) store.close?.();
+    }
   }
 
   private async buildReviewerDraft(
     plan: FleetPlan,
     candidates: readonly FleetCandidate[],
     criticScores: readonly BlindCriticScore[],
+    arena: ArenaSession,
     intent: string
   ): Promise<ReviewerDraft> {
-    const selectedScore = criticScores[0];
+    const selectedScore =
+      criticScores.find((score) => score.candidateId === arena.winner.candidateId) ??
+      criticScores[0];
     const selectedCandidateId =
       selectedScore?.candidateId ?? candidates[0]?.candidateId ?? 'candidate-1';
     const policyDecision = this.policyGate.evaluate({
@@ -433,8 +621,8 @@ export class FleetCoordinator {
     });
     const evidencePack = createEvidencePack(`${plan.taskId}:reviewer`, intent, [
       {
-        source_ref: `fleet://${plan.fleetSessionId}/reviewer-draft`,
-        content: 'Reviewer produced draft MR artifact only; real MR creation is disabled.',
+        source_ref: `arena://${plan.fleetSessionId}/winner/${selectedCandidateId}/reviewer-draft`,
+        content: 'Reviewer draft includes only the Arena winner; losers remain archived.',
         tool: 'fleet-coordinator'
       }
     ]);
@@ -445,6 +633,11 @@ export class FleetCoordinator {
       title: `Draft MR for ${plan.parentTaskId}`,
       body: [
         `Selected candidate: ${selectedCandidateId}`,
+        `Arena scorer: ${arena.scorerMode}/${arena.realScorer}`,
+        `Candidate count: ${arena.candidateCount}`,
+        `Winner score: ${formatDimensions(arena.winner.dimensions)}`,
+        `Consistency delta: ${arena.winner.consistencyDelta}`,
+        `Loser archive: ${arena.archivePath}`,
         `Planner steps: ${plan.steps.length}`,
         'Real push: real_disabled',
         'Real GitLab MR creation: real_disabled'
@@ -539,11 +732,66 @@ function toCandidateAuditPayload(candidate: FleetCandidate): Readonly<{
   };
 }
 
-function scoreBlindInput(input: BlindCriticInput): number {
-  const selfTestScore = input.selfTest.passed ? 35 : 0;
-  const acceptanceScore = Math.min(input.acceptance.length * 15, 45);
-  const diffScore = input.anonymousDiff.trim().length > 0 ? 20 : 0;
-  return selfTestScore + acceptanceScore + diffScore;
+function toBlindCriticInput(candidate: FleetCandidate): BlindCriticInput {
+  return {
+    anonymousDiff: sanitizeBlindDiff(candidate.anonymousDiff),
+    selfTest: {
+      command: sanitizeBlindText(candidate.selfTest.command),
+      passed: candidate.selfTest.passed,
+      summary: sanitizeBlindText(candidate.selfTest.summary)
+    },
+    acceptance: candidate.acceptance.map(sanitizeBlindText)
+  };
+}
+
+function sanitizeBlindDiff(value: string): string {
+  return sanitizeBlindText(value)
+    .replace(/\b(?:a|b)\/[^\s]+/g, '[redacted_path]')
+    .replace(/^diff --(?:git|mock)\s+.+$/gim, 'diff --blind [redacted_path]')
+    .replace(/^---\s+.+$/gim, '--- [redacted_path]')
+    .replace(/^\+\+\+\s+.+$/gim, '+++ [redacted_path]');
+}
+
+function sanitizeBlindText(value: string): string {
+  return value
+    .replace(/\bproducer_agent\s*[:=]\s*[^\s,;]+/gi, '[redacted_identity]')
+    .replace(/\bworktree[-_/]?[a-z0-9][a-z0-9._/-]*/gi, '[redacted_identity]')
+    .replace(/\bcandidate[-_\s]?\d+\b/gi, 'candidate-[redacted]')
+    .replace(/\bproducer[-_ ]?agent\b/gi, '[redacted_identity]')
+    .replace(/(?:[\w.-]+\/)+[\w.-]+(?:\.[A-Za-z0-9]+)?/g, '[redacted_path]');
+}
+
+function selectWinner(scores: readonly ArenaCandidateScore[]): ArenaCandidateScore {
+  const selected = [...scores].sort(
+    (left, right) =>
+      Number(right.consistency.passed) - Number(left.consistency.passed) ||
+      right.overallScore - left.overallScore ||
+      left.candidateId.localeCompare(right.candidateId)
+  )[0];
+  if (selected === undefined) {
+    throw new Error('Arena winner cannot be selected without candidate scores');
+  }
+  return selected;
+}
+
+function findRequiredCandidate(
+  candidates: readonly FleetCandidate[],
+  candidateId: string
+): FleetCandidate {
+  const candidate = candidates.find((item) => item.candidateId === candidateId);
+  if (candidate === undefined) {
+    throw new Error(`Fleet candidate not found: ${candidateId}`);
+  }
+  return candidate;
+}
+
+function formatDimensions(dimensions: ArenaCandidateScore['dimensions']): string {
+  return [
+    `correctness=${dimensions.correctness}`,
+    `style=${dimensions.style}`,
+    `testCoverage=${dimensions.testCoverage}`,
+    `diffMinimality=${dimensions.diffMinimality}`
+  ].join(', ');
 }
 
 function buildAgentResult(input: {

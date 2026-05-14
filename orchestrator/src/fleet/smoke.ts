@@ -5,9 +5,11 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { AuditLogger } from '../audit/index.js';
 import { DEFAULT_MODEL, type EvidencePack } from '../runtime/index.js';
 import { FleetCoordinator } from './coordinator.js';
+import { SqliteArenaStore } from './arenaStore.js';
 import {
   W10_FLEET_PROMPT_VERSION,
   type AgentRole,
+  type ArenaScoreDimensions,
   type FleetSession,
   type ReviewerDraft
 } from './index.js';
@@ -104,7 +106,18 @@ interface W10FleetTaskState {
     readonly candidate_count: number;
     readonly critic_score_count: number;
     readonly selected_candidate_id: string | null;
+    readonly arena: ArenaTaskStateSummary | null;
   };
+}
+
+interface ArenaTaskStateSummary {
+  readonly candidate_count: number;
+  readonly winner: string;
+  readonly scores: ArenaScoreDimensions;
+  readonly consistency_delta: number;
+  readonly archive_path: string;
+  readonly scorer_mode: 'mock';
+  readonly real_scorer: '未接入';
 }
 
 export async function runW10FleetSmoke(options: RunSmokeOptions): Promise<W10FleetSmokeRunResult> {
@@ -112,30 +125,39 @@ export async function runW10FleetSmoke(options: RunSmokeOptions): Promise<W10Fle
   const generatedAt = options.generatedAt ?? new Date().toISOString();
   const evalDir = join(repoRoot, 'orchestrator', 'eval');
   const auditLogPath = join(repoRoot, 'reports', 'audit.log');
+  const arenaStore = new SqliteArenaStore({
+    sqlitePath: join(repoRoot, 'reports', 'arena.sqlite')
+  });
   const taskStatePath = join(repoRoot, 'state', 'tasks', 'w10', 'w10-fleet-smoke.json');
   const fleetSessionId = 'fleet-w10-fleet-smoke';
 
   await resetFleetAuditRecords(auditLogPath, fleetSessionId);
   const coordinator = new FleetCoordinator({
-    auditLogger: new AuditLogger(auditLogPath)
+    auditLogger: new AuditLogger(auditLogPath),
+    arenaStore,
+    arenaArchiveRoot: join(repoRoot, 'reports', 'arena', 'archive')
   });
-  const session = await coordinator.run({
-    taskId: 'w10-fleet-smoke',
-    parentTaskId: 'w10-fleet-smoke',
-    prompt: 'Run W10 deterministic mock fleet smoke without real fanout.',
-    intent: 'W10 fleet smoke',
-    allowedFiles: [
-      'orchestrator/src/fleet/types.ts',
-      'orchestrator/src/fleet/coordinator.ts',
-      'orchestrator/src/fleet/smoke.ts'
-    ],
-    acceptance: [
-      'planner emits bounded atomic steps',
-      'implementer emits anonymous mock diff',
-      'reviewer emits draft artifact only'
-    ],
-    fanout: 3
-  });
+  const session = await coordinator
+    .run({
+      taskId: 'w10-fleet-smoke',
+      parentTaskId: 'w10-fleet-smoke',
+      prompt: 'Run W10 deterministic mock fleet smoke without real fanout.',
+      intent: 'W10 fleet smoke',
+      allowedFiles: [
+        'orchestrator/src/fleet/types.ts',
+        'orchestrator/src/fleet/coordinator.ts',
+        'orchestrator/src/fleet/smoke.ts'
+      ],
+      acceptance: [
+        'planner emits bounded atomic steps',
+        'implementer emits anonymous mock diff',
+        'reviewer emits draft artifact only'
+      ],
+      fanout: 3
+    })
+    .finally(() => {
+      arenaStore.close();
+    });
 
   await writeTaskState(taskStatePath, session);
 
@@ -324,7 +346,19 @@ async function writeTaskState(path: string, session: FleetSession): Promise<void
       real_merge_request: session.realMergeRequest,
       candidate_count: session.candidates.length,
       critic_score_count: session.criticScores.length,
-      selected_candidate_id: session.reviewerDraft?.selectedCandidateId ?? null
+      selected_candidate_id: session.reviewerDraft?.selectedCandidateId ?? null,
+      arena:
+        session.arena === undefined
+          ? null
+          : {
+              candidate_count: session.arena.candidateCount,
+              winner: session.arena.winner.candidateId,
+              scores: session.arena.winner.dimensions,
+              consistency_delta: session.arena.winner.consistencyDelta,
+              archive_path: session.arena.archivePath,
+              scorer_mode: session.arena.scorerMode,
+              real_scorer: session.arena.realScorer
+            }
     }
   };
   await mkdir(dirname(path), { recursive: true });

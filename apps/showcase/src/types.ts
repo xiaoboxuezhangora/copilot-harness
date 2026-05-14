@@ -38,6 +38,22 @@ export interface ShowcaseTask {
   } | null;
   evidence_pack_size: number | null;
   memory_hit_count: number | null;
+  arena?: ShowcaseArenaSummary | null;
+}
+
+export interface ShowcaseArenaSummary {
+  candidate_count: number | null;
+  winner: string | null;
+  scores: {
+    correctness: number;
+    style: number;
+    testCoverage: number;
+    diffMinimality: number;
+  } | null;
+  consistency_delta: number | null;
+  archive_path: string | null;
+  scorer_mode: "mock" | "未接入" | null;
+  real_scorer: "未接入" | null;
 }
 
 export interface ShowcaseMcpCall {

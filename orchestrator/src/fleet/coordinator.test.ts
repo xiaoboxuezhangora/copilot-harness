@@ -5,7 +5,14 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import { AuditLogger } from '../audit/index.js';
-import { FleetCoordinator } from './index.js';
+import {
+  FleetCoordinator,
+  MockArenaScorer,
+  SqliteArenaStore,
+  type ArenaMockScoreInput,
+  type ArenaMockScoreResult,
+  type ArenaScorer
+} from './index.js';
 import { buildW10FleetSmokeReport } from './smoke.js';
 import type { MockFleetCandidateDraft } from './index.js';
 
@@ -42,6 +49,13 @@ describe('FleetCoordinator', () => {
       expect(session.plan?.steps).toHaveLength(3);
       expect(session.candidates).toHaveLength(3);
       expect(session.criticScores).toHaveLength(3);
+      expect(session.arena).toMatchObject({
+        candidateCount: 3,
+        scorerMode: 'mock',
+        realScorer: '未接入'
+      });
+      expect(session.arena?.criticRuns).toHaveLength(6);
+      expect(session.arena?.winner.consistencyPassed).toBe(true);
       expect(session.reviewerDraft).toMatchObject({
         isDraft: true,
         pushed: false,
@@ -52,7 +66,37 @@ describe('FleetCoordinator', () => {
       expect(auditLog).toContain('"agentRole":"implementer"');
       expect(auditLog).toContain('"agentRole":"critic"');
       expect(auditLog).toContain('"agentRole":"reviewer"');
-      expect(auditLines).toHaveLength(8);
+      expect(auditLines).toHaveLength(11);
+    });
+  });
+
+  it('runs fanout=5 under BudgetGate cap', async () => {
+    await withFleetCoordinator(async (coordinator) => {
+      const session = await coordinator.run({
+        ...baseInput,
+        fanout: 5
+      });
+
+      expect(session.turnState).toBe('done');
+      expect(session.candidates).toHaveLength(5);
+      expect(session.arena?.candidateCount).toBe(5);
+      expect(session.arena?.criticRuns).toHaveLength(10);
+    });
+  });
+
+  it('blocks fanout below three before mock implementers start', async () => {
+    await withFleetCoordinator(async (coordinator, auditPath) => {
+      const session = await coordinator.run({
+        ...baseInput,
+        fanout: 2
+      });
+      const auditLog = await readFile(auditPath, 'utf8');
+
+      expect(session.turnState).toBe('blocked');
+      expect(session.candidates).toHaveLength(0);
+      expect(session.blockedPartialResult?.blockedReason).toContain('below W12 Arena minimum');
+      expect(session.evidencePack.evidences[0]?.source_ref).toContain('fanout-policy');
+      expect(auditLog).toContain('"policyDecision":"deny"');
     });
   });
 
@@ -103,16 +147,103 @@ describe('FleetCoordinator', () => {
     );
   });
 
-  it('keeps critic blind input free of producer_agent', async () => {
+  it('keeps critic blind input free of producer_agent, worktree id, and file identity', async () => {
+    const identityLeakDrafts = ((): readonly MockFleetCandidateDraft[] => [
+      {
+        stepId: 'step-1',
+        filesTouched: ['orchestrator/src/fleet/types.ts'],
+        anonymousDiff: [
+          'diff --mock a/orchestrator/src/fleet/candidate-7.ts b/worktree-alpha/candidate-7.ts',
+          '+ producer_agent=implementer-a touched worktree-alpha/candidate-7.ts'
+        ].join('\n'),
+        selfTest: {
+          command: 'mock-self-test worktree-alpha',
+          passed: true,
+          summary: 'producer_agent=implementer-a passed for candidate-7.ts'
+        }
+      },
+      {
+        stepId: 'step-2',
+        filesTouched: ['orchestrator/src/fleet/coordinator.ts'],
+        anonymousDiff:
+          'diff --mock a/orchestrator/src/fleet/coordinator.ts b/orchestrator/src/fleet/coordinator.ts',
+        selfTest: {
+          command: 'mock-self-test 2',
+          passed: true,
+          summary: 'passed'
+        }
+      },
+      {
+        stepId: 'step-3',
+        filesTouched: ['orchestrator/src/gates/index.ts'],
+        anonymousDiff:
+          'diff --mock a/orchestrator/src/gates/index.ts b/orchestrator/src/gates/index.ts',
+        selfTest: {
+          command: 'mock-self-test 3',
+          passed: true,
+          summary: 'passed'
+        }
+      }
+    ])();
+
+    await withFleetCoordinator(
+      async (coordinator) => {
+        const session = await coordinator.run(baseInput);
+        const criticInput = JSON.stringify(
+          session.criticScores.map((score) => score.blindInput)
+        );
+
+        expect(criticInput).not.toContain('producer_agent');
+        expect(criticInput).not.toContain('worktree-alpha');
+        expect(criticInput).not.toContain('candidate-7.ts');
+        expect(criticInput).not.toContain('orchestrator/src/fleet');
+        expect(criticInput).toContain('anonymousDiff');
+        expect(criticInput).toContain('selfTest');
+        expect(criticInput).toContain('acceptance');
+      },
+      {
+        candidateFactory: () => identityLeakDrafts
+      }
+    );
+  });
+
+  it('puts only the winner into final Evidence Pack and archives losers', async () => {
     await withFleetCoordinator(async (coordinator) => {
       const session = await coordinator.run(baseInput);
-      const criticInput = JSON.stringify(session.criticScores.map((score) => score.blindInput));
+      const criticInput = JSON.stringify(
+        session.criticScores.map((score) => score.blindInput)
+      );
+      const winner = session.arena?.winner.candidateId;
+      const loser = session.candidates.find((candidate) => candidate.candidateId !== winner);
+      const sourceRefs = session.evidencePack.evidences.map((evidence) => evidence.source_ref);
 
-      expect(criticInput).not.toContain('producer_agent');
+      expect(winner).toBe(session.reviewerDraft?.selectedCandidateId);
+      expect(sourceRefs.some((sourceRef) => sourceRef.includes(`/winner/${winner}`))).toBe(
+        true
+      );
+      expect(JSON.stringify(session.evidencePack)).not.toContain(loser?.candidateId);
+      expect(session.arena?.archivePath).toContain(session.fleetSessionId);
+      const archiveJson = await readFile(`${session.arena?.archivePath}/session.json`, 'utf8');
+      expect(archiveJson).toContain('"status": "pending_review"');
+      expect(archiveJson).toContain('"archiveStatus": "loser"');
       expect(criticInput).toContain('anonymousDiff');
-      expect(criticInput).toContain('selfTest');
-      expect(criticInput).toContain('acceptance');
     });
+  });
+
+  it('allows scorer injection while keeping mock mode as the default scorer contract', async () => {
+    const scorer = new CountingArenaScorer();
+    await withFleetCoordinator(
+      async (coordinator) => {
+        const session = await coordinator.run(baseInput);
+
+        expect(scorer.calls).toBe(3);
+        expect(session.arena?.scorerMode).toBe('mock');
+        expect(session.arena?.realScorer).toBe('未接入');
+      },
+      {
+        arenaScorer: scorer
+      }
+    );
   });
 
   it('reviewer only produces a draft artifact and leaves real MR disabled', async () => {
@@ -128,6 +259,8 @@ describe('FleetCoordinator', () => {
         worktreeMode: 'real_disabled'
       });
       expect(session.reviewerDraft?.body).toContain('Real GitLab MR creation: real_disabled');
+      expect(session.reviewerDraft?.body).toContain('Arena scorer: mock/未接入');
+      expect(session.reviewerDraft?.body).toContain('Loser archive:');
       expect(session.realMergeRequest).toBe('real_disabled');
     });
   });
@@ -165,21 +298,40 @@ describe('FleetCoordinator', () => {
 });
 
 async function withFleetCoordinator(
-  callback: (coordinator: FleetCoordinator, auditPath: string) => Promise<void>,
+  callback: (coordinator: FleetCoordinator, auditPath: string, arenaPath: string) => Promise<void>,
   options: Omit<ConstructorParameters<typeof FleetCoordinator>[0], 'auditLogger'> = {}
 ): Promise<void> {
   const tempDir = await mkdtemp(join(tmpdir(), 'fleet-audit-'));
+  const arenaArchiveRoot = options.arenaArchiveRoot ?? join(tempDir, 'arena-archive');
+  const ownedArenaStore =
+    options.arenaStore === undefined
+      ? new SqliteArenaStore({ sqlitePath: join(tempDir, 'arena.sqlite') })
+      : undefined;
   try {
     const auditPath = join(tempDir, 'audit.log');
+    const arenaPath = join(tempDir, 'arena.sqlite');
     const coordinator = new FleetCoordinator({
       ...options,
-      auditLogger: new AuditLogger(auditPath)
+      auditLogger: new AuditLogger(auditPath),
+      arenaArchiveRoot,
+      ...(ownedArenaStore !== undefined ? { arenaStore: ownedArenaStore } : {})
     });
-    await callback(coordinator, auditPath);
+    await callback(coordinator, auditPath, arenaPath);
   } finally {
+    ownedArenaStore?.close();
     await rm(tempDir, {
       force: true,
       recursive: true
     });
+  }
+}
+
+class CountingArenaScorer implements ArenaScorer {
+  private readonly delegate = new MockArenaScorer();
+  calls = 0;
+
+  scoreCandidate(input: ArenaMockScoreInput): ArenaMockScoreResult {
+    this.calls += 1;
+    return this.delegate.scoreCandidate(input);
   }
 }

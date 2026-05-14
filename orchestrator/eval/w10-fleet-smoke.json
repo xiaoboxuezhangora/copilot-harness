@@ -1,7 +1,7 @@
 {
   "schema_version": "phase-2-w10-fleet-smoke@1",
   "version": 1,
-  "generated_at": "2026-05-12T01:22:10.042Z",
+  "generated_at": "2026-05-14T09:30:22.541Z",
   "status": "pass",
   "mode": "mock",
   "real_fanout": "real_disabled",
@@ -22,7 +22,7 @@
   },
   "audit_log_path": "/Users/wangbo/own/copilot-harness/reports/audit.log",
   "task_state_path": "/Users/wangbo/own/copilot-harness/state/tasks/w10/w10-fleet-smoke.json",
-  "snapshot_path": "/Users/wangbo/own/copilot-harness/reports/showcase/2026-05-12/snapshot.json",
+  "snapshot_path": "/Users/wangbo/own/copilot-harness/reports/showcase/2026-05-14/snapshot.json",
   "mirrored_snapshot_path": "/Users/wangbo/own/copilot-harness/apps/showcase/src/generated/snapshot.json",
   "checks": [
     {

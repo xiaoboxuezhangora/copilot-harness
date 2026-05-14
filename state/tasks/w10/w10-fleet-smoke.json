@@ -10,7 +10,7 @@
   "parent_task_id": "w10-fleet-smoke",
   "agent_role": "reviewer",
   "worktree_mode": "real_disabled",
-  "evidence_pack_size": 8,
+  "evidence_pack_size": 4,
   "memory_hit_count": 0,
   "evidencePack": {
     "taskId": "w10-fleet-smoke",
@@ -27,33 +27,13 @@
         "tool": "fleet-coordinator"
       },
       {
-        "source_ref": "fleet://fleet-w10-fleet-smoke/candidate-2",
-        "content": "Mock implementer produced anonymous diff for step-2.",
+        "source_ref": "arena://fleet-w10-fleet-smoke/winner/candidate-1",
+        "content": "{\"schema_version\":\"phase-2-w12-arena-session@1\",\"scorer_mode\":\"mock\",\"real_scorer\":\"未接入\",\"winner_candidate_id\":\"candidate-1\",\"dimensions\":{\"correctness\":4.5,\"style\":4.05,\"testCoverage\":4.25,\"diffMinimality\":4.5},\"overall_score\":4.33,\"consistency_delta\":0.1,\"consistency_passed\":true}",
         "tool": "fleet-coordinator"
       },
       {
-        "source_ref": "fleet://fleet-w10-fleet-smoke/candidate-3",
-        "content": "Mock implementer produced anonymous diff for step-3.",
-        "tool": "fleet-coordinator"
-      },
-      {
-        "source_ref": "fleet://fleet-w10-fleet-smoke/candidate-1/critic",
-        "content": "Blind critic scored candidate-1 without producer identity.",
-        "tool": "fleet-coordinator"
-      },
-      {
-        "source_ref": "fleet://fleet-w10-fleet-smoke/candidate-2/critic",
-        "content": "Blind critic scored candidate-2 without producer identity.",
-        "tool": "fleet-coordinator"
-      },
-      {
-        "source_ref": "fleet://fleet-w10-fleet-smoke/candidate-3/critic",
-        "content": "Blind critic scored candidate-3 without producer identity.",
-        "tool": "fleet-coordinator"
-      },
-      {
-        "source_ref": "fleet://fleet-w10-fleet-smoke/reviewer-draft",
-        "content": "Reviewer produced draft MR artifact only; real MR creation is disabled.",
+        "source_ref": "arena://fleet-w10-fleet-smoke/winner/candidate-1/reviewer-draft",
+        "content": "Reviewer draft includes only the Arena winner; losers remain archived.",
         "tool": "fleet-coordinator"
       }
     ],
@@ -65,6 +45,20 @@
     "real_merge_request": "real_disabled",
     "candidate_count": 3,
     "critic_score_count": 3,
-    "selected_candidate_id": "candidate-1"
+    "selected_candidate_id": "candidate-1",
+    "arena": {
+      "candidate_count": 3,
+      "winner": "candidate-1",
+      "scores": {
+        "correctness": 4.5,
+        "style": 4.05,
+        "testCoverage": 4.25,
+        "diffMinimality": 4.5
+      },
+      "consistency_delta": 0.1,
+      "archive_path": "/Users/wangbo/own/copilot-harness/reports/arena/archive/fleet-w10-fleet-smoke",
+      "scorer_mode": "mock",
+      "real_scorer": "未接入"
+    }
   }
 }

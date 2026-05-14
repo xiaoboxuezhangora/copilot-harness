@@ -1,8 +1,8 @@
 {
   "schemaVersion": "ShowcaseSnapshotV1",
   "metadata": {
-    "generatedAt": "2026-05-12T01:22:10.090Z",
-    "snapshot_date": "2026-05-12",
+    "generatedAt": "2026-05-14T09:30:22.619Z",
+    "snapshot_date": "2026-05-14",
     "sourceFiles": [
       "orchestrator/eval/report.json",
       "reports/audit.log",
@@ -72,100 +72,148 @@
       "status": "present"
     },
     "tasks.fleet_session_id": {
-      "present": 9,
+      "present": 12,
       "missing": 24,
-      "coverage": 0.273,
+      "coverage": 0.333,
       "status": "partial"
     },
     "tasks.parent_task_id": {
-      "present": 9,
+      "present": 12,
       "missing": 24,
-      "coverage": 0.273,
+      "coverage": 0.333,
       "status": "partial"
     },
     "tasks.agent_role": {
-      "present": 9,
+      "present": 12,
       "missing": 24,
-      "coverage": 0.273,
+      "coverage": 0.333,
       "status": "partial"
     },
     "tasks.candidate_id": {
-      "present": 7,
+      "present": 10,
       "missing": 26,
-      "coverage": 0.212,
+      "coverage": 0.278,
       "status": "partial"
     },
     "tasks.worktree_mode": {
-      "present": 9,
+      "present": 12,
       "missing": 24,
-      "coverage": 0.273,
+      "coverage": 0.333,
       "status": "partial"
     },
     "tasks.task_id": {
-      "present": 33,
+      "present": 36,
       "missing": 0,
       "coverage": 1,
       "status": "present"
     },
     "tasks.turn_state": {
-      "present": 33,
+      "present": 36,
       "missing": 0,
       "coverage": 1,
       "status": "present"
     },
     "tasks.execution_mode": {
       "present": 23,
-      "missing": 10,
-      "coverage": 0.697,
+      "missing": 13,
+      "coverage": 0.639,
       "status": "partial"
     },
     "tasks.role": {
       "present": 23,
-      "missing": 10,
-      "coverage": 0.697,
+      "missing": 13,
+      "coverage": 0.639,
       "status": "partial"
     },
     "tasks.prompt_version": {
-      "present": 32,
+      "present": 35,
       "missing": 1,
-      "coverage": 0.97,
+      "coverage": 0.972,
       "status": "partial"
     },
     "tasks.model": {
-      "present": 33,
+      "present": 36,
       "missing": 0,
       "coverage": 1,
       "status": "present"
     },
     "tasks.runtime": {
-      "present": 33,
+      "present": 36,
       "missing": 0,
       "coverage": 1,
       "status": "present"
     },
     "tasks.budget_usage": {
       "present": 7,
-      "missing": 26,
-      "coverage": 0.212,
+      "missing": 29,
+      "coverage": 0.194,
       "status": "partial"
     },
     "tasks.tool_policy_hit": {
-      "present": 11,
+      "present": 14,
       "missing": 22,
-      "coverage": 0.333,
+      "coverage": 0.389,
       "status": "partial"
     },
     "tasks.evidence_pack_size": {
-      "present": 33,
+      "present": 36,
       "missing": 0,
       "coverage": 1,
       "status": "present"
     },
     "tasks.memory_hit_count": {
       "present": 23,
-      "missing": 10,
-      "coverage": 0.697,
+      "missing": 13,
+      "coverage": 0.639,
       "status": "partial"
+    },
+    "tasks.arena": {
+      "present": 1,
+      "missing": 35,
+      "coverage": 0.028,
+      "status": "partial"
+    },
+    "tasks.arena.candidate_count": {
+      "present": 1,
+      "missing": 35,
+      "coverage": 0.028,
+      "status": "partial"
+    },
+    "tasks.arena.winner": {
+      "present": 1,
+      "missing": 35,
+      "coverage": 0.028,
+      "status": "partial"
+    },
+    "tasks.arena.scores": {
+      "present": 1,
+      "missing": 35,
+      "coverage": 0.028,
+      "status": "partial"
+    },
+    "tasks.arena.consistency_delta": {
+      "present": 1,
+      "missing": 35,
+      "coverage": 0.028,
+      "status": "partial"
+    },
+    "tasks.arena.archive_path": {
+      "present": 1,
+      "missing": 35,
+      "coverage": 0.028,
+      "status": "partial"
+    },
+    "tasks.arena.scorer_mode": {
+      "present": 1,
+      "missing": 35,
+      "coverage": 0.028,
+      "status": "partial"
+    },
+    "tasks.arena.real_scorer": {
+      "present": 0,
+      "missing": 36,
+      "coverage": 0,
+      "status": "missing"
     },
     "mcpCalls.task_id": {
       "present": 11,
@@ -228,73 +276,73 @@
       "status": "partial"
     },
     "evidencePacks.task_id": {
-      "present": 33,
+      "present": 36,
       "missing": 0,
       "coverage": 1,
       "status": "present"
     },
     "evidencePacks.source_refs": {
       "present": 23,
-      "missing": 10,
-      "coverage": 0.697,
+      "missing": 13,
+      "coverage": 0.639,
       "status": "partial"
     },
     "evidencePacks.confidence": {
       "present": 23,
-      "missing": 10,
-      "coverage": 0.697,
+      "missing": 13,
+      "coverage": 0.639,
       "status": "partial"
     },
     "evidencePacks.assumptions": {
       "present": 22,
-      "missing": 11,
-      "coverage": 0.667,
+      "missing": 14,
+      "coverage": 0.611,
       "status": "partial"
     },
     "evidencePacks.evidence_count": {
-      "present": 33,
+      "present": 36,
       "missing": 0,
       "coverage": 1,
       "status": "present"
     },
     "routeChains.task_id": {
-      "present": 33,
+      "present": 36,
       "missing": 0,
       "coverage": 1,
       "status": "present"
     },
     "routeChains.task_class": {
-      "present": 33,
+      "present": 36,
       "missing": 0,
       "coverage": 1,
       "status": "present"
     },
     "routeChains.execution_mode": {
       "present": 23,
-      "missing": 10,
-      "coverage": 0.697,
+      "missing": 13,
+      "coverage": 0.639,
       "status": "partial"
     },
     "routeChains.role": {
       "present": 23,
-      "missing": 10,
-      "coverage": 0.697,
+      "missing": 13,
+      "coverage": 0.639,
       "status": "partial"
     },
     "routeChains.model_tier": {
-      "present": 33,
+      "present": 36,
       "missing": 0,
       "coverage": 1,
       "status": "present"
     },
     "routeChains.concrete_model": {
-      "present": 33,
+      "present": 36,
       "missing": 0,
       "coverage": 1,
       "status": "present"
     },
     "routeChains.route_chain": {
-      "present": 33,
+      "present": 36,
       "missing": 0,
       "coverage": 1,
       "status": "present"
@@ -346,8 +394,22 @@
       "runtime": "contract_stub",
       "budget_usage": null,
       "tool_policy_hit": null,
-      "evidence_pack_size": 8,
-      "memory_hit_count": 0
+      "evidence_pack_size": 4,
+      "memory_hit_count": 0,
+      "arena": {
+        "candidate_count": 3,
+        "winner": "candidate-1",
+        "scores": {
+          "correctness": 4.5,
+          "style": 4.05,
+          "testCoverage": 4.25,
+          "diffMinimality": 4.5
+        },
+        "consistency_delta": 0.1,
+        "archive_path": "/Users/wangbo/own/copilot-harness/reports/arena/archive/fleet-w10-fleet-smoke",
+        "scorer_mode": "mock",
+        "real_scorer": "未接入"
+      }
     },
     {
       "task_id": "w10-fleet-smoke:candidate-1",
@@ -375,10 +437,11 @@
         "hit_count": 0
       },
       "evidence_pack_size": 0,
-      "memory_hit_count": null
+      "memory_hit_count": null,
+      "arena": null
     },
     {
-      "task_id": "w10-fleet-smoke:candidate-1:critic",
+      "task_id": "w10-fleet-smoke:candidate-1:critic:1",
       "fleet_session_id": "fleet-w10-fleet-smoke",
       "parent_task_id": "w10-fleet-smoke",
       "agent_role": "critic",
@@ -396,7 +459,30 @@
         "hit_count": 0
       },
       "evidence_pack_size": 0,
-      "memory_hit_count": null
+      "memory_hit_count": null,
+      "arena": null
+    },
+    {
+      "task_id": "w10-fleet-smoke:candidate-1:critic:2",
+      "fleet_session_id": "fleet-w10-fleet-smoke",
+      "parent_task_id": "w10-fleet-smoke",
+      "agent_role": "critic",
+      "candidate_id": "candidate-1",
+      "worktree_mode": "mock",
+      "turn_state": "done",
+      "execution_mode": "unknown",
+      "role": "unknown",
+      "prompt_version": "fleet-mock-control-plane@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "contract_stub",
+      "budget_usage": null,
+      "tool_policy_hit": {
+        "decision": "allow",
+        "hit_count": 0
+      },
+      "evidence_pack_size": 0,
+      "memory_hit_count": null,
+      "arena": null
     },
     {
       "task_id": "w10-fleet-smoke:candidate-2",
@@ -424,10 +510,11 @@
         "hit_count": 0
       },
       "evidence_pack_size": 0,
-      "memory_hit_count": null
+      "memory_hit_count": null,
+      "arena": null
     },
     {
-      "task_id": "w10-fleet-smoke:candidate-2:critic",
+      "task_id": "w10-fleet-smoke:candidate-2:critic:1",
       "fleet_session_id": "fleet-w10-fleet-smoke",
       "parent_task_id": "w10-fleet-smoke",
       "agent_role": "critic",
@@ -445,7 +532,30 @@
         "hit_count": 0
       },
       "evidence_pack_size": 0,
-      "memory_hit_count": null
+      "memory_hit_count": null,
+      "arena": null
+    },
+    {
+      "task_id": "w10-fleet-smoke:candidate-2:critic:2",
+      "fleet_session_id": "fleet-w10-fleet-smoke",
+      "parent_task_id": "w10-fleet-smoke",
+      "agent_role": "critic",
+      "candidate_id": "candidate-2",
+      "worktree_mode": "mock",
+      "turn_state": "done",
+      "execution_mode": "unknown",
+      "role": "unknown",
+      "prompt_version": "fleet-mock-control-plane@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "contract_stub",
+      "budget_usage": null,
+      "tool_policy_hit": {
+        "decision": "allow",
+        "hit_count": 0
+      },
+      "evidence_pack_size": 0,
+      "memory_hit_count": null,
+      "arena": null
     },
     {
       "task_id": "w10-fleet-smoke:candidate-3",
@@ -473,10 +583,11 @@
         "hit_count": 0
       },
       "evidence_pack_size": 0,
-      "memory_hit_count": null
+      "memory_hit_count": null,
+      "arena": null
     },
     {
-      "task_id": "w10-fleet-smoke:candidate-3:critic",
+      "task_id": "w10-fleet-smoke:candidate-3:critic:1",
       "fleet_session_id": "fleet-w10-fleet-smoke",
       "parent_task_id": "w10-fleet-smoke",
       "agent_role": "critic",
@@ -494,7 +605,30 @@
         "hit_count": 0
       },
       "evidence_pack_size": 0,
-      "memory_hit_count": null
+      "memory_hit_count": null,
+      "arena": null
+    },
+    {
+      "task_id": "w10-fleet-smoke:candidate-3:critic:2",
+      "fleet_session_id": "fleet-w10-fleet-smoke",
+      "parent_task_id": "w10-fleet-smoke",
+      "agent_role": "critic",
+      "candidate_id": "candidate-3",
+      "worktree_mode": "mock",
+      "turn_state": "done",
+      "execution_mode": "unknown",
+      "role": "unknown",
+      "prompt_version": "fleet-mock-control-plane@0.1",
+      "model": "gpt-5-mini",
+      "runtime": "contract_stub",
+      "budget_usage": null,
+      "tool_policy_hit": {
+        "decision": "allow",
+        "hit_count": 0
+      },
+      "evidence_pack_size": 0,
+      "memory_hit_count": null,
+      "arena": null
     },
     {
       "task_id": "w10-fleet-smoke:planner",
@@ -522,7 +656,8 @@
         "hit_count": 0
       },
       "evidence_pack_size": 0,
-      "memory_hit_count": null
+      "memory_hit_count": null,
+      "arena": null
     },
     {
       "task_id": "w10-fleet-smoke:reviewer",
@@ -543,7 +678,8 @@
         "hit_count": 1
       },
       "evidence_pack_size": 0,
-      "memory_hit_count": null
+      "memory_hit_count": null,
+      "arena": null
     },
     {
       "task_id": "w2-smoke-sdk",
@@ -561,7 +697,8 @@
       "budget_usage": null,
       "tool_policy_hit": null,
       "evidence_pack_size": 0,
-      "memory_hit_count": null
+      "memory_hit_count": null,
+      "arena": null
     },
     {
       "task_id": "w3-eval-case-1",
@@ -579,7 +716,8 @@
       "budget_usage": null,
       "tool_policy_hit": null,
       "evidence_pack_size": 2,
-      "memory_hit_count": 0
+      "memory_hit_count": 0,
+      "arena": null
     },
     {
       "task_id": "w3-eval-case-2",
@@ -597,7 +735,8 @@
       "budget_usage": null,
       "tool_policy_hit": null,
       "evidence_pack_size": 2,
-      "memory_hit_count": 0
+      "memory_hit_count": 0,
+      "arena": null
     },
     {
       "task_id": "w3-eval-case-3",
@@ -615,7 +754,8 @@
       "budget_usage": null,
       "tool_policy_hit": null,
       "evidence_pack_size": 2,
-      "memory_hit_count": 0
+      "memory_hit_count": 0,
+      "arena": null
     },
     {
       "task_id": "w3-eval-case-4",
@@ -633,7 +773,8 @@
       "budget_usage": null,
       "tool_policy_hit": null,
       "evidence_pack_size": 2,
-      "memory_hit_count": 0
+      "memory_hit_count": 0,
+      "arena": null
     },
     {
       "task_id": "w3-eval-case-5",
@@ -651,7 +792,8 @@
       "budget_usage": null,
       "tool_policy_hit": null,
       "evidence_pack_size": 2,
-      "memory_hit_count": 0
+      "memory_hit_count": 0,
+      "arena": null
     },
     {
       "task_id": "w3-eval-pda-1",
@@ -669,7 +811,8 @@
       "budget_usage": null,
       "tool_policy_hit": null,
       "evidence_pack_size": 2,
-      "memory_hit_count": 0
+      "memory_hit_count": 0,
+      "arena": null
     },
     {
       "task_id": "w3-eval-pda-2",
@@ -687,7 +830,8 @@
       "budget_usage": null,
       "tool_policy_hit": null,
       "evidence_pack_size": 2,
-      "memory_hit_count": 0
+      "memory_hit_count": 0,
+      "arena": null
     },
     {
       "task_id": "w3-eval-pda-3",
@@ -705,7 +849,8 @@
       "budget_usage": null,
       "tool_policy_hit": null,
       "evidence_pack_size": 2,
-      "memory_hit_count": 0
+      "memory_hit_count": 0,
+      "arena": null
     },
     {
       "task_id": "w3-eval-pda-4",
@@ -723,7 +868,8 @@
       "budget_usage": null,
       "tool_policy_hit": null,
       "evidence_pack_size": 2,
-      "memory_hit_count": 0
+      "memory_hit_count": 0,
+      "arena": null
     },
     {
       "task_id": "w3-eval-pda-5",
@@ -741,7 +887,8 @@
       "budget_usage": null,
       "tool_policy_hit": null,
       "evidence_pack_size": 2,
-      "memory_hit_count": 0
+      "memory_hit_count": 0,
+      "arena": null
     },
     {
       "task_id": "w3-eval-sample",
@@ -769,7 +916,8 @@
         "hit_count": 1
       },
       "evidence_pack_size": 0,
-      "memory_hit_count": null
+      "memory_hit_count": null,
+      "arena": null
     },
     {
       "task_id": "w3-eval-sso-1",
@@ -787,7 +935,8 @@
       "budget_usage": null,
       "tool_policy_hit": null,
       "evidence_pack_size": 2,
-      "memory_hit_count": 0
+      "memory_hit_count": 0,
+      "arena": null
     },
     {
       "task_id": "w3-eval-sso-2",
@@ -805,7 +954,8 @@
       "budget_usage": null,
       "tool_policy_hit": null,
       "evidence_pack_size": 2,
-      "memory_hit_count": 0
+      "memory_hit_count": 0,
+      "arena": null
     },
     {
       "task_id": "w3-eval-sso-3",
@@ -823,7 +973,8 @@
       "budget_usage": null,
       "tool_policy_hit": null,
       "evidence_pack_size": 2,
-      "memory_hit_count": 0
+      "memory_hit_count": 0,
+      "arena": null
     },
     {
       "task_id": "w3-eval-sso-4",
@@ -841,7 +992,8 @@
       "budget_usage": null,
       "tool_policy_hit": null,
       "evidence_pack_size": 2,
-      "memory_hit_count": 0
+      "memory_hit_count": 0,
+      "arena": null
     },
     {
       "task_id": "w3-eval-sso-5",
@@ -859,7 +1011,8 @@
       "budget_usage": null,
       "tool_policy_hit": null,
       "evidence_pack_size": 2,
-      "memory_hit_count": 0
+      "memory_hit_count": 0,
+      "arena": null
     },
     {
       "task_id": "w3-eval-transfusion-1",
@@ -877,7 +1030,8 @@
       "budget_usage": null,
       "tool_policy_hit": null,
       "evidence_pack_size": 2,
-      "memory_hit_count": 0
+      "memory_hit_count": 0,
+      "arena": null
     },
     {
       "task_id": "w3-eval-transfusion-2",
@@ -895,7 +1049,8 @@
       "budget_usage": null,
       "tool_policy_hit": null,
       "evidence_pack_size": 2,
-      "memory_hit_count": 0
+      "memory_hit_count": 0,
+      "arena": null
     },
     {
       "task_id": "w3-eval-transfusion-3",
@@ -913,7 +1068,8 @@
       "budget_usage": null,
       "tool_policy_hit": null,
       "evidence_pack_size": 2,
-      "memory_hit_count": 0
+      "memory_hit_count": 0,
+      "arena": null
     },
     {
       "task_id": "w3-eval-transfusion-4",
@@ -931,7 +1087,8 @@
       "budget_usage": null,
       "tool_policy_hit": null,
       "evidence_pack_size": 2,
-      "memory_hit_count": 0
+      "memory_hit_count": 0,
+      "arena": null
     },
     {
       "task_id": "w3-eval-transfusion-5",
@@ -949,7 +1106,8 @@
       "budget_usage": null,
       "tool_policy_hit": null,
       "evidence_pack_size": 2,
-      "memory_hit_count": 0
+      "memory_hit_count": 0,
+      "arena": null
     },
     {
       "task_id": "w4-evidence-jira-reader-live",
@@ -977,7 +1135,8 @@
         "hit_count": 3
       },
       "evidence_pack_size": 3,
-      "memory_hit_count": 0
+      "memory_hit_count": 0,
+      "arena": null
     },
     {
       "task_id": "w4-evidence-jira-reader-mock",
@@ -1005,7 +1164,8 @@
         "hit_count": 3
       },
       "evidence_pack_size": 3,
-      "memory_hit_count": 0
+      "memory_hit_count": 0,
+      "arena": null
     }
   ],
   "mcpCalls": [
@@ -1148,16 +1308,12 @@
       "source_refs": [
         "fleet://fleet-w10-fleet-smoke/plan",
         "fleet://fleet-w10-fleet-smoke/candidate-1",
-        "fleet://fleet-w10-fleet-smoke/candidate-2",
-        "fleet://fleet-w10-fleet-smoke/candidate-3",
-        "fleet://fleet-w10-fleet-smoke/candidate-1/critic",
-        "fleet://fleet-w10-fleet-smoke/candidate-2/critic",
-        "fleet://fleet-w10-fleet-smoke/candidate-3/critic",
-        "fleet://fleet-w10-fleet-smoke/reviewer-draft"
+        "arena://fleet-w10-fleet-smoke/winner/candidate-1",
+        "arena://fleet-w10-fleet-smoke/winner/candidate-1/reviewer-draft"
       ],
       "confidence": 1,
       "assumptions": [],
-      "evidence_count": 8
+      "evidence_count": 4
     },
     {
       "task_id": "w10-fleet-smoke:candidate-1",
@@ -1167,7 +1323,14 @@
       "evidence_count": 0
     },
     {
-      "task_id": "w10-fleet-smoke:candidate-1:critic",
+      "task_id": "w10-fleet-smoke:candidate-1:critic:1",
+      "source_refs": [],
+      "confidence": null,
+      "assumptions": [],
+      "evidence_count": 0
+    },
+    {
+      "task_id": "w10-fleet-smoke:candidate-1:critic:2",
       "source_refs": [],
       "confidence": null,
       "assumptions": [],
@@ -1181,7 +1344,14 @@
       "evidence_count": 0
     },
     {
-      "task_id": "w10-fleet-smoke:candidate-2:critic",
+      "task_id": "w10-fleet-smoke:candidate-2:critic:1",
+      "source_refs": [],
+      "confidence": null,
+      "assumptions": [],
+      "evidence_count": 0
+    },
+    {
+      "task_id": "w10-fleet-smoke:candidate-2:critic:2",
       "source_refs": [],
       "confidence": null,
       "assumptions": [],
@@ -1195,7 +1365,14 @@
       "evidence_count": 0
     },
     {
-      "task_id": "w10-fleet-smoke:candidate-3:critic",
+      "task_id": "w10-fleet-smoke:candidate-3:critic:1",
+      "source_refs": [],
+      "confidence": null,
+      "assumptions": [],
+      "evidence_count": 0
+    },
+    {
+      "task_id": "w10-fleet-smoke:candidate-3:critic:2",
       "source_refs": [],
       "confidence": null,
       "assumptions": [],
@@ -1594,7 +1771,22 @@
       ]
     },
     {
-      "task_id": "w10-fleet-smoke:candidate-1:critic",
+      "task_id": "w10-fleet-smoke:candidate-1:critic:1",
+      "task_class": "w10",
+      "execution_mode": "unknown",
+      "role": "unknown",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w10",
+        "unknown",
+        "unknown",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w10-fleet-smoke:candidate-1:critic:2",
       "task_class": "w10",
       "execution_mode": "unknown",
       "role": "unknown",
@@ -1624,7 +1816,22 @@
       ]
     },
     {
-      "task_id": "w10-fleet-smoke:candidate-2:critic",
+      "task_id": "w10-fleet-smoke:candidate-2:critic:1",
+      "task_class": "w10",
+      "execution_mode": "unknown",
+      "role": "unknown",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w10",
+        "unknown",
+        "unknown",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w10-fleet-smoke:candidate-2:critic:2",
       "task_class": "w10",
       "execution_mode": "unknown",
       "role": "unknown",
@@ -1654,7 +1861,22 @@
       ]
     },
     {
-      "task_id": "w10-fleet-smoke:candidate-3:critic",
+      "task_id": "w10-fleet-smoke:candidate-3:critic:1",
+      "task_class": "w10",
+      "execution_mode": "unknown",
+      "role": "unknown",
+      "model_tier": "mini",
+      "concrete_model": "gpt-5-mini",
+      "route_chain": [
+        "w10",
+        "unknown",
+        "unknown",
+        "mini",
+        "gpt-5-mini"
+      ]
+    },
+    {
+      "task_id": "w10-fleet-smoke:candidate-3:critic:2",
       "task_class": "w10",
       "execution_mode": "unknown",
       "role": "unknown",

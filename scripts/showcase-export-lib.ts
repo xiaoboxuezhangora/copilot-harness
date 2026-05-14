@@ -60,6 +60,22 @@ export interface ShowcaseTask {
   } | null;
   evidence_pack_size: number | null;
   memory_hit_count: number | null;
+  arena: ShowcaseArenaSummary | null;
+}
+
+export interface ShowcaseArenaSummary {
+  candidate_count: number | null;
+  winner: string | null;
+  scores: {
+    correctness: number;
+    style: number;
+    testCoverage: number;
+    diffMinimality: number;
+  } | null;
+  consistency_delta: number | null;
+  archive_path: string | null;
+  scorer_mode: "mock" | "未接入" | null;
+  real_scorer: "未接入" | null;
 }
 
 export interface ShowcaseMcpCall {
@@ -375,6 +391,7 @@ export function buildTasks(
     const evidencePackSize =
       readNumber(taskStateRecord?.evidence_pack_size) ??
       parsedEvidencePack.evidences.length;
+    const arena = normalizeArenaSummary(taskStateRecord);
 
     tasksById.set(taskId, {
       task_id: taskId,
@@ -409,6 +426,7 @@ export function buildTasks(
             },
       evidence_pack_size: evidencePackSize,
       memory_hit_count: readNumber(taskStateRecord?.memory_hit_count) ?? null,
+      arena,
     });
   }
 
@@ -451,6 +469,7 @@ export function buildTasks(
         readNumber(record.evidence_pack_size) ??
         parsedEvidencePack.evidences.length,
       memory_hit_count: readNumber(record.memory_hit_count) ?? null,
+      arena: normalizeArenaSummary(record),
     });
   }
 
@@ -759,6 +778,83 @@ function parseEvidencePackLike(
   };
 }
 
+function normalizeArenaSummary(
+  record: Record<string, unknown> | undefined,
+): ShowcaseArenaSummary | null {
+  const nestedFleetSession =
+    asRecord(record?.fleet_session) ?? asRecord(record?.fleetSession);
+  const arena =
+    asRecord(record?.arena) ?? asRecord(nestedFleetSession?.arena);
+  if (arena === undefined) return null;
+
+  return {
+    candidate_count:
+      readNumber(arena.candidate_count) ??
+      readNumber(arena.candidateCount) ??
+      null,
+    winner:
+      readString(arena.winner) ??
+      readString(arena.winner_candidate_id) ??
+      readString(arena.winnerCandidateId) ??
+      null,
+    scores: normalizeArenaScores(
+      asRecord(arena.scores) ?? asRecord(arena.dimensions),
+    ),
+    consistency_delta:
+      readNumber(arena.consistency_delta) ??
+      readNumber(arena.consistencyDelta) ??
+      null,
+    archive_path:
+      readString(arena.archive_path) ?? readString(arena.archivePath) ?? null,
+    scorer_mode: normalizeArenaScorerMode(
+      readString(arena.scorer_mode) ?? readString(arena.scorerMode),
+    ),
+    real_scorer: normalizeArenaRealScorer(
+      readString(arena.real_scorer) ?? readString(arena.realScorer),
+    ),
+  };
+}
+
+function normalizeArenaScores(
+  record: Record<string, unknown> | undefined,
+): ShowcaseArenaSummary["scores"] {
+  if (record === undefined) return null;
+  const correctness = readNumber(record.correctness);
+  const style = readNumber(record.style);
+  const testCoverage =
+    readNumber(record.testCoverage) ?? readNumber(record.test_coverage);
+  const diffMinimality =
+    readNumber(record.diffMinimality) ?? readNumber(record.diff_minimality);
+  if (
+    correctness === null ||
+    style === null ||
+    testCoverage === null ||
+    diffMinimality === null
+  ) {
+    return null;
+  }
+  return {
+    correctness,
+    style,
+    testCoverage,
+    diffMinimality,
+  };
+}
+
+function normalizeArenaScorerMode(
+  value: string | undefined,
+): ShowcaseArenaSummary["scorer_mode"] {
+  if (value === "mock") return "mock";
+  if (value === "未接入") return "未接入";
+  return null;
+}
+
+function normalizeArenaRealScorer(
+  value: string | undefined,
+): ShowcaseArenaSummary["real_scorer"] {
+  return value === "未接入" ? "未接入" : null;
+}
+
 export function buildRouteChains(tasks: ShowcaseTask[]): ShowcaseRouteChain[] {
   return tasks.map((task) => {
     const taskClass = deriveTaskClass(task.task_id);
@@ -871,6 +967,38 @@ export function buildFieldPresence(
   add(
     "tasks.memory_hit_count",
     snapshot.tasks.map((item) => item.memory_hit_count),
+  );
+  add(
+    "tasks.arena",
+    snapshot.tasks.map((item) => item.arena),
+  );
+  add(
+    "tasks.arena.candidate_count",
+    snapshot.tasks.map((item) => item.arena?.candidate_count),
+  );
+  add(
+    "tasks.arena.winner",
+    snapshot.tasks.map((item) => item.arena?.winner),
+  );
+  add(
+    "tasks.arena.scores",
+    snapshot.tasks.map((item) => item.arena?.scores),
+  );
+  add(
+    "tasks.arena.consistency_delta",
+    snapshot.tasks.map((item) => item.arena?.consistency_delta),
+  );
+  add(
+    "tasks.arena.archive_path",
+    snapshot.tasks.map((item) => item.arena?.archive_path),
+  );
+  add(
+    "tasks.arena.scorer_mode",
+    snapshot.tasks.map((item) => item.arena?.scorer_mode),
+  );
+  add(
+    "tasks.arena.real_scorer",
+    snapshot.tasks.map((item) => item.arena?.real_scorer),
   );
 
   add(
