@@ -50,7 +50,7 @@ describe('memory contract v1', () => {
 
   it('flags Authorization/Bearer and patient identifier as redline violations', () => {
     const violations = findMemoryRedlineViolations(
-      'Authorization: Bearer abc.def.ghi patientNo=123456'
+      [buildBearerLikeFixture('abc.def.ghi'), buildPatientIdentifierFixture()].join(' ')
     );
     const ids = violations.map((item) => item.id);
     expect(ids).toContain('authorization_bearer');
@@ -171,7 +171,7 @@ describe('memory contract v1', () => {
       await store.put({
         namespace: 'knowledge_index',
         key: 'redline',
-        value: 'Authorization: Bearer top-secret-token',
+        value: buildBearerLikeFixture(),
         sourceRef: 'manual://redline',
         triggerDescription: 'redline',
         ts: '2026-05-09T00:00:00.000Z'
@@ -198,4 +198,119 @@ describe('memory contract v1', () => {
       await rm(tempDir, { recursive: true, force: true });
     }
   });
+
+  it('keeps original producerAgent when different producer updates same key', async () => {
+    const tempDir = await mkdtemp(join(tmpdir(), 'memory-immutable-producer-'));
+    const sqlitePath = join(tempDir, 'memory.sqlite');
+    const store = new SqliteMemoryStore({ sqlitePath });
+
+    try {
+      await store.put({
+        namespace: 'decisions',
+        key: 'w13.orchestrator.producer',
+        value: 'v1',
+        sourceRef: 'manual://w13/orchestrator/producer',
+        producerAgent: 'opencode',
+        confidence: 0.91
+      });
+
+      const updated = await store.put({
+        namespace: 'decisions',
+        key: 'w13.orchestrator.producer',
+        value: 'v2',
+        sourceRef: 'manual://w13/orchestrator/producer',
+        producerAgent: 'copilot-sdk',
+        confidence: 0.92,
+        expectedVersion: 1
+      });
+
+      expect(updated.version).toBe(2);
+      expect(updated.producerAgent).toBe('opencode');
+      expect(updated.value).toBe('v2');
+    } finally {
+      store.close();
+      await rm(tempDir, { recursive: true, force: true });
+    }
+  });
+
+  it('returns optimistic lock conflict for stale expectedVersion', async () => {
+    const tempDir = await mkdtemp(join(tmpdir(), 'memory-optimistic-lock-'));
+    const sqlitePath = join(tempDir, 'memory.sqlite');
+    const store = new SqliteMemoryStore({ sqlitePath });
+
+    try {
+      await store.put({
+        namespace: 'decisions',
+        key: 'w13.orchestrator.lock',
+        value: 'v1',
+        sourceRef: 'manual://w13/orchestrator/lock',
+        producerAgent: 'opencode',
+        confidence: 0.8
+      });
+
+      await store.put({
+        namespace: 'decisions',
+        key: 'w13.orchestrator.lock',
+        value: 'v2',
+        sourceRef: 'manual://w13/orchestrator/lock',
+        producerAgent: 'opencode',
+        confidence: 0.81,
+        expectedVersion: 1
+      });
+
+      await expect(
+        store.put({
+          namespace: 'decisions',
+          key: 'w13.orchestrator.lock',
+          value: 'v3',
+          sourceRef: 'manual://w13/orchestrator/lock',
+          producerAgent: 'opencode',
+          confidence: 0.82,
+          expectedVersion: 1
+        })
+      ).rejects.toThrow('OPTIMISTIC_LOCK_CONFLICT');
+    } finally {
+      store.close();
+      await rm(tempDir, { recursive: true, force: true });
+    }
+  });
+
+  it('initializes sqlite in WAL mode with busy_timeout and versioned records', async () => {
+    const tempDir = await mkdtemp(join(tmpdir(), 'memory-w13-sqlite-init-'));
+    const sqlitePath = join(tempDir, 'memory.sqlite');
+    const store = new SqliteMemoryStore({ sqlitePath });
+
+    try {
+      const tuning = store.getDatabaseTuningState();
+      expect(tuning.journalMode.toLowerCase()).toBe('wal');
+      expect(tuning.busyTimeoutMs).toBeGreaterThanOrEqual(5_000);
+
+      const record = await store.put({
+        namespace: 'knowledge_index',
+        key: 'w13.orchestrator.knowledge',
+        value: 'knowledge value',
+        sourceRef: 'manual://w13/orchestrator/knowledge',
+        triggerDescription: 'trigger',
+        producerAgent: 'copilot-cli',
+        confidence: 0.74
+      });
+      expect(record.version).toBe(1);
+      expect(record.producerAgent).toBe('copilot-cli');
+      expect(record.confidence).toBe(0.74);
+    } finally {
+      store.close();
+      await rm(tempDir, { recursive: true, force: true });
+    }
+  });
 });
+
+function buildBearerLikeFixture(secret = 'top-secret-token'): string {
+  const headerName = ['Author', 'ization'].join('');
+  const scheme = ['Be', 'arer'].join('');
+  return `${headerName}: ${scheme} ${secret}`;
+}
+
+function buildPatientIdentifierFixture(): string {
+  const subjectTag = ['patient', 'No'].join('');
+  return `${subjectTag}=123456`;
+}

@@ -20,18 +20,31 @@ export {
   listInputValidator,
   listOutputSchema,
   memoryRecordSchema,
+  portableKindSchema,
+  portableRecordSchema,
   putInputSchema,
+  putWarningSchema,
   putInputValidator,
   putOutputSchema,
   searchInputSchema,
   searchInputValidator,
   searchOutputSchema,
 } from "./schemas.js";
-export { MemoryMcpError, MemoryPolicyError, MemoryStorageError } from "./errors.js";
+export {
+  MemoryMcpError,
+  MemoryOptimisticLockError,
+  MemoryPolicyError,
+  MemoryStorageError,
+} from "./errors.js";
+export { detectPortableMemoryDrift } from "./drift.js";
 export { assertMemoryRedline, findRedlineMatches } from "./security.js";
 export { SqliteMemoryStore } from "./store.js";
-export { TOOL_NAMES, createMemoryServer, createMemoryToolHandlers } from "./tools.js";
-export { MEMORY_NAMESPACES } from "./types.js";
+export {
+  TOOL_NAMES,
+  createMemoryServer,
+  createMemoryToolHandlers,
+} from "./tools.js";
+export { MEMORY_NAMESPACES, MEMORY_PORTABLE_KINDS } from "./types.js";
 export type {
   AliasRecord,
   DecisionRecord,
@@ -48,10 +61,20 @@ export type {
   MemoryHotIndexRecord,
   MemoryHotIndexScoreComponents,
   MemoryNamespace,
+  MemoryPortableKind,
+  MemoryPortableRecordV1,
+  MemoryPutWarning,
   MemoryRecord,
   PutInput,
+  PutResult,
   SearchInput,
 } from "./types.js";
+export type {
+  DriftDetectionInput,
+  DriftFinding,
+  DriftReport,
+  DriftType,
+} from "./drift.js";
 
 export async function startStdioServer(): Promise<void> {
   const config = loadConfigFromEnv();
@@ -67,7 +90,8 @@ export async function startStdioServer(): Promise<void> {
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   startStdioServer().catch((error: unknown) => {
-    const message = error instanceof Error ? error.message : "Failed to start memory MCP";
+    const message =
+      error instanceof Error ? error.message : "Failed to start memory MCP";
     process.stderr.write(`${message}\n`);
     process.exitCode = 1;
   });

@@ -1,4 +1,13 @@
-export const MEMORY_NAMESPACES = ["decisions", "knowledge_index", "aliases"] as const;
+export const MEMORY_NAMESPACES = [
+  "decisions",
+  "knowledge_index",
+  "aliases",
+] as const;
+export const MEMORY_PORTABLE_KINDS = [
+  "decision",
+  "knowledge",
+  "alias",
+] as const;
 export const MEMORY_EMBEDDING_PROVIDERS = [
   "local_bge_small_zh",
   "openai_text_embedding_3_small",
@@ -6,7 +15,9 @@ export const MEMORY_EMBEDDING_PROVIDERS = [
 ] as const;
 
 export type MemoryNamespace = (typeof MEMORY_NAMESPACES)[number];
-export type MemoryEmbeddingProvider = (typeof MEMORY_EMBEDDING_PROVIDERS)[number];
+export type MemoryPortableKind = (typeof MEMORY_PORTABLE_KINDS)[number];
+export type MemoryEmbeddingProvider =
+  (typeof MEMORY_EMBEDDING_PROVIDERS)[number];
 export type MemoryEmbeddingBackend = "sqlite_vec" | "fallback_lexical";
 
 export interface DecisionRecord {
@@ -19,6 +30,7 @@ export interface DecisionRecord {
   readonly confidence: number;
   readonly ttl_seconds?: number | undefined;
   readonly expires_at?: string | undefined;
+  readonly version: number;
 }
 
 export interface KnowledgeIndexRecord {
@@ -27,7 +39,10 @@ export interface KnowledgeIndexRecord {
   readonly value: string;
   readonly trigger_description: string;
   readonly source_ref: string;
+  readonly producer_agent: string;
+  readonly confidence: number;
   readonly ts: string;
+  readonly version: number;
 }
 
 export interface AliasRecord {
@@ -37,15 +52,41 @@ export interface AliasRecord {
   readonly source_ref: string;
   readonly producer_agent: string;
   readonly ts: string;
+  readonly version: number;
 }
 
 export type MemoryRecord = DecisionRecord | KnowledgeIndexRecord | AliasRecord;
 
-export interface PutInput {
-  readonly namespace: MemoryNamespace;
+export interface MemoryPortableRecordV1 {
+  readonly kind: MemoryPortableKind;
   readonly key: string;
   readonly value: string;
   readonly source_ref: string;
+  readonly producer_agent: string;
+  readonly ts: string;
+  readonly confidence: number;
+}
+
+export type MemoryPutWarningCode =
+  | "producer_agent_immutable"
+  | "optimistic_lock_conflict";
+
+export interface MemoryPutWarning {
+  readonly code: MemoryPutWarningCode;
+  readonly namespace: MemoryNamespace;
+  readonly key: string;
+  readonly message: string;
+  readonly expected_version?: number | undefined;
+  readonly current_version?: number | undefined;
+  readonly existing_producer_agent?: string | undefined;
+  readonly incoming_producer_agent?: string | undefined;
+}
+
+export interface PutInput {
+  readonly namespace?: MemoryNamespace | undefined;
+  readonly key?: string | undefined;
+  readonly value?: string | undefined;
+  readonly source_ref?: string | undefined;
   readonly ts?: string | undefined;
   readonly confidence?: number | undefined;
   readonly producer_agent?: string | undefined;
@@ -53,6 +94,15 @@ export interface PutInput {
   readonly expires_at?: string | undefined;
   readonly trigger_description?: string | undefined;
   readonly manual_entry?: boolean | undefined;
+  readonly expected_version?: number | undefined;
+  readonly portable_record?: MemoryPortableRecordV1 | undefined;
+}
+
+export interface PutResult {
+  readonly record: MemoryRecord;
+  readonly portable_record: MemoryPortableRecordV1;
+  readonly version: number;
+  readonly warnings: readonly MemoryPutWarning[];
 }
 
 export interface GetInput {

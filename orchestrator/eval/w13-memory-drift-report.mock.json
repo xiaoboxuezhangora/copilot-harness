@@ -1,0 +1,14 @@
+{
+  "schema_version": "phase-2-w13-memory-drift-report@1",
+  "generated_at": "2026-05-14T15:30:00.000Z",
+  "migration_window": "mock",
+  "legacy_total": 3,
+  "mcp_total": 3,
+  "drift_count": 0,
+  "findings": [],
+  "cutover_ready": false,
+  "notes": [
+    "mock report only validates drift detector behavior in CI",
+    "real 2-day dual-write evidence is required before production cutover"
+  ]
+}

@@ -45,6 +45,13 @@ export class MemoryStorageError extends MemoryMcpError {
   }
 }
 
+export class MemoryOptimisticLockError extends MemoryMcpError {
+  constructor(message: string, audit?: MemoryErrorAudit) {
+    super(message, "OPTIMISTIC_LOCK_CONFLICT", 409, audit);
+    this.name = "MemoryOptimisticLockError";
+  }
+}
+
 export function toMemoryMcpError(error: unknown): MemoryMcpError {
   if (error instanceof MemoryMcpError) {
     return error;

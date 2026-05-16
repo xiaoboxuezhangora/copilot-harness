@@ -41,35 +41,45 @@ export interface MemoryToolHandlers {
   readonly get: (input: unknown) => Promise<CallToolResult>;
   readonly search: (input: unknown) => Promise<CallToolResult>;
   readonly list: (input: unknown) => Promise<CallToolResult>;
-  readonly findSimilarMemoryRecords: (input: unknown) => Promise<CallToolResult>;
+  readonly findSimilarMemoryRecords: (
+    input: unknown,
+  ) => Promise<CallToolResult>;
   readonly hotIndex: (input: unknown) => Promise<CallToolResult>;
 }
 
-export function createMemoryToolHandlers(store: SqliteMemoryStore): MemoryToolHandlers {
+export function createMemoryToolHandlers(
+  store: SqliteMemoryStore,
+): MemoryToolHandlers {
   return {
     put: async (input) =>
       toToolResult("put", putOutputSchema, async () => {
         const parsed = putInputValidator.parse(input);
+        const redlineSource = parsed.portable_record ?? parsed;
         assertMemoryRedline({
-          key: parsed.key,
-          value: parsed.value,
-          source_ref: parsed.source_ref,
-          producer_agent: parsed.producer_agent,
+          key: redlineSource.key,
+          value: redlineSource.value,
+          source_ref: redlineSource.source_ref,
+          producer_agent: redlineSource.producer_agent,
           trigger_description: parsed.trigger_description,
         });
 
-        const record = store.put(parsed);
+        const stored = store.putDetailed(parsed);
         return {
           ok: true as const,
-          record,
+          record: stored.record,
+          portable_record: stored.portable_record,
+          version: stored.version,
+          warnings: [...stored.warnings],
         };
       }),
     get: async (input) =>
       toToolResult("get", getOutputSchema, async () => {
         const parsed = getInputValidator.parse(input);
+        const record = store.get(parsed);
         return {
           ok: true as const,
-          record: store.get(parsed),
+          record,
+          portable_record: record === null ? null : toPortableRecord(record),
         };
       }),
     search: async (input) =>
@@ -89,6 +99,7 @@ export function createMemoryToolHandlers(store: SqliteMemoryStore): MemoryToolHa
           query: parsed.query,
           total: records.length,
           records: [...records],
+          portable_records: records.map((record) => toPortableRecord(record)),
         };
       }),
     list: async (input) =>
@@ -108,26 +119,83 @@ export function createMemoryToolHandlers(store: SqliteMemoryStore): MemoryToolHa
           ok: true as const,
           total: records.length,
           records: [...records],
+          portable_records: records.map((record) => toPortableRecord(record)),
         };
       }),
     findSimilarMemoryRecords: async (input) =>
-      toToolResult("findSimilarMemoryRecords", findSimilarMemoryRecordsOutputSchema, async () => {
-        const parsed = findSimilarMemoryRecordsInputValidator.parse(input);
-        assertMemoryRedline({
-          key: parsed.key,
-          value: parsed.value,
-          source_ref: parsed.source_ref,
-          producer_agent: parsed.producer_agent,
-          trigger_description: parsed.trigger_description,
-        });
+      toToolResult(
+        "findSimilarMemoryRecords",
+        findSimilarMemoryRecordsOutputSchema,
+        async () => {
+          const parsed = findSimilarMemoryRecordsInputValidator.parse(input);
+          assertMemoryRedline({
+            key: parsed.key,
+            value: parsed.value,
+            source_ref: parsed.source_ref,
+            producer_agent: parsed.producer_agent,
+            trigger_description: parsed.trigger_description,
+          });
 
-        return store.findSimilarMemoryRecords(parsed);
-      }),
+          return store.findSimilarMemoryRecords(parsed);
+        },
+      ),
     hotIndex: async (input) =>
       toToolResult("hotIndex", hotIndexOutputSchema, async () => {
         const parsed = hotIndexInputValidator.parse(input);
         return store.hotIndex(parsed);
       }),
+  };
+}
+
+function toPortableRecord(record: {
+  readonly namespace: "decisions" | "knowledge_index" | "aliases";
+  readonly key: string;
+  readonly value: string;
+  readonly source_ref: string;
+  readonly ts: string;
+  readonly producer_agent: string;
+  readonly confidence?: number | undefined;
+}): {
+  readonly kind: "decision" | "knowledge" | "alias";
+  readonly key: string;
+  readonly value: string;
+  readonly source_ref: string;
+  readonly producer_agent: string;
+  readonly ts: string;
+  readonly confidence: number;
+} {
+  if (record.namespace === "decisions") {
+    return {
+      kind: "decision",
+      key: record.key,
+      value: record.value,
+      source_ref: record.source_ref,
+      producer_agent: record.producer_agent ?? "unknown",
+      ts: record.ts,
+      confidence: record.confidence ?? 0.7,
+    };
+  }
+
+  if (record.namespace === "aliases") {
+    return {
+      kind: "alias",
+      key: record.key,
+      value: record.value,
+      source_ref: record.source_ref,
+      producer_agent: record.producer_agent,
+      ts: record.ts,
+      confidence: 0.7,
+    };
+  }
+
+  return {
+    kind: "knowledge",
+    key: record.key,
+    value: record.value,
+    source_ref: record.source_ref,
+    producer_agent: record.producer_agent,
+    ts: record.ts,
+    confidence: record.confidence ?? 0.7,
   };
 }
 
@@ -265,8 +333,12 @@ async function toToolResult<TOutput>(
         label,
         code: memoryError.code,
         message: memoryError.message,
-        ...(memoryError.status !== undefined ? { status: memoryError.status } : {}),
-        ...(memoryError.audit !== undefined ? { audit: memoryError.audit } : {}),
+        ...(memoryError.status !== undefined
+          ? { status: memoryError.status }
+          : {}),
+        ...(memoryError.audit !== undefined
+          ? { audit: memoryError.audit }
+          : {}),
       },
     });
 

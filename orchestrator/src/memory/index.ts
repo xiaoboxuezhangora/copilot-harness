@@ -4,6 +4,7 @@ import { DatabaseSync } from 'node:sqlite';
 
 export const DEFAULT_MEMORY_SQLITE_PATH = 'reports/memory.sqlite';
 export const MEMORY_NAMESPACES = ['decisions', 'knowledge_index', 'aliases'] as const;
+export const MEMORY_PORTABLE_KINDS = ['decision', 'knowledge', 'alias'] as const;
 export const MEMORY_EMBEDDING_PROVIDERS = [
   'local_bge_small_zh',
   'openai_text_embedding_3_small',
@@ -11,8 +12,19 @@ export const MEMORY_EMBEDDING_PROVIDERS = [
 ] as const;
 
 export type MemoryNamespace = (typeof MEMORY_NAMESPACES)[number];
+export type MemoryPortableKind = (typeof MEMORY_PORTABLE_KINDS)[number];
 export type MemoryEmbeddingProvider = (typeof MEMORY_EMBEDDING_PROVIDERS)[number];
 export type MemoryEmbeddingBackend = 'sqlite_vec' | 'fallback_lexical';
+
+export interface MemoryPortableRecordV1 {
+  readonly kind: MemoryPortableKind;
+  readonly key: string;
+  readonly value: string;
+  readonly source_ref: string;
+  readonly producer_agent: string;
+  readonly ts: string;
+  readonly confidence: number;
+}
 
 export interface MemoryRecord {
   readonly namespace: MemoryNamespace;
@@ -20,6 +32,7 @@ export interface MemoryRecord {
   readonly value: string;
   readonly sourceRef: string;
   readonly ts: string;
+  readonly version: number;
   readonly confidence?: number | undefined;
   readonly producerAgent?: string | undefined;
   readonly ttlSeconds?: number | undefined;
@@ -40,6 +53,8 @@ export interface MemoryPutInput {
   readonly expiresAt?: string | undefined;
   readonly triggerDescription?: string | undefined;
   readonly manualEntry?: boolean | undefined;
+  readonly expectedVersion?: number | undefined;
+  readonly portableRecord?: MemoryPortableRecordV1 | undefined;
 }
 
 export interface MemoryGetInput {
@@ -159,6 +174,7 @@ interface DecisionRow {
   readonly confidence: number;
   readonly ttl_seconds: number | null;
   readonly expires_at: string | null;
+  readonly version: number;
 }
 
 interface KnowledgeIndexRow {
@@ -166,7 +182,10 @@ interface KnowledgeIndexRow {
   readonly value: string;
   readonly trigger_description: string;
   readonly source_ref: string;
+  readonly producer_agent: string;
+  readonly confidence: number;
   readonly ts: string;
+  readonly version: number;
 }
 
 interface AliasRow {
@@ -175,6 +194,19 @@ interface AliasRow {
   readonly source_ref: string;
   readonly producer_agent: string;
   readonly ts: string;
+  readonly version: number;
+}
+
+interface KeyVersionRow {
+  readonly version: number;
+}
+
+interface DecisionKeyRow extends KeyVersionRow {
+  readonly producer_agent: string;
+}
+
+interface AliasKeyRow extends KeyVersionRow {
+  readonly producer_agent: string;
 }
 
 interface MemoryStatsRow {
@@ -213,117 +245,216 @@ export class SqliteMemoryStore implements MemoryStore {
   }
 
   async put(input: MemoryPutInput): Promise<MemoryRecord> {
-    const ts = input.ts ?? this.now().toISOString();
+    const normalized = normalizePutInput(input, this.now);
+    const updatedAt = this.now().toISOString();
 
-    if (input.namespace === 'decisions') {
-      const producerAgent = requiredString(
-        input.producerAgent,
-        'producerAgent is required for decisions namespace'
+    if (normalized.namespace === 'decisions') {
+      const expiresAt = resolveExpiresAt(
+        normalized.ts,
+        normalized.ttlSeconds,
+        normalized.expiresAt
       );
-      const confidence = requiredNumber(
-        input.confidence,
-        'confidence is required for decisions namespace'
-      );
-      const expiresAt = resolveExpiresAt(ts, input.ttlSeconds, input.expiresAt);
-
-      this.db
-        .prepare(
-          `
-          INSERT INTO decisions (
-            key, value, source_ref, producer_agent, ts, confidence, ttl_seconds, expires_at, updated_at
-          ) VALUES (
-            :key, :value, :source_ref, :producer_agent, :ts, :confidence, :ttl_seconds, :expires_at, :updated_at
+      const existing = this.readDecisionKeyRow(normalized.key);
+      if (existing === null) {
+        assertExpectedVersionForInsert(
+          normalized.expectedVersion,
+          normalized.namespace,
+          normalized.key
+        );
+        this.db
+          .prepare(
+            `
+            INSERT INTO decisions (
+              key, value, source_ref, producer_agent, ts, confidence, ttl_seconds, expires_at, updated_at, version
+            ) VALUES (
+              :key, :value, :source_ref, :producer_agent, :ts, :confidence, :ttl_seconds, :expires_at, :updated_at, 1
+            )
+            `
           )
-          ON CONFLICT(key) DO UPDATE SET
-            value = excluded.value,
-            source_ref = excluded.source_ref,
-            producer_agent = excluded.producer_agent,
-            ts = excluded.ts,
-            confidence = excluded.confidence,
-            ttl_seconds = excluded.ttl_seconds,
-            expires_at = excluded.expires_at,
-            updated_at = excluded.updated_at
-          `
-        )
-        .run({
-          key: input.key,
-          value: input.value,
-          source_ref: input.sourceRef,
-          producer_agent: producerAgent,
-          ts,
-          confidence,
-          ttl_seconds: input.ttlSeconds ?? null,
-          expires_at: expiresAt ?? null,
-          updated_at: this.now().toISOString()
-        });
-    } else if (input.namespace === 'knowledge_index') {
-      const triggerDescription = requiredString(
-        input.triggerDescription,
-        'triggerDescription is required for knowledge_index namespace'
-      );
-
-      this.db
-        .prepare(
-          `
-          INSERT INTO knowledge_index (
-            key, value, trigger_description, source_ref, ts, updated_at
-          ) VALUES (
-            :key, :value, :trigger_description, :source_ref, :ts, :updated_at
+          .run({
+            key: normalized.key,
+            value: normalized.value,
+            source_ref: normalized.sourceRef,
+            producer_agent: normalized.producerAgent,
+            ts: normalized.ts,
+            confidence: normalized.confidence,
+            ttl_seconds: normalized.ttlSeconds ?? null,
+            expires_at: expiresAt ?? null,
+            updated_at: updatedAt
+          });
+      } else {
+        assertExpectedVersionForUpdate(
+          normalized.expectedVersion,
+          existing.version,
+          normalized.namespace,
+          normalized.key
+        );
+        const resolvedProducerAgent = existing.producer_agent;
+        const updateResult = this.db
+          .prepare(
+            `
+            UPDATE decisions
+            SET value = :value,
+                source_ref = :source_ref,
+                producer_agent = :producer_agent,
+                ts = :ts,
+                confidence = :confidence,
+                ttl_seconds = :ttl_seconds,
+                expires_at = :expires_at,
+                updated_at = :updated_at,
+                version = version + 1
+            WHERE key = :key AND version = :expected_version
+            `
           )
-          ON CONFLICT(key) DO UPDATE SET
-            value = excluded.value,
-            trigger_description = excluded.trigger_description,
-            source_ref = excluded.source_ref,
-            ts = excluded.ts,
-            updated_at = excluded.updated_at
-          `
-        )
-        .run({
-          key: input.key,
-          value: input.value,
-          trigger_description: triggerDescription,
-          source_ref: input.sourceRef,
-          ts,
-          updated_at: this.now().toISOString()
-        });
+          .run({
+            key: normalized.key,
+            value: normalized.value,
+            source_ref: normalized.sourceRef,
+            producer_agent: resolvedProducerAgent,
+            ts: normalized.ts,
+            confidence: normalized.confidence,
+            ttl_seconds: normalized.ttlSeconds ?? null,
+            expires_at: expiresAt ?? null,
+            updated_at: updatedAt,
+            expected_version: existing.version
+          });
+        if (updateResult.changes === 0) {
+          throw new Error('OPTIMISTIC_LOCK_CONFLICT');
+        }
+      }
+    } else if (normalized.namespace === 'knowledge_index') {
+      const existing = this.readKnowledgeKeyVersionRow(normalized.key);
+      if (existing === null) {
+        assertExpectedVersionForInsert(
+          normalized.expectedVersion,
+          normalized.namespace,
+          normalized.key
+        );
+        this.db
+          .prepare(
+            `
+            INSERT INTO knowledge_index (
+              key, value, trigger_description, source_ref, producer_agent, confidence, ts, updated_at, version
+            ) VALUES (
+              :key, :value, :trigger_description, :source_ref, :producer_agent, :confidence, :ts, :updated_at, 1
+            )
+            `
+          )
+          .run({
+            key: normalized.key,
+            value: normalized.value,
+            trigger_description: normalized.triggerDescription,
+            source_ref: normalized.sourceRef,
+            producer_agent: normalized.producerAgent,
+            confidence: normalized.confidence,
+            ts: normalized.ts,
+            updated_at: updatedAt
+          });
+      } else {
+        assertExpectedVersionForUpdate(
+          normalized.expectedVersion,
+          existing.version,
+          normalized.namespace,
+          normalized.key
+        );
+        const updateResult = this.db
+          .prepare(
+            `
+            UPDATE knowledge_index
+            SET value = :value,
+                trigger_description = :trigger_description,
+                source_ref = :source_ref,
+                producer_agent = :producer_agent,
+                confidence = :confidence,
+                ts = :ts,
+                updated_at = :updated_at,
+                version = version + 1
+            WHERE key = :key AND version = :expected_version
+            `
+          )
+          .run({
+            key: normalized.key,
+            value: normalized.value,
+            trigger_description: normalized.triggerDescription,
+            source_ref: normalized.sourceRef,
+            producer_agent: normalized.producerAgent,
+            confidence: normalized.confidence,
+            ts: normalized.ts,
+            updated_at: updatedAt,
+            expected_version: existing.version
+          });
+        if (updateResult.changes === 0) {
+          throw new Error('OPTIMISTIC_LOCK_CONFLICT');
+        }
+      }
     } else {
-      if (input.manualEntry !== true) {
+      if (normalized.manualEntry !== true) {
         throw new Error('manualEntry=true is required for aliases namespace');
       }
-      const producerAgent = requiredString(
-        input.producerAgent,
-        'producerAgent is required for aliases namespace'
-      );
-
-      this.db
-        .prepare(
-          `
-          INSERT INTO aliases (
-            key, value, source_ref, producer_agent, ts, updated_at
-          ) VALUES (
-            :key, :value, :source_ref, :producer_agent, :ts, :updated_at
+      const existing = this.readAliasKeyRow(normalized.key);
+      if (existing === null) {
+        assertExpectedVersionForInsert(
+          normalized.expectedVersion,
+          normalized.namespace,
+          normalized.key
+        );
+        this.db
+          .prepare(
+            `
+            INSERT INTO aliases (
+              key, value, source_ref, producer_agent, ts, updated_at, version
+            ) VALUES (
+              :key, :value, :source_ref, :producer_agent, :ts, :updated_at, 1
+            )
+            `
           )
-          ON CONFLICT(key) DO UPDATE SET
-            value = excluded.value,
-            source_ref = excluded.source_ref,
-            producer_agent = excluded.producer_agent,
-            ts = excluded.ts,
-            updated_at = excluded.updated_at
-          `
-        )
-        .run({
-          key: input.key,
-          value: input.value,
-          source_ref: input.sourceRef,
-          producer_agent: producerAgent,
-          ts,
-          updated_at: this.now().toISOString()
-        });
+          .run({
+            key: normalized.key,
+            value: normalized.value,
+            source_ref: normalized.sourceRef,
+            producer_agent: normalized.producerAgent,
+            ts: normalized.ts,
+            updated_at: updatedAt
+          });
+      } else {
+        assertExpectedVersionForUpdate(
+          normalized.expectedVersion,
+          existing.version,
+          normalized.namespace,
+          normalized.key
+        );
+        const resolvedProducerAgent = existing.producer_agent;
+        const updateResult = this.db
+          .prepare(
+            `
+            UPDATE aliases
+            SET value = :value,
+                source_ref = :source_ref,
+                producer_agent = :producer_agent,
+                ts = :ts,
+                updated_at = :updated_at,
+                version = version + 1
+            WHERE key = :key AND version = :expected_version
+            `
+          )
+          .run({
+            key: normalized.key,
+            value: normalized.value,
+            source_ref: normalized.sourceRef,
+            producer_agent: resolvedProducerAgent,
+            ts: normalized.ts,
+            updated_at: updatedAt,
+            expected_version: existing.version
+          });
+        if (updateResult.changes === 0) {
+          throw new Error('OPTIMISTIC_LOCK_CONFLICT');
+        }
+      }
     }
 
     const stored = this.readRecord({
-      namespace: input.namespace,
-      key: input.key
+      namespace: normalized.namespace,
+      key: normalized.key
     });
 
     if (stored === null) {
@@ -347,7 +478,7 @@ export class SqliteMemoryStore implements MemoryStore {
       const row = this.db
         .prepare(
           `
-          SELECT key, value, source_ref, producer_agent, ts, confidence, ttl_seconds, expires_at
+          SELECT key, value, source_ref, producer_agent, ts, confidence, ttl_seconds, expires_at, version
           FROM decisions
           WHERE key = :key
           `
@@ -364,7 +495,7 @@ export class SqliteMemoryStore implements MemoryStore {
       const row = this.db
         .prepare(
           `
-          SELECT key, value, trigger_description, source_ref, ts
+          SELECT key, value, trigger_description, source_ref, producer_agent, confidence, ts, version
           FROM knowledge_index
           WHERE key = :key
           `
@@ -380,7 +511,7 @@ export class SqliteMemoryStore implements MemoryStore {
     const row = this.db
       .prepare(
         `
-        SELECT key, value, source_ref, producer_agent, ts
+        SELECT key, value, source_ref, producer_agent, ts, version
         FROM aliases
         WHERE key = :key
         `
@@ -443,9 +574,7 @@ export class SqliteMemoryStore implements MemoryStore {
     return sortMemoryRecords(combined).slice(input.offset, input.offset + input.limit);
   }
 
-  async findSimilarMemoryRecords(
-    input: MemoryFindSimilarInput
-  ): Promise<MemoryFindSimilarResult> {
+  async findSimilarMemoryRecords(input: MemoryFindSimilarInput): Promise<MemoryFindSimilarResult> {
     const threshold = input.threshold ?? 0.85;
     const limit = input.limit ?? 5;
     const embeddingProvider = input.embeddingProvider ?? this.embeddingProvider;
@@ -539,7 +668,7 @@ export class SqliteMemoryStore implements MemoryStore {
     const rows = this.db
       .prepare(
         `
-        SELECT key, value, source_ref, producer_agent, ts, confidence, ttl_seconds, expires_at
+        SELECT key, value, source_ref, producer_agent, ts, confidence, ttl_seconds, expires_at, version
         FROM decisions
         WHERE (
           key LIKE :pattern ESCAPE '\\'
@@ -568,7 +697,7 @@ export class SqliteMemoryStore implements MemoryStore {
     const rows = this.db
       .prepare(
         `
-        SELECT key, value, trigger_description, source_ref, ts
+        SELECT key, value, trigger_description, source_ref, producer_agent, confidence, ts, version
         FROM knowledge_index
         WHERE (
           key LIKE :pattern ESCAPE '\\'
@@ -592,7 +721,7 @@ export class SqliteMemoryStore implements MemoryStore {
     const rows = this.db
       .prepare(
         `
-        SELECT key, value, source_ref, producer_agent, ts
+        SELECT key, value, source_ref, producer_agent, ts, version
         FROM aliases
         WHERE (
           key LIKE :pattern ESCAPE '\\'
@@ -620,7 +749,7 @@ export class SqliteMemoryStore implements MemoryStore {
     const rows = this.db
       .prepare(
         `
-        SELECT key, value, source_ref, producer_agent, ts, confidence, ttl_seconds, expires_at
+        SELECT key, value, source_ref, producer_agent, ts, confidence, ttl_seconds, expires_at, version
         FROM decisions
         WHERE (
           :include_expired = 1 OR expires_at IS NULL OR expires_at > :now_iso
@@ -643,7 +772,7 @@ export class SqliteMemoryStore implements MemoryStore {
     const rows = this.db
       .prepare(
         `
-        SELECT key, value, trigger_description, source_ref, ts
+        SELECT key, value, trigger_description, source_ref, producer_agent, confidence, ts, version
         FROM knowledge_index
         ORDER BY ts DESC, key ASC
         LIMIT :limit OFFSET :offset
@@ -661,7 +790,7 @@ export class SqliteMemoryStore implements MemoryStore {
     const rows = this.db
       .prepare(
         `
-        SELECT key, value, source_ref, producer_agent, ts
+        SELECT key, value, source_ref, producer_agent, ts, version
         FROM aliases
         ORDER BY ts DESC, key ASC
         LIMIT :limit OFFSET :offset
@@ -675,7 +804,93 @@ export class SqliteMemoryStore implements MemoryStore {
     return rows.map((row) => mapAliasRow(readAliasRow(row)));
   }
 
+  private readDecisionKeyRow(key: string): DecisionKeyRow | null {
+    const row = this.db
+      .prepare(
+        `
+        SELECT producer_agent, version
+        FROM decisions
+        WHERE key = :key
+        `
+      )
+      .get({ key });
+    if (row === undefined) {
+      return null;
+    }
+    return readDecisionKeyRow(row);
+  }
+
+  private readKnowledgeKeyVersionRow(key: string): KeyVersionRow | null {
+    const row = this.db
+      .prepare(
+        `
+        SELECT version
+        FROM knowledge_index
+        WHERE key = :key
+        `
+      )
+      .get({ key });
+    if (row === undefined) {
+      return null;
+    }
+    return readKeyVersionRow(row);
+  }
+
+  private readAliasKeyRow(key: string): AliasKeyRow | null {
+    const row = this.db
+      .prepare(
+        `
+        SELECT producer_agent, version
+        FROM aliases
+        WHERE key = :key
+        `
+      )
+      .get({ key });
+    if (row === undefined) {
+      return null;
+    }
+    return readAliasKeyRow(row);
+  }
+
+  getDatabaseTuningState(): { readonly journalMode: string; readonly busyTimeoutMs: number } {
+    const journalMode = this.readPragmaText('journal_mode');
+    const busyTimeoutMs = this.readPragmaNumber('busy_timeout');
+    return {
+      journalMode,
+      busyTimeoutMs
+    };
+  }
+
+  private readPragmaText(name: string): string {
+    const row = this.db.prepare(`PRAGMA ${name}`).get();
+    if (row === undefined || typeof row !== 'object' || row === null || Array.isArray(row)) {
+      throw new Error(`PRAGMA ${name} did not return a row`);
+    }
+    const values = Object.values(row);
+    const value = values[0];
+    if (typeof value !== 'string') {
+      throw new Error(`PRAGMA ${name} did not return string`);
+    }
+    return value;
+  }
+
+  private readPragmaNumber(name: string): number {
+    const row = this.db.prepare(`PRAGMA ${name}`).get();
+    if (row === undefined || typeof row !== 'object' || row === null || Array.isArray(row)) {
+      throw new Error(`PRAGMA ${name} did not return a row`);
+    }
+    const values = Object.values(row);
+    const value = values[0];
+    if (typeof value !== 'number' || !Number.isFinite(value)) {
+      throw new Error(`PRAGMA ${name} did not return number`);
+    }
+    return value;
+  }
+
   private initialize(): void {
+    this.db.exec('PRAGMA journal_mode = WAL;');
+    this.db.exec('PRAGMA busy_timeout = 5000;');
+    this.db.exec('PRAGMA synchronous = NORMAL;');
     this.db.exec(`
       CREATE TABLE IF NOT EXISTS decisions (
         key TEXT PRIMARY KEY,
@@ -686,7 +901,8 @@ export class SqliteMemoryStore implements MemoryStore {
         confidence REAL NOT NULL,
         ttl_seconds INTEGER,
         expires_at TEXT,
-        updated_at TEXT NOT NULL
+        updated_at TEXT NOT NULL,
+        version INTEGER NOT NULL DEFAULT 1
       );
 
       CREATE TABLE IF NOT EXISTS knowledge_index (
@@ -694,8 +910,11 @@ export class SqliteMemoryStore implements MemoryStore {
         value TEXT NOT NULL,
         trigger_description TEXT NOT NULL,
         source_ref TEXT NOT NULL,
+        producer_agent TEXT NOT NULL DEFAULT 'unknown',
+        confidence REAL NOT NULL DEFAULT 0.7,
         ts TEXT NOT NULL,
-        updated_at TEXT NOT NULL
+        updated_at TEXT NOT NULL,
+        version INTEGER NOT NULL DEFAULT 1
       );
 
       CREATE TABLE IF NOT EXISTS aliases (
@@ -704,7 +923,8 @@ export class SqliteMemoryStore implements MemoryStore {
         source_ref TEXT NOT NULL,
         producer_agent TEXT NOT NULL,
         ts TEXT NOT NULL,
-        updated_at TEXT NOT NULL
+        updated_at TEXT NOT NULL,
+        version INTEGER NOT NULL DEFAULT 1
       );
 
       CREATE TABLE IF NOT EXISTS memory_stats (
@@ -725,6 +945,29 @@ export class SqliteMemoryStore implements MemoryStore {
       CREATE INDEX IF NOT EXISTS idx_memory_stats_score_inputs
         ON memory_stats(namespace, hit_count, accepted_at);
     `);
+
+    this.ensureColumnExists('decisions', 'version', 'INTEGER NOT NULL DEFAULT 1');
+    this.ensureColumnExists('knowledge_index', 'version', 'INTEGER NOT NULL DEFAULT 1');
+    this.ensureColumnExists('knowledge_index', 'producer_agent', "TEXT NOT NULL DEFAULT 'unknown'");
+    this.ensureColumnExists('knowledge_index', 'confidence', 'REAL NOT NULL DEFAULT 0.7');
+    this.ensureColumnExists('aliases', 'version', 'INTEGER NOT NULL DEFAULT 1');
+  }
+
+  private ensureColumnExists(
+    table: 'decisions' | 'knowledge_index' | 'aliases',
+    column: string,
+    definition: string
+  ): void {
+    const rows = this.db.prepare(`PRAGMA table_info(${table})`).all();
+    const exists = rows.some((row) => {
+      if (typeof row !== 'object' || row === null || Array.isArray(row)) {
+        return false;
+      }
+      return (row as Record<string, unknown>).name === column;
+    });
+    if (!exists) {
+      this.db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+    }
   }
 
   private upsertMemoryStats(record: MemoryRecord): MemoryStatsRow {
@@ -1013,7 +1256,8 @@ export const MEMORY_REDLINE_RULES: readonly MemoryRedlineRule[] = [
   {
     id: 'patient_identifier',
     description: '禁止写入真实患者标识。',
-    pattern: /(patient(?:_?id|_?no)|inpatient(?:_?id|_?no)|患者(?:编号|标识|姓名|证件)|身份证号?|住院号)/i
+    pattern:
+      /(patient(?:_?id|_?no)|inpatient(?:_?id|_?no)|患者(?:编号|标识|姓名|证件)|身份证号?|住院号)/i
   },
   {
     id: 'sso_token',
@@ -1038,7 +1282,8 @@ export const MEMORY_REDLINE_RULES: readonly MemoryRedlineRule[] = [
   {
     id: 'platform_credentials',
     description: '禁止写入平台凭证。',
-    pattern: /(client_secret|app_secret|access_key|secret_key|platform[_-]?(?:credential|secret|token)|平台(?:凭证|密钥|令牌))/i
+    pattern:
+      /(client_secret|app_secret|access_key|secret_key|platform[_-]?(?:credential|secret|token)|平台(?:凭证|密钥|令牌))/i
   },
   {
     id: 'authorization_bearer',
@@ -1048,7 +1293,8 @@ export const MEMORY_REDLINE_RULES: readonly MemoryRedlineRule[] = [
   {
     id: 'sensitive_request_response_dump',
     description: '禁止写入完整敏感请求/响应。',
-    pattern: /(full\s+(?:request|response)|raw\s+(?:request|response)|完整(?:敏感)?(?:请求|响应)|(?:request|response)\s*body\s*[:=])/i
+    pattern:
+      /(full\s+(?:request|response)|raw\s+(?:request|response)|完整(?:敏感)?(?:请求|响应)|(?:request|response)\s*body\s*[:=])/i
   }
 ];
 
@@ -1216,7 +1462,13 @@ function truncateUtf8(value: string, maxBytes: number): string {
 }
 
 function confidenceForRecord(record: MemoryRecord): number {
-  return record.namespace === 'decisions' ? (record.confidence ?? 0.7) : 0.7;
+  if (record.namespace === 'decisions') {
+    return record.confidence ?? 0.7;
+  }
+  if (record.namespace === 'knowledge_index') {
+    return record.confidence ?? 0.7;
+  }
+  return 0.7;
 }
 
 function recencyScore(acceptedAt: string, now: Date): number {
@@ -1278,7 +1530,8 @@ function buildDeterministicEmbedding(input: MemoryFindSimilarInput): readonly nu
 function scoreMemorySimilarity(candidate: MemoryFindSimilarInput, existing: MemoryRecord): number {
   const candidateKey = normalizeComparableText(candidate.key);
   const existingKey = normalizeComparableText(existing.key);
-  const keyScore = candidateKey === existingKey ? 1 : lexicalSimilarity(candidate.key, existing.key);
+  const keyScore =
+    candidateKey === existingKey ? 1 : lexicalSimilarity(candidate.key, existing.key);
   const valueScore = lexicalSimilarity(candidate.value, existing.value);
   const combined = Math.max(keyScore === 1 ? 0.96 : 0, keyScore * 0.25 + valueScore * 0.75);
   return Math.min(1, Math.round(combined * 10_000) / 10_000);
@@ -1340,7 +1593,21 @@ function toMemoryMcpInput(input: MemoryPutInput): Record<string, unknown> {
     ...(input.triggerDescription !== undefined
       ? { trigger_description: input.triggerDescription }
       : {}),
-    ...(input.manualEntry !== undefined ? { manual_entry: input.manualEntry } : {})
+    ...(input.manualEntry !== undefined ? { manual_entry: input.manualEntry } : {}),
+    ...(input.expectedVersion !== undefined ? { expected_version: input.expectedVersion } : {}),
+    ...(input.portableRecord !== undefined
+      ? {
+          portable_record: {
+            kind: input.portableRecord.kind,
+            key: input.portableRecord.key,
+            value: input.portableRecord.value,
+            source_ref: input.portableRecord.source_ref,
+            producer_agent: input.portableRecord.producer_agent,
+            ts: input.portableRecord.ts,
+            confidence: input.portableRecord.confidence
+          }
+        }
+      : {})
   };
 }
 
@@ -1387,9 +1654,7 @@ function parseMemoryFindSimilarPayload(payload: unknown): MemoryFindSimilarResul
       readObject(envelope.candidate_embedding, 'findSimilarMemoryRecords candidate_embedding')
     ),
     candidates: candidatesValue.map((item, index) =>
-      readMemoryConflictCandidate(
-        readObject(item, `findSimilarMemoryRecords candidates[${index}]`)
-      )
+      readMemoryConflictCandidate(readObject(item, `findSimilarMemoryRecords candidates[${index}]`))
     )
   };
 }
@@ -1417,6 +1682,7 @@ function readMemoryRecordFromSnakeCase(record: Record<string, unknown>): MemoryR
   const value = readRequiredString(record, 'value');
   const sourceRef = readRequiredString(record, 'source_ref');
   const ts = readRequiredString(record, 'ts');
+  const version = readRequiredNumber(record, 'version');
 
   if (namespace === 'decisions') {
     const producerAgent = readRequiredString(record, 'producer_agent');
@@ -1427,6 +1693,7 @@ function readMemoryRecordFromSnakeCase(record: Record<string, unknown>): MemoryR
       value,
       sourceRef,
       ts,
+      version,
       confidence,
       producerAgent,
       ...readOptionalNumber(record, 'ttl_seconds', 'ttlSeconds'),
@@ -1441,6 +1708,7 @@ function readMemoryRecordFromSnakeCase(record: Record<string, unknown>): MemoryR
       value,
       sourceRef,
       ts,
+      version,
       producerAgent: readRequiredString(record, 'producer_agent')
     };
   }
@@ -1451,6 +1719,9 @@ function readMemoryRecordFromSnakeCase(record: Record<string, unknown>): MemoryR
     value,
     sourceRef,
     ts,
+    version,
+    producerAgent: readRequiredString(record, 'producer_agent'),
+    confidence: readRequiredNumber(record, 'confidence'),
     ...readOptionalString(record, 'trigger_description', 'triggerDescription')
   };
 }
@@ -1473,9 +1744,7 @@ function readMemoryEmbeddingRecord(record: Record<string, unknown>): MemoryEmbed
   };
 }
 
-function readMemoryConflictCandidate(
-  record: Record<string, unknown>
-): MemoryConflictCandidateV1 {
+function readMemoryConflictCandidate(record: Record<string, unknown>): MemoryConflictCandidateV1 {
   const schemaVersion = readRequiredString(record, 'schema_version');
   if (schemaVersion !== 'phase-1c-w9-memory-conflict-candidate@1') {
     throw new Error(`Unsupported memory conflict schema_version: ${schemaVersion}`);
@@ -1539,7 +1808,8 @@ function readDecisionRow(value: unknown): DecisionRow {
     ts: readRequiredString(row, 'ts'),
     confidence: readRequiredNumber(row, 'confidence'),
     ttl_seconds: readNullableNumber(row, 'ttl_seconds'),
-    expires_at: readNullableString(row, 'expires_at')
+    expires_at: readNullableString(row, 'expires_at'),
+    version: readRequiredNumber(row, 'version')
   };
 }
 
@@ -1550,7 +1820,10 @@ function readKnowledgeIndexRow(value: unknown): KnowledgeIndexRow {
     value: readRequiredString(row, 'value'),
     trigger_description: readRequiredString(row, 'trigger_description'),
     source_ref: readRequiredString(row, 'source_ref'),
-    ts: readRequiredString(row, 'ts')
+    producer_agent: readRequiredString(row, 'producer_agent'),
+    confidence: readRequiredNumber(row, 'confidence'),
+    ts: readRequiredString(row, 'ts'),
+    version: readRequiredNumber(row, 'version')
   };
 }
 
@@ -1561,7 +1834,31 @@ function readAliasRow(value: unknown): AliasRow {
     value: readRequiredString(row, 'value'),
     source_ref: readRequiredString(row, 'source_ref'),
     producer_agent: readRequiredString(row, 'producer_agent'),
-    ts: readRequiredString(row, 'ts')
+    ts: readRequiredString(row, 'ts'),
+    version: readRequiredNumber(row, 'version')
+  };
+}
+
+function readDecisionKeyRow(value: unknown): DecisionKeyRow {
+  const row = readObject(value, 'decision key row');
+  return {
+    producer_agent: readRequiredString(row, 'producer_agent'),
+    version: readRequiredNumber(row, 'version')
+  };
+}
+
+function readKeyVersionRow(value: unknown): KeyVersionRow {
+  const row = readObject(value, 'key version row');
+  return {
+    version: readRequiredNumber(row, 'version')
+  };
+}
+
+function readAliasKeyRow(value: unknown): AliasKeyRow {
+  const row = readObject(value, 'alias key row');
+  return {
+    producer_agent: readRequiredString(row, 'producer_agent'),
+    version: readRequiredNumber(row, 'version')
   };
 }
 
@@ -1586,6 +1883,7 @@ function mapDecisionRow(row: DecisionRow): MemoryRecord {
     sourceRef: row.source_ref,
     producerAgent: row.producer_agent,
     ts: row.ts,
+    version: row.version,
     confidence: row.confidence,
     ...(row.ttl_seconds !== null ? { ttlSeconds: row.ttl_seconds } : {}),
     ...(row.expires_at !== null ? { expiresAt: row.expires_at } : {})
@@ -1598,8 +1896,11 @@ function mapKnowledgeIndexRow(row: KnowledgeIndexRow): MemoryRecord {
     key: row.key,
     value: row.value,
     sourceRef: row.source_ref,
+    producerAgent: row.producer_agent,
+    confidence: row.confidence,
     triggerDescription: row.trigger_description,
-    ts: row.ts
+    ts: row.ts,
+    version: row.version
   };
 }
 
@@ -1610,8 +1911,134 @@ function mapAliasRow(row: AliasRow): MemoryRecord {
     value: row.value,
     sourceRef: row.source_ref,
     producerAgent: row.producer_agent,
-    ts: row.ts
+    ts: row.ts,
+    version: row.version
   };
+}
+
+type NormalizedPutInput =
+  | {
+      readonly namespace: 'decisions';
+      readonly key: string;
+      readonly value: string;
+      readonly sourceRef: string;
+      readonly producerAgent: string;
+      readonly confidence: number;
+      readonly ts: string;
+      readonly ttlSeconds?: number | undefined;
+      readonly expiresAt?: string | undefined;
+      readonly expectedVersion?: number | undefined;
+    }
+  | {
+      readonly namespace: 'knowledge_index';
+      readonly key: string;
+      readonly value: string;
+      readonly sourceRef: string;
+      readonly producerAgent: string;
+      readonly confidence: number;
+      readonly triggerDescription: string;
+      readonly ts: string;
+      readonly expectedVersion?: number | undefined;
+    }
+  | {
+      readonly namespace: 'aliases';
+      readonly key: string;
+      readonly value: string;
+      readonly sourceRef: string;
+      readonly producerAgent: string;
+      readonly ts: string;
+      readonly manualEntry: boolean;
+      readonly expectedVersion?: number | undefined;
+    };
+
+function normalizePutInput(input: MemoryPutInput, now: () => Date): NormalizedPutInput {
+  const namespace = input.namespace;
+  const key = input.key;
+  const value = input.value;
+  const sourceRef = input.sourceRef;
+  const portable = input.portableRecord;
+  const ts = input.ts ?? portable?.ts ?? now().toISOString();
+  if (namespace === 'decisions') {
+    return {
+      namespace,
+      key,
+      value,
+      sourceRef,
+      producerAgent: requiredString(
+        input.producerAgent ?? portable?.producer_agent,
+        'producerAgent is required for decisions namespace'
+      ),
+      confidence: requiredNumber(
+        input.confidence ?? portable?.confidence,
+        'confidence is required for decisions namespace'
+      ),
+      ts,
+      ttlSeconds: input.ttlSeconds,
+      expiresAt: input.expiresAt,
+      expectedVersion: input.expectedVersion
+    };
+  }
+
+  if (namespace === 'knowledge_index') {
+    const portableProducer = portable?.kind === 'knowledge' ? portable.producer_agent : undefined;
+    const portableConfidence = portable?.kind === 'knowledge' ? portable.confidence : undefined;
+    return {
+      namespace,
+      key,
+      value,
+      sourceRef,
+      producerAgent: input.producerAgent ?? portableProducer ?? 'unknown',
+      confidence: input.confidence ?? portableConfidence ?? 0.7,
+      triggerDescription: requiredString(
+        input.triggerDescription ??
+          (portable?.kind === 'knowledge' ? `portable:${key}` : undefined),
+        'triggerDescription is required for knowledge_index namespace'
+      ),
+      ts,
+      expectedVersion: input.expectedVersion
+    };
+  }
+
+  return {
+    namespace: 'aliases',
+    key,
+    value,
+    sourceRef,
+    producerAgent: requiredString(
+      input.producerAgent ?? portable?.producer_agent,
+      'producerAgent is required for aliases namespace'
+    ),
+    ts,
+    manualEntry: input.manualEntry ?? false,
+    expectedVersion: input.expectedVersion
+  };
+}
+
+function assertExpectedVersionForInsert(
+  expectedVersion: number | undefined,
+  namespace: MemoryNamespace,
+  key: string
+): void {
+  if (expectedVersion === undefined || expectedVersion === 0) {
+    return;
+  }
+  throw new Error(
+    `OPTIMISTIC_LOCK_CONFLICT:${namespace}:${key}:expected=${expectedVersion}:current=0`
+  );
+}
+
+function assertExpectedVersionForUpdate(
+  expectedVersion: number | undefined,
+  currentVersion: number,
+  namespace: MemoryNamespace,
+  key: string
+): void {
+  if (expectedVersion === undefined || expectedVersion === currentVersion) {
+    return;
+  }
+  throw new Error(
+    `OPTIMISTIC_LOCK_CONFLICT:${namespace}:${key}:expected=${expectedVersion}:current=${currentVersion}`
+  );
 }
 
 function resolveExpiresAt(

@@ -47,9 +47,7 @@ class FakeMemoryStore implements MemoryStore {
     throw new Error('list is not used in this test');
   }
 
-  async findSimilarMemoryRecords(
-    _input: MemoryFindSimilarInput
-  ): Promise<MemoryFindSimilarResult> {
+  async findSimilarMemoryRecords(_input: MemoryFindSimilarInput): Promise<MemoryFindSimilarResult> {
     throw new Error('findSimilarMemoryRecords is not used in this test');
   }
 
@@ -69,8 +67,10 @@ class FakeMemoryStore implements MemoryStore {
         const leftTs = Date.parse(left.ts);
         const rightTs = Date.parse(right.ts);
         if (leftTs !== rightTs) return rightTs - leftTs;
-        if (left.sourceRef !== right.sourceRef) return left.sourceRef.localeCompare(right.sourceRef);
-        if (left.namespace !== right.namespace) return left.namespace.localeCompare(right.namespace);
+        if (left.sourceRef !== right.sourceRef)
+          return left.sourceRef.localeCompare(right.sourceRef);
+        if (left.namespace !== right.namespace)
+          return left.namespace.localeCompare(right.namespace);
         return left.key.localeCompare(right.key);
       })
       .slice(0, input.limit ?? 200)
@@ -131,7 +131,8 @@ describe('context assembler', () => {
         sourceRef: 'skills/.github/skills/blood-transfusion/SKILL.md',
         producerAgent: 'investigator',
         confidence: 0.9,
-        ts: '2026-05-07T01:00:00.000Z'
+        ts: '2026-05-07T01:00:00.000Z',
+        version: 1
       }
     ]);
     const assembler = new MemoryBackedContextAssembler(store);
@@ -179,7 +180,8 @@ describe('context assembler', () => {
         value: 'Angular table width should use one config source.',
         sourceRef: 'skills/.github/skills/angular-delivery/SKILL.md',
         triggerDescription: 'header/body desync',
-        ts: '2026-05-07T00:00:00.000Z'
+        ts: '2026-05-07T00:00:00.000Z',
+        version: 1
       },
       {
         namespace: 'decisions',
@@ -188,7 +190,8 @@ describe('context assembler', () => {
         sourceRef: 'skills/.github/skills/angular17-upgrade-regression-handler/SKILL.md',
         producerAgent: 'investigator',
         confidence: 0.8,
-        ts: '2026-05-07T02:00:00.000Z'
+        ts: '2026-05-07T02:00:00.000Z',
+        version: 1
       }
     ];
     const reversed = [...records].reverse();
@@ -218,7 +221,8 @@ describe('context assembler', () => {
           value: 'Authorization: Bearer abc.def.ghi should never be in prompt.',
           sourceRef: 'unit-test',
           triggerDescription: 'secret leak',
-          ts: '2026-05-07T00:00:00.000Z'
+          ts: '2026-05-07T00:00:00.000Z',
+          version: 1
         },
         {
           namespace: 'knowledge_index',
@@ -226,7 +230,8 @@ describe('context assembler', () => {
           value: 'Only include source ref and summary.',
           sourceRef: 'skills/.github/skills/angular-delivery/SKILL.md',
           triggerDescription: 'safe summary',
-          ts: '2026-05-07T00:01:00.000Z'
+          ts: '2026-05-07T00:01:00.000Z',
+          version: 1
         }
       ])
     );
@@ -252,7 +257,8 @@ describe('context assembler', () => {
           value: 'Approval reminder changes should verify schedule idempotency.',
           sourceRef: 'memory://approval-reminder',
           triggerDescription: 'approval reminder',
-          ts: '2026-05-08T00:00:00.000Z'
+          ts: '2026-05-08T00:00:00.000Z',
+          version: 1
         }
       ])
     );
@@ -342,7 +348,8 @@ describe('context assembler', () => {
         value: longMemoryValue,
         sourceRef: 'manual://memory/oversized',
         triggerDescription: 'oversized memory',
-        ts: '2026-05-08T00:00:00.000Z'
+        ts: '2026-05-08T00:00:00.000Z',
+        version: 1
       }
     ]);
     const assembler = new MemoryBackedContextAssembler(store);

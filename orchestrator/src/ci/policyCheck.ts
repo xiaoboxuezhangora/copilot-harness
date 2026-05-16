@@ -100,6 +100,10 @@ const POLICY_SCHEMA_VERSION = 'phase-2-w11-policies@1';
 const REPORT_SCHEMA_VERSION = 'phase-2-w11-policy-report@1';
 const DEFAULT_POLICY_PATH = 'policies.yaml';
 const DEFAULT_REPORT_PATH = 'reports/w11-policy-report.json';
+const REDLINE_RULE_DEFINITION_FILES = new Set([
+  'orchestrator/src/memory/index.ts',
+  'mcp-servers/memory/src/security.ts'
+]);
 
 export async function runPolicyCheck(options: PolicyCheckOptions = {}): Promise<W11PolicyReport> {
   const repoRoot = resolve(options.repoRoot ?? resolveRepoRoot());
@@ -346,6 +350,17 @@ async function evaluateFiles(
       for (const rule of policy.forbiddenPatterns) {
         rule.matcher.lastIndex = 0;
         if (rule.matcher.test(line)) {
+          if (
+            shouldSkipRuleDefinitionPatternViolation({
+              path: file,
+              line,
+              lineNumber: index + 1,
+              lines,
+              ruleId: rule.id
+            })
+          ) {
+            continue;
+          }
           violations.push({
             kind: 'forbidden_pattern',
             rule_id: rule.id,
@@ -463,6 +478,80 @@ function resolvePath(repoRoot: string, path: string): string {
 
 function isScanExempt(path: string, patterns: readonly RegExp[]): boolean {
   return patterns.some((pattern) => pattern.test(path));
+}
+
+interface RuleDefinitionSkipInput {
+  readonly path: string;
+  readonly line: string;
+  readonly lineNumber: number;
+  readonly lines: readonly string[];
+  readonly ruleId: string;
+}
+
+function shouldSkipRuleDefinitionPatternViolation(input: RuleDefinitionSkipInput): boolean {
+  if (!REDLINE_RULE_DEFINITION_FILES.has(input.path)) {
+    return false;
+  }
+  if (!isRedlineRuleDefinitionLine(input.line)) {
+    return false;
+  }
+
+  const lineIndex = input.lineNumber - 1;
+  if (!isInRedlineRulesSection(input.lines, lineIndex)) {
+    return false;
+  }
+
+  const nearbyRuleId = findNearbyRuleId(input.lines, lineIndex);
+  return nearbyRuleId === input.ruleId;
+}
+
+function isRedlineRuleDefinitionLine(line: string): boolean {
+  const trimmed = line.trim();
+  return trimmed.startsWith('description:') || trimmed.startsWith('pattern:');
+}
+
+function isInRedlineRulesSection(lines: readonly string[], lineIndex: number): boolean {
+  const start = findNearestRulesSectionStart(lines, lineIndex);
+  if (start < 0) {
+    return false;
+  }
+
+  const end = findRulesSectionEnd(lines, start);
+  return end >= 0 && lineIndex <= end;
+}
+
+function findNearestRulesSectionStart(lines: readonly string[], lineIndex: number): number {
+  for (let index = lineIndex; index >= 0; index -= 1) {
+    const line = lines[index]?.trim() ?? '';
+    if (
+      line.startsWith('export const MEMORY_REDLINE_RULES') ||
+      line.startsWith('const REDLINE_RULES')
+    ) {
+      return index;
+    }
+  }
+  return -1;
+}
+
+function findRulesSectionEnd(lines: readonly string[], start: number): number {
+  for (let index = start; index < lines.length; index += 1) {
+    if ((lines[index]?.trim() ?? '') === '];') {
+      return index;
+    }
+  }
+  return -1;
+}
+
+function findNearbyRuleId(lines: readonly string[], lineIndex: number): string | null {
+  const lowerBound = Math.max(0, lineIndex - 8);
+  for (let index = lineIndex; index >= lowerBound; index -= 1) {
+    const line = lines[index] ?? '';
+    const match = line.match(/id:\s*['"]([a-z0-9_]+)['"]/i);
+    if (match?.[1] !== undefined) {
+      return match[1];
+    }
+  }
+  return null;
 }
 
 function uniqueStrings(values: readonly string[]): readonly string[] {

@@ -1,4 +1,4 @@
-import { mkdtemp, rm, writeFile, readFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, rm, writeFile, readFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -17,6 +17,9 @@ forbidden_patterns:
   - id: authorization_bearer
     regex: '(authorization\\s*:\\s*bearer\\s+[a-z0-9\\-._~+/]{12,}=*|\\bbearer\\s+[a-z0-9\\-._~+/]{12,}=*)'
     reason: 'No bearer tokens.'
+  - id: sensitive_request_response_dump
+    regex: '(full\\s+(request|response)|raw\\s+(request|response)|完整(敏感)?(请求|响应)|request\\s*body\\s*[:=]|response\\s*body\\s*[:=])'
+    reason: 'No sensitive request/response dump.'
 
 scan_exempt_paths:
   - '^policies\\.yaml$'
@@ -87,5 +90,64 @@ describe('W11 policy check', () => {
 
     const writtenReport = await readFile(reportPath, 'utf8');
     expect(writtenReport).not.toContain('top-secret-token');
+  });
+
+  it('skips policy hits only for redline rule definitions', async () => {
+    const targetPath = join(tempDir, 'orchestrator', 'src', 'memory', 'index.ts');
+    await mkdir(join(tempDir, 'orchestrator', 'src', 'memory'), { recursive: true });
+    await writeFile(
+      targetPath,
+      [
+        'export const MEMORY_REDLINE_RULES = [',
+        '  {',
+        "    id: 'sensitive_request_response_dump',",
+        "    description: '禁止写入完整敏感请求/响应。',",
+        '    pattern: /(request\\s*body\\s*[:=]|response\\s*body\\s*[:=])/i',
+        '  }',
+        '];',
+        ''
+      ].join('\n'),
+      'utf8'
+    );
+
+    const report = await runPolicyCheck({
+      repoRoot: tempDir,
+      policyPath,
+      changedFiles: ['orchestrator/src/memory/index.ts']
+    });
+
+    expect(report.passed).toBe(true);
+    expect(report.violations).toHaveLength(0);
+  });
+
+  it('still reports sensitive dump outside redline rule definition section', async () => {
+    const targetPath = join(tempDir, 'orchestrator', 'src', 'memory', 'index.ts');
+    await mkdir(join(tempDir, 'orchestrator', 'src', 'memory'), { recursive: true });
+    await writeFile(
+      targetPath,
+      [
+        'export const MEMORY_REDLINE_RULES = [',
+        '  {',
+        "    id: 'sensitive_request_response_dump',",
+        "    description: '规则定义',",
+        '    pattern: /(request\\s*body\\s*[:=]|response\\s*body\\s*[:=])/i',
+        '  }',
+        '];',
+        'const leaked = "request body: should still be blocked";',
+        ''
+      ].join('\n'),
+      'utf8'
+    );
+
+    const report = await runPolicyCheck({
+      repoRoot: tempDir,
+      policyPath,
+      changedFiles: ['orchestrator/src/memory/index.ts']
+    });
+
+    expect(report.passed).toBe(false);
+    expect(report.violations.map((item) => item.rule_id)).toContain(
+      'sensitive_request_response_dump'
+    );
   });
 });
