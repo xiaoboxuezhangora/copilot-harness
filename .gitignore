@@ -13,6 +13,8 @@ reports/memory.sqlite
 .memory/
 audit.log
 apps/showcase/.tmp/
+orchestrator/eval/harvester/harvester-report-mock-20*.json
+orchestrator/eval/harvester/harvester-report-mock-20*.md
 
 # Environment
 .env
