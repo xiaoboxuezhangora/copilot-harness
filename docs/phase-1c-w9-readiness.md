@@ -1,47 +1,46 @@
 # Phase 1c W9-0 Readiness
 
-Generated at: 2026-05-09
+Generated at: 2026-05-14
 
 ## Conclusion
 
-W8 is not ready for the W9 single-model release gate review.
+W8 is now ready for the W9 single-model release gate review.
 
-The W8 technical hardening work can continue, but the ADR must not allow a Phase 2 late-stage multi-model pilot until the final W8 evidence target is met.
+W9 hardening can proceed on a final W8 evidence base. This readiness status only means W8 entry gates are met; it does not auto-approve a multi-model pilot.
 
 ## Evidence Checked
 
 - `orchestrator/eval/w8-report.md`
 - `orchestrator/eval/w8-report.json`
-- `orchestrator/src/w8Eval.ts`
-- `orchestrator/eval/w8-eval-schema.json`
+- `orchestrator/eval/w8-review-metrics.json`
 - `orchestrator/eval/w8-acceptance-profile.json`
+- `orchestrator/eval/w8-jira-gitlab-eval-current.json`
 
-## Current Gaps
+## Current Readiness Snapshot
 
-- `status`: `NOT_READY` after re-running `pnpm --filter @copilot-harness/orchestrator eval:w8` in the current shell.
-- `real_joint_sample_count`: `12`, below the W9-0 final readiness threshold of `20`.
-- `source_ref_coverage`: `100%`; this portion is not blocking.
-- `repo_hit_at_1`: calculable at `100%` over `12/12` eligible samples.
-- `review_cli_accept_rate`: `100%`, above the `40%` threshold, but this currently comes from dataset review decisions because no `orchestrator/eval/w8-review-metrics.json` exists.
-- `review_time_minutes`: `null` / `not_available`, so the `<= 10` requirement is not proven by real Review CLI metrics.
-- Read-only environment: current shell does not expose `GITLAB_BASE_URL`, `GITLAB_TOKEN`, `JIRA_BASE_URL`, `JIRA_TOKEN`, or `JIRA_API_TOKEN`. Token values were not printed.
-- Acceptance profile is temporary: `w8-current-jira-limited-closure` uses `12` samples and records a final target of `50` samples / `20` real joint samples.
+- `status`: `PASS` (`pnpm --filter @copilot-harness/orchestrator eval:w8`).
+- `acceptance_profile.name`: `w8-final-target` (`temporary: false`).
+- `sample_count`: `50/50`.
+- `real_joint_sample_count`: `50/20`.
+- `source_ref_coverage`: `100%` (`50/50`).
+- `repo_hit_at_1`: `100%` (`50/50` eligible).
+- `review_cli_accept_rate`: `100%` (`7/7`) from real Review CLI metrics.
+- `review_time_minutes`: `0.76` (`<= 10` target met).
+
+## Command Evidence (2026-05-14)
+
+- `bash scripts/run-w8-mapping-draft.sh`
+- `W8_CURRENT_EVAL_INCLUDE_CANDIDATE=1 bash scripts/run-w8-current-eval.sh`
+- `pnpm --filter @copilot-harness/orchestrator automemory-review -- --pending-dir ../.memory/pending/b-harvester --archive-dir ../.memory/archive --sqlite-path ../reports/memory-w8-review.sqlite --reviewer w8-reviewer`
+- `pnpm --filter @copilot-harness/orchestrator automemory-review:metrics --audit-log ../reports/audit.log --output eval/w8-review-metrics.json --reviewer w8-reviewer`
+- `source secrets/jira.env && source secrets/gitlab.env && pnpm --filter @copilot-harness/orchestrator eval:w8`
 
 ## Blocking Assessment
 
-- W9 technical hardening: not blocked. W9-A/W9-B/W9-C/W9-D may continue using deterministic tests, contracts, and local harness evidence.
-- ADR multi-model release: blocked. The ADR decision must keep the default model locked to `gpt-5-mini` and must not approve a Phase 2 multi-model pilot from the current W8 evidence.
+- W9 technical hardening: not blocked.
+- ADR multi-model release decision: still governance-controlled and must follow ADR criteria; W8 readiness alone is not sufficient for automatic model policy change.
 
-## W9 Phase Entry Assumptions
+## Residual Risks Outside W8 Entry
 
-- W9-A Memory conflict detection may proceed if it uses deterministic conflict fixtures and does not rely on W8 being final-ready.
-- W9-B hot_index loading may proceed if it preserves redline filtering and source_ref traceability.
-- W9-C AgentRuntime contract smoke may proceed, but real SDK/CLI blocks must be recorded instead of fabricated.
-- W9-D BudgetGate pressure may proceed against a local deterministic harness; fanout and overrun evidence must be real harness output.
-
-## Required Follow-up Before ADR Release
-
-- Restore the final W8 acceptance target: `50` samples with at least `20` real Jira + GitLab joint samples.
-- Re-run Code Retrieval MCP in a read-only GitLab environment and attach real evidence refs to each joint sample.
-- Complete one real Auto-Memory Review CLI approval pass and generate `orchestrator/eval/w8-review-metrics.json`.
-- Re-run `pnpm --filter @copilot-harness/orchestrator eval:w8` with read-only Jira/GitLab env configured and verify `status` is `PASS`.
+- W11 live GitLab CI execution still depends on project runner availability (infrastructure-side, not repository-side).
+- W13 production cutover still needs real 2-day dual-write drift evidence; mock drift reports are insufficient for final closure.

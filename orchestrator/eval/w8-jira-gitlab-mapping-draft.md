@@ -1,12 +1,12 @@
 # W8 Jira 到 GitLab 映射草稿
 
-- 生成时间：2026-05-08T14:46:39.111Z
-- Jira 查询来源：env:W8_MAPPING_JIRA_JQL
-- Jira JQL 哈希：c9bf76a434c03a145efb48ebf12c2f92b8dc1cb4cddce455a1b32b30ec08efa2
-- Jira 样本数：15 / 总数 15
+- 生成时间：2026-05-14T15:28:01.920Z
+- Jira 查询来源：env:JIRA_SMOKE_JQL
+- Jira JQL 哈希：5707766eeb0f79f8d6decd4dd896b1b72342b891856211b9bdc351e8a340ae54
+- Jira 样本数：50 / 总数 2240
 - 已扫描 GitLab 成员工程数：160
-- 已搜索 GitLab issue-key 历史的工单数：15
-- 高置信工单候选数：12
+- 已搜索 GitLab issue-key 历史的工单数：50
+- 高置信工单候选数：30
 
 ## 更新协议
 
@@ -16,46 +16,76 @@
 
 ## 人工确认规则库
 
-| 规则 | GitLab 工程 | 分支策略 | 说明 |
-| --- | --- | --- | --- |
-| 标题或描述包含 Angular17 | apmis/odcbs/odcbs-frontend | 固定 develop_to_angular17 | Angular17 相关工单固定进入前端 Angular17 升级分支。 |
-| 单点登录系统厂商对接 | apmis/dc-sso | 固定 master | dc-sso 用于对接各单点登录系统厂商。 |
-| 电子签名厂商对接 | apmis/ca-sso/odcbs-ca | 固定 master | odcbs-ca 用于对接各个电子签名厂商；GitLab 已验证路径为 apmis/ca-sso/odcbs-ca。 |
-| 移动端代码 | apmis/mobile/aims-mobile-vue | 主版本 master；西安交通大学 xajd；广东省人民 gdsrm | aims-mobile-vue 是移动端代码。 |
-| PDA 代码 | apmis/mobile/aims-pda-vue | 主版本 main；广东省人民 gdsrm | aims-pda-vue 是 PDA 代码。 |
-| 后端代码 | apmis/odcbs/odcbs-backend | 开发分支 develop；广东省人民 gdsrm_develop | odcbs-backend 是后端代码。 |
-| 前端代码 | apmis/odcbs/odcbs-frontend | 开发分支 develop；广东省人民 gdsrm_develop；Angular17 由更高优先级规则进入 develop_to_angular17 | odcbs-frontend 是前端代码。 |
-| 手麻平台三方交互接口 | apmis/odbip/odbip-custom-backend | 固定 develop | odbip-custom-backend 是当前手麻平台项目，用于处理手麻系统一切跟三方系统交互接口的处理；GitLab 验证实际分支为 develop，未发现 deveop。 |
+| 规则                     | GitLab 工程                      | 分支策略                                                                                        | 说明                                                                                                                                  |
+| ------------------------ | -------------------------------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| 标题或描述包含 Angular17 | apmis/odcbs/odcbs-frontend       | 固定 develop_to_angular17                                                                       | Angular17 相关工单固定进入前端 Angular17 升级分支。                                                                                   |
+| 单点登录系统厂商对接     | apmis/dc-sso                     | 固定 master                                                                                     | dc-sso 用于对接各单点登录系统厂商。                                                                                                   |
+| 电子签名厂商对接         | apmis/ca-sso/odcbs-ca            | 固定 master                                                                                     | odcbs-ca 用于对接各个电子签名厂商；GitLab 已验证路径为 apmis/ca-sso/odcbs-ca。                                                        |
+| 移动端代码               | apmis/mobile/aims-mobile-vue     | 主版本 master；西安交通大学 xajd；广东省人民 gdsrm                                              | aims-mobile-vue 是移动端代码。                                                                                                        |
+| PDA 代码                 | apmis/mobile/aims-pda-vue        | 主版本 main；广东省人民 gdsrm                                                                   | aims-pda-vue 是 PDA 代码。                                                                                                            |
+| 后端代码                 | apmis/odcbs/odcbs-backend        | 开发分支 develop；广东省人民 gdsrm_develop                                                      | odcbs-backend 是后端代码。                                                                                                            |
+| 前端代码                 | apmis/odcbs/odcbs-frontend       | 开发分支 develop；广东省人民 gdsrm_develop；Angular17 由更高优先级规则进入 develop_to_angular17 | odcbs-frontend 是前端代码。                                                                                                           |
+| 手麻平台三方交互接口     | apmis/odbip/odbip-custom-backend | 固定 develop                                                                                    | odbip-custom-backend 是当前手麻平台项目，用于处理手麻系统一切跟三方系统交互接口的处理；GitLab 验证实际分支为 develop，未发现 deveop。 |
 
 ## 候选字段规则
 
-| 字段 | 字段值 | 工单数 | 推荐 GitLab 工程候选 | 示例 Jira 编号 |
-| --- | --- | ---: | --- | --- |
-| domain_rule | 新手麻代码在 APMIS | 15 | apmis/odcbs/odcbs-frontend（命中 15，平均置信度 0.878） | APMIS-1988, APMIS-2061, APMIS-2062, APMIS-2028, APMIS-2027, APMIS-2026, APMIS-2213, APMIS-2096, APMIS-2090, APMIS-2045 |
-| jira_project | APMIS | 15 | apmis/odcbs/odcbs-frontend（命中 15，平均置信度 0.878） | APMIS-1988, APMIS-2061, APMIS-2062, APMIS-2028, APMIS-2027, APMIS-2026, APMIS-2213, APMIS-2096, APMIS-2090, APMIS-2045 |
-| product_module | 手麻 | 15 | apmis/odcbs/odcbs-frontend（命中 15，平均置信度 0.878） | APMIS-1988, APMIS-2061, APMIS-2062, APMIS-2028, APMIS-2027, APMIS-2026, APMIS-2213, APMIS-2096, APMIS-2090, APMIS-2045 |
-| project_source | Z总部集成测试 | 12 | apmis/odcbs/odcbs-frontend（命中 12，平均置信度 0.898） | APMIS-1988, APMIS-2061, APMIS-2062, APMIS-2028, APMIS-2027, APMIS-2026, APMIS-2213, APMIS-2096, APMIS-2045, APMIS-2088 |
-| manual_rules | client.frontend.odcbs-frontend | 8 | apmis/odcbs/odcbs-frontend（命中 8，平均置信度 1） | APMIS-2028, APMIS-2027, APMIS-2213, APMIS-2090, APMIS-2045, APMIS-1955, APMIS-73, APMIS-1004 |
-| manual_rules | text.angular17.frontend | 7 | apmis/odcbs/odcbs-frontend（命中 7，平均置信度 1） | APMIS-1988, APMIS-2061, APMIS-2062, APMIS-2028, APMIS-2027, APMIS-2026, APMIS-2213 |
-| project_source | SH盛京医院 | 2 | apmis/odcbs/odcbs-frontend（命中 2，平均置信度 0.695） | APMIS-73, APMIS-840 |
-| project_source | H怀化市第一人民医院 | 1 | apmis/odcbs/odcbs-frontend（命中 1，平均置信度 1） | APMIS-2090 |
+| 字段           | 字段值                                    | 工单数 | 推荐 GitLab 工程候选                                                                                                                                                                                                                                                               | 示例 Jira 编号                                                                                                         |
+| -------------- | ----------------------------------------- | -----: | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| domain_rule    | 新手麻代码在 APMIS                        |     50 | apmis/odcbs/odcbs-backend（命中 19，平均置信度 0.461）<br>apmis/odcbs/odcbs-frontend（命中 12，平均置信度 1）<br>apmis/odbip/odbip-custom-backend（命中 9，平均置信度 1）<br>apmis/mobile/aims-mobile-vue（命中 4，平均置信度 1）<br>apmis/ca-sso/odcbs-ca（命中 3，平均置信度 1） | APMIS-2254, APMIS-2253, APMIS-2244, APMIS-2242, APMIS-2252, APMIS-2251, APMIS-2222, APMIS-2204, APMIS-2212, APMIS-2250 |
+| jira_project   | APMIS                                     |     50 | apmis/odcbs/odcbs-backend（命中 19，平均置信度 0.461）<br>apmis/odcbs/odcbs-frontend（命中 12，平均置信度 1）<br>apmis/odbip/odbip-custom-backend（命中 9，平均置信度 1）<br>apmis/mobile/aims-mobile-vue（命中 4，平均置信度 1）<br>apmis/ca-sso/odcbs-ca（命中 3，平均置信度 1） | APMIS-2254, APMIS-2253, APMIS-2244, APMIS-2242, APMIS-2252, APMIS-2251, APMIS-2222, APMIS-2204, APMIS-2212, APMIS-2250 |
+| product_module | 手麻                                      |     50 | apmis/odcbs/odcbs-backend（命中 19，平均置信度 0.461）<br>apmis/odcbs/odcbs-frontend（命中 12，平均置信度 1）<br>apmis/odbip/odbip-custom-backend（命中 9，平均置信度 1）<br>apmis/mobile/aims-mobile-vue（命中 4，平均置信度 1）<br>apmis/ca-sso/odcbs-ca（命中 3，平均置信度 1） | APMIS-2254, APMIS-2253, APMIS-2244, APMIS-2242, APMIS-2252, APMIS-2251, APMIS-2222, APMIS-2204, APMIS-2212, APMIS-2250 |
+| project_source | Z总部集成测试                             |     18 | apmis/odcbs/odcbs-backend（命中 9，平均置信度 0.39）<br>apmis/odcbs/odcbs-frontend（命中 6，平均置信度 1）<br>apmis/ca-sso/odcbs-ca（命中 1，平均置信度 1）<br>apmis/odbip/odbip-custom-backend（命中 1，平均置信度 1）<br>apmis/aims-2019-doc（命中 1，平均置信度 0.42）          | APMIS-2212, APMIS-2250, APMIS-2044, APMIS-2047, APMIS-2229, APMIS-2249, APMIS-2248, APMIS-2247, APMIS-2246, APMIS-2231 |
+| manual_rules   | client.frontend.odcbs-frontend            |      8 | apmis/odcbs/odcbs-frontend（命中 8，平均置信度 1）                                                                                                                                                                                                                                 | APMIS-2028, APMIS-2027, APMIS-2213, APMIS-2090, APMIS-2045, APMIS-1955, APMIS-73, APMIS-1004                           |
+| manual_rules   | integration.platform.odbip-custom-backend |      9 | apmis/odbip/odbip-custom-backend（命中 9，平均置信度 1）                                                                                                                                                                                                                           | APMIS-2253, APMIS-2226, APMIS-2197, APMIS-2169, APMIS-2232, APMIS-2223, APMIS-1816, APMIS-1598, APMIS-1811             |
+| project_source | X襄阳中心医院                             |      5 | apmis/odbip/odbip-custom-backend（命中 3，平均置信度 1）<br>apmis/mobile/aims-mobile-vue（命中 1，平均置信度 1）<br>apmis/odcbs/odcbs-frontend（命中 1，平均置信度 1）                                                                                                             | APMIS-2254, APMIS-2239, APMIS-2197, APMIS-2169, APMIS-2223                                                             |
+| project_source | F福建三明永安总院                         |      5 | apmis/odcbs/odcbs-backend（命中 4，平均置信度 0.39）<br>apmis/odbip/odbip-custom-backend（命中 1，平均置信度 1）                                                                                                                                                                   | APMIS-2242, APMIS-2252, APMIS-2228, APMIS-2243, APMIS-1816                                                             |
+| manual_rules   | client.mobile.aims-mobile-vue             |      4 | apmis/mobile/aims-mobile-vue（命中 4，平均置信度 1）                                                                                                                                                                                                                               | APMIS-2254, APMIS-2041, APMIS-2038, APMIS-1637                                                                         |
+| manual_rules   | text.angular17.frontend                   |      7 | apmis/odcbs/odcbs-frontend（命中 7，平均置信度 1）                                                                                                                                                                                                                                 | APMIS-1988, APMIS-2061, APMIS-2062, APMIS-2028, APMIS-2027, APMIS-2026, APMIS-2213                                     |
+| manual_rules   | integration.signature.odcbs-ca            |      3 | apmis/ca-sso/odcbs-ca（命中 3，平均置信度 1）                                                                                                                                                                                                                                      | APMIS-2229, APMIS-2227, APMIS-1641                                                                                     |
+| project_source | N南京儿童                                 |      3 | apmis/mobile/aims-mobile-vue（命中 2，平均置信度 1）<br>apmis/aims-2019-doc（命中 1，平均置信度 0.42）                                                                                                                                                                             | APMIS-2041, APMIS-2038, APMIS-1805                                                                                     |
+| project_source | B北京玉泉项目                             |      2 | apmis/odcbs/odcbs-frontend（命中 2，平均置信度 1）                                                                                                                                                                                                                                 | APMIS-2222, APMIS-2245                                                                                                 |
+| project_source | ZH中山大学肿瘤防治中心                    |      2 | apmis/odcbs/odcbs-backend（命中 1，平均置信度 1）<br>apmis/intelligent-risk-evaluate/ire-frontend（命中 1，平均置信度 0.42）                                                                                                                                                       | APMIS-2244, APMIS-2240                                                                                                 |
+| project_source | H怀化市第一人民医院                       |      2 | apmis/odcbs/odcbs-frontend（命中 1，平均置信度 1）<br>apmis/odcbs/odcbs-backend（命中 1，平均置信度 0.39）                                                                                                                                                                         | APMIS-1815, APMIS-1609                                                                                                 |
+| project_source | X西安交通大学第一附属医院HIS一体化项目    |      2 | apmis/odcbs/odcbs-frontend（命中 1，平均置信度 1）<br>apmis/odbip/odbip-custom-backend（命中 1，平均置信度 1）                                                                                                                                                                     | APMIS-2235, APMIS-1811                                                                                                 |
+| manual_rules   | server.backend.odcbs-backend              |      1 | apmis/odcbs/odcbs-backend（命中 1，平均置信度 1）                                                                                                                                                                                                                                  | APMIS-2244                                                                                                             |
+| project_source | Q青岛妇儿项目                             |      1 | apmis/odcbs/odcbs-backend（命中 1，平均置信度 0.51）                                                                                                                                                                                                                               | APMIS-2236                                                                                                             |
+| project_source | G古田县医院                               |      1 | apmis/odbip/odbip-custom-backend（命中 1，平均置信度 1）                                                                                                                                                                                                                           | APMIS-1598                                                                                                             |
+| project_source | G广东祈福医院                             |      1 | apmis/mobile/aims-mobile-vue（命中 1，平均置信度 1）                                                                                                                                                                                                                               | APMIS-1637                                                                                                             |
 
 ## 高置信工单候选
 
-| Jira 编号 | 候选 GitLab 工程 | 置信度 | 分支候选 | 证据 |
-| --- | --- | ---: | --- | --- |
-| APMIS-1988 | apmis/odcbs/odcbs-frontend | 1 | develop_to_angular17：人工确认规则 | 命中人工确认规则：标题或描述包含 Angular17 |
-| APMIS-2061 | apmis/odcbs/odcbs-frontend | 1 | develop_to_angular17：人工确认规则 | 命中人工确认规则：标题或描述包含 Angular17 |
-| APMIS-2062 | apmis/odcbs/odcbs-frontend | 1 | develop_to_angular17：人工确认规则 | 命中人工确认规则：标题或描述包含 Angular17 |
-| APMIS-2028 | apmis/odcbs/odcbs-frontend | 1 | develop_to_angular17：人工确认规则 | 命中人工确认规则：标题或描述包含 Angular17 |
-| APMIS-2027 | apmis/odcbs/odcbs-frontend | 1 | develop_to_angular17：人工确认规则 | 命中人工确认规则：标题或描述包含 Angular17 |
-| APMIS-2026 | apmis/odcbs/odcbs-frontend | 1 | develop_to_angular17：人工确认规则 | 命中人工确认规则：标题或描述包含 Angular17 |
-| APMIS-2213 | apmis/odcbs/odcbs-frontend | 1 | develop_to_angular17：人工确认规则 | 命中人工确认规则：标题或描述包含 Angular17 |
-| APMIS-2090 | apmis/odcbs/odcbs-frontend | 1 | develop：人工确认规则 | 命中人工确认规则：前端代码 |
-| APMIS-2045 | apmis/odcbs/odcbs-frontend | 1 | develop：人工确认规则 | 命中人工确认规则：前端代码 |
-| APMIS-1955 | apmis/odcbs/odcbs-frontend | 1 | develop：人工确认规则 | 命中人工确认规则：前端代码 |
-| APMIS-73 | apmis/odcbs/odcbs-frontend | 1 | develop：人工确认规则 | 命中人工确认规则：前端代码<br>gitlab:apmis/odcbs/odcbs-frontend#mr:1737<br>gitlab:apmis/odcbs/odcbs-frontend#mr:1717 |
-| APMIS-1004 | apmis/odcbs/odcbs-frontend | 1 | develop：人工确认规则 | 命中人工确认规则：前端代码 |
+| Jira 编号  | 候选 GitLab 工程                 | 置信度 | 分支候选                           | 证据                                                                                                                 |
+| ---------- | -------------------------------- | -----: | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| APMIS-2254 | apmis/mobile/aims-mobile-vue     |      1 | master：人工确认规则               | 命中人工确认规则：移动端代码                                                                                         |
+| APMIS-2253 | apmis/odbip/odbip-custom-backend |      1 | develop：人工确认规则              | 命中人工确认规则：手麻平台三方交互接口                                                                               |
+| APMIS-2244 | apmis/odcbs/odcbs-backend        |      1 | develop：人工确认规则              | 命中人工确认规则：后端代码                                                                                           |
+| APMIS-2251 | apmis/odcbs/odcbs-frontend       |      1 | develop：人工确认规则              | 命中人工确认规则：前端代码                                                                                           |
+| APMIS-2222 | apmis/odcbs/odcbs-frontend       |      1 | develop：人工确认规则              | 命中人工确认规则：前端代码                                                                                           |
+| APMIS-2204 | apmis/odcbs/odcbs-backend        |      1 | develop：默认分支                  | gitlab:apmis/odcbs/odcbs-backend#mr:2565                                                                             |
+| APMIS-2250 | apmis/odcbs/odcbs-frontend       |      1 | develop_to_angular17：人工确认规则 | 命中人工确认规则：标题或描述包含 Angular17                                                                           |
+| APMIS-2044 | apmis/odcbs/odcbs-frontend       |      1 | develop_to_angular17：人工确认规则 | 命中人工确认规则：标题或描述包含 Angular17<br>gitlab:apmis/odcbs/odcbs-frontend#mr:2668                              |
+| APMIS-2047 | apmis/odcbs/odcbs-frontend       |      1 | develop：人工确认规则              | 命中人工确认规则：前端代码<br>gitlab:apmis/odcbs/odcbs-frontend#mr:2679<br>gitlab:apmis/odcbs/odcbs-frontend#mr:2668 |
+| APMIS-2229 | apmis/ca-sso/odcbs-ca            |      1 | master：人工确认规则               | 命中人工确认规则：电子签名厂商对接<br>gitlab:apmis/ca-sso/odcbs-ca#mr:110                                            |
+| APMIS-2247 | apmis/odcbs/odcbs-frontend       |      1 | develop：人工确认规则              | 命中人工确认规则：前端代码                                                                                           |
+| APMIS-2235 | apmis/odcbs/odcbs-frontend       |      1 | develop：人工确认规则              | 命中人工确认规则：前端代码                                                                                           |
+| APMIS-2227 | apmis/ca-sso/odcbs-ca            |      1 | master：人工确认规则               | 命中人工确认规则：电子签名厂商对接                                                                                   |
+| APMIS-2245 | apmis/odcbs/odcbs-frontend       |      1 | develop：人工确认规则              | 命中人工确认规则：前端代码                                                                                           |
+| APMIS-2239 | apmis/odcbs/odcbs-frontend       |      1 | develop：人工确认规则              | 命中人工确认规则：前端代码                                                                                           |
+| APMIS-2226 | apmis/odbip/odbip-custom-backend |      1 | develop：人工确认规则              | 命中人工确认规则：手麻平台三方交互接口                                                                               |
+| APMIS-2197 | apmis/odbip/odbip-custom-backend |      1 | develop：人工确认规则              | 命中人工确认规则：手麻平台三方交互接口                                                                               |
+| APMIS-2231 | apmis/odcbs/odcbs-frontend       |      1 | develop：人工确认规则              | 命中人工确认规则：前端代码                                                                                           |
+| APMIS-2169 | apmis/odbip/odbip-custom-backend |      1 | develop：人工确认规则              | 命中人工确认规则：手麻平台三方交互接口                                                                               |
+| APMIS-2232 | apmis/odbip/odbip-custom-backend |      1 | develop：人工确认规则              | 命中人工确认规则：手麻平台三方交互接口                                                                               |
+| APMIS-2041 | apmis/mobile/aims-mobile-vue     |      1 | master：人工确认规则               | 命中人工确认规则：移动端代码                                                                                         |
+| APMIS-2038 | apmis/mobile/aims-mobile-vue     |      1 | master：人工确认规则               | 命中人工确认规则：移动端代码                                                                                         |
+| APMIS-2223 | apmis/odbip/odbip-custom-backend |      1 | develop：人工确认规则              | 命中人工确认规则：手麻平台三方交互接口                                                                               |
+| APMIS-2234 | apmis/odcbs/odcbs-frontend       |      1 | develop_to_angular17：人工确认规则 | 命中人工确认规则：标题或描述包含 Angular17                                                                           |
+| APMIS-1816 | apmis/odbip/odbip-custom-backend |      1 | develop：人工确认规则              | 命中人工确认规则：手麻平台三方交互接口                                                                               |
+| APMIS-1641 | apmis/ca-sso/odcbs-ca            |      1 | master：人工确认规则               | 命中人工确认规则：电子签名厂商对接                                                                                   |
+| APMIS-1598 | apmis/odbip/odbip-custom-backend |      1 | develop：人工确认规则              | 命中人工确认规则：手麻平台三方交互接口                                                                               |
+| APMIS-1811 | apmis/odbip/odbip-custom-backend |      1 | develop：人工确认规则              | 命中人工确认规则：手麻平台三方交互接口                                                                               |
+| APMIS-1815 | apmis/odcbs/odcbs-frontend       |      1 | develop：人工确认规则              | 命中人工确认规则：前端代码                                                                                           |
+| APMIS-1637 | apmis/mobile/aims-mobile-vue     |      1 | master：人工确认规则               | 命中人工确认规则：移动端代码                                                                                         |
 
 ## 待确认动作
 
@@ -63,4 +93,3 @@
 - 每条 confirmed 规则都需要明确 GitLab 分支策略：默认分支、版本分支或功能分支。
 - 从 confirmed 的 issue_mappings 中挑选至少 20 条作为 W8 真实联合 eval 种子样本。
 - 不要把 candidate 规则直接复制为 W8 真值，必须先经过人工确认。
-

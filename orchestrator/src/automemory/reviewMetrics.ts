@@ -6,6 +6,9 @@ import type { ReviewAuditEvent } from './reviewCli.js';
 export interface ReviewMetricsOptions {
   readonly auditLogPath: string;
   readonly outputPath: string;
+  readonly reviewer?: string | undefined;
+  readonly since?: string | undefined;
+  readonly until?: string | undefined;
 }
 
 export interface W8ReviewMetricsJson {
@@ -28,17 +31,20 @@ const DEFAULT_OUTPUT_PATH = join('eval', 'w8-review-metrics.json');
 export async function generateW8ReviewMetrics(
   options: ReviewMetricsOptions
 ): Promise<W8ReviewMetricsJson> {
-  const events = await readReviewAuditEvents(options.auditLogPath);
+  const events = (await readReviewAuditEvents(options.auditLogPath)).filter((event) =>
+    shouldIncludeEvent(event, options)
+  );
   const acceptedCount = countDecision(events, 'accept');
   const editAcceptedCount = countDecision(events, 'edit');
   const rejectedCount = countDecision(events, 'reject');
   const skippedCount = countDecision(events, 'skip');
   const reviewedCount = acceptedCount + editAcceptedCount + rejectedCount;
   const reviewTimeMinutes = calculateReviewTimeMinutes(events);
+  const sourceSuffix = buildSourceSuffix(options);
 
   return {
     schema_version: REVIEW_METRICS_SCHEMA_VERSION,
-    source: `${options.auditLogPath}#${REVIEW_EVENT_NAME}`,
+    source: `${options.auditLogPath}#${REVIEW_EVENT_NAME}${sourceSuffix}`,
     reviewed_count: reviewedCount,
     accepted_count: acceptedCount,
     edit_accepted_count: editAcceptedCount,
@@ -49,14 +55,18 @@ export async function generateW8ReviewMetrics(
   };
 }
 
-export async function writeW8ReviewMetrics(options: ReviewMetricsOptions): Promise<W8ReviewMetricsJson> {
+export async function writeW8ReviewMetrics(
+  options: ReviewMetricsOptions
+): Promise<W8ReviewMetricsJson> {
   const metrics = await generateW8ReviewMetrics(options);
   await mkdir(dirname(options.outputPath), { recursive: true });
   await writeFile(options.outputPath, `${JSON.stringify(metrics, null, 2)}\n`, 'utf8');
   return metrics;
 }
 
-export async function runReviewMetricsCli(argv: readonly string[] = process.argv.slice(2)): Promise<void> {
+export async function runReviewMetricsCli(
+  argv: readonly string[] = process.argv.slice(2)
+): Promise<void> {
   const options = parseArgs(argv);
   const metrics = await writeW8ReviewMetrics(options);
   process.stdout.write(`${JSON.stringify(metrics, null, 2)}\n`);
@@ -71,7 +81,10 @@ async function readReviewAuditEvents(auditLogPath: string): Promise<readonly Rev
     .filter(isReviewAuditEvent);
 }
 
-function countDecision(events: readonly ReviewAuditEvent[], decision: ReviewAuditEvent['decision']): number {
+function countDecision(
+  events: readonly ReviewAuditEvent[],
+  decision: ReviewAuditEvent['decision']
+): number {
   return events.filter((event) => event.decision === decision).length;
 }
 
@@ -121,6 +134,9 @@ function isReviewDecision(value: unknown): value is ReviewAuditEvent['decision']
 function parseArgs(argv: readonly string[]): ReviewMetricsOptions {
   let auditLogPath = DEFAULT_AUDIT_LOG_PATH;
   let outputPath = DEFAULT_OUTPUT_PATH;
+  let reviewer: string | undefined;
+  let since: string | undefined;
+  let until: string | undefined;
 
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index]!;
@@ -134,12 +150,27 @@ function parseArgs(argv: readonly string[]): ReviewMetricsOptions {
       index += 1;
     } else if (arg.startsWith('--output=')) {
       outputPath = arg.slice('--output='.length);
+    } else if (arg === '--reviewer') {
+      reviewer = readNonEmpty(readNext(argv, index, arg), '--reviewer');
+      index += 1;
+    } else if (arg.startsWith('--reviewer=')) {
+      reviewer = readNonEmpty(arg.slice('--reviewer='.length), '--reviewer');
+    } else if (arg === '--since') {
+      since = readIsoTimestamp(readNext(argv, index, arg), '--since');
+      index += 1;
+    } else if (arg.startsWith('--since=')) {
+      since = readIsoTimestamp(arg.slice('--since='.length), '--since');
+    } else if (arg === '--until') {
+      until = readIsoTimestamp(readNext(argv, index, arg), '--until');
+      index += 1;
+    } else if (arg.startsWith('--until=')) {
+      until = readIsoTimestamp(arg.slice('--until='.length), '--until');
     } else {
       throw new Error(`Unknown option: ${arg}`);
     }
   }
 
-  return { auditLogPath, outputPath };
+  return { auditLogPath, outputPath, reviewer, since, until };
 }
 
 function readNext(argv: readonly string[], index: number, option: string): string {
@@ -148,6 +179,55 @@ function readNext(argv: readonly string[], index: number, option: string): strin
     throw new Error(`${option} requires a value`);
   }
   return value;
+}
+
+function readNonEmpty(value: string, option: string): string {
+  const trimmed = value.trim();
+  if (trimmed.length === 0) {
+    throw new Error(`${option} requires a non-empty value`);
+  }
+  return trimmed;
+}
+
+function readIsoTimestamp(value: string, option: string): string {
+  const timestamp = value.trim();
+  if (timestamp.length === 0 || Number.isNaN(Date.parse(timestamp))) {
+    throw new Error(`${option} must be an ISO timestamp`);
+  }
+  return timestamp;
+}
+
+function shouldIncludeEvent(event: ReviewAuditEvent, options: ReviewMetricsOptions): boolean {
+  if (options.reviewer !== undefined && event.reviewer !== options.reviewer) {
+    return false;
+  }
+
+  if (options.since !== undefined && Date.parse(event.timestamp) < Date.parse(options.since)) {
+    return false;
+  }
+
+  if (options.until !== undefined && Date.parse(event.timestamp) > Date.parse(options.until)) {
+    return false;
+  }
+
+  return true;
+}
+
+function buildSourceSuffix(options: ReviewMetricsOptions): string {
+  const params: string[] = [];
+  if (options.reviewer !== undefined) {
+    params.push(`reviewer=${options.reviewer}`);
+  }
+  if (options.since !== undefined) {
+    params.push(`since=${options.since}`);
+  }
+  if (options.until !== undefined) {
+    params.push(`until=${options.until}`);
+  }
+  if (params.length === 0) {
+    return '';
+  }
+  return `?${params.join('&')}`;
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

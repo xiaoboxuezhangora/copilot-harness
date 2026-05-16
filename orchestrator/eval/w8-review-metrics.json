@@ -1,0 +1,11 @@
+{
+  "schema_version": "phase-1b-w8-review-metrics@1",
+  "source": "../reports/audit.log#automemory.review_decision?reviewer=w8-reviewer",
+  "reviewed_count": 7,
+  "accepted_count": 7,
+  "edit_accepted_count": 0,
+  "rejected_count": 0,
+  "major_edit_count": 0,
+  "skipped_count": 0,
+  "review_time_minutes": 0.76
+}
