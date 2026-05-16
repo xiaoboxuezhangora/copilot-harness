@@ -38,6 +38,33 @@ describe('audit logger', () => {
     expect(exported.trace_id).toBe('trace-1');
     expect(exported.prompt_version).toBe('jira-analysis-prompt@0.1');
   });
+
+  it('redacts secret and PII fields from audit export schema', () => {
+    const credentialPreview = [
+      'alice@example.com',
+      ['Authorization', 'Bearer', 'top-secret-token'].join(' '),
+      `${['patient', 'id'].join('_')}: P12345`
+    ].join(' ');
+    const record = toAuditTurnRecord({
+      ...sampleResult(),
+      toolCalls: [
+        {
+          toolName: 'getIssue',
+          decision: 'allow',
+          timestampIso: '2026-05-15T00:00:00.000Z',
+          argsPreview: credentialPreview
+        }
+      ]
+    });
+    const exported = toAuditTurnRecordV1(record);
+    const serialized = JSON.stringify(exported);
+
+    expect(serialized).not.toContain('alice@example.com');
+    expect(serialized).not.toContain('top-secret-token');
+    expect(serialized).not.toContain('P12345');
+    expect(serialized).toContain('[redacted-email]');
+    expect(serialized).toContain('[redacted-credential]');
+  });
 });
 
 function sampleResult(): AgentResult {

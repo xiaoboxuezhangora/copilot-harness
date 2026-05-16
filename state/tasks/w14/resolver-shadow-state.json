@@ -1,0 +1,42 @@
+{
+  "schema_version": "w14-resolver-shadow-state@1",
+  "task_id": "w14-resolver-shadow",
+  "turn_state": "done",
+  "execution_mode": "shadow",
+  "generated_at": "2026-05-15T23:54:32.546Z",
+  "resolver_packet_schema_version": "resolver_packet.v1",
+  "sample_count": 100,
+  "report_status": "PASS",
+  "metrics": {
+    "sample_count": 100,
+    "schema_pass_rate": 1,
+    "schema_pass_numerator": 100,
+    "schema_pass_denominator": 100,
+    "misrelease_rate": 0,
+    "misrelease_numerator": 0,
+    "misrelease_denominator": 50,
+    "need_more_context_ratio": 0.32,
+    "need_more_context_numerator": 32,
+    "need_more_context_denominator": 100,
+    "ask_human_count": 0,
+    "await_human_count": 21,
+    "shadow_ready_count": 47,
+    "high_risk_count": 21,
+    "high_risk_await_human_count": 21,
+    "no_repo_evidence_count": 46,
+    "source_ref_fabrication_count": 0
+  },
+  "artifact_paths": {
+    "resolver_schema": "/Users/wangbo/own/copilot-harness/reports/w14/resolver-packet.schema.json",
+    "resolver_packets": "/Users/wangbo/own/copilot-harness/reports/w14/resolver-packets.json",
+    "eval_report_json": "/Users/wangbo/own/copilot-harness/reports/w14/eval-report.json",
+    "eval_report_md": "/Users/wangbo/own/copilot-harness/reports/w14/eval-report.md",
+    "task_state": "/Users/wangbo/own/copilot-harness/state/tasks/w14/resolver-shadow-state.json"
+  },
+  "external_writes": {
+    "git_push": false,
+    "merge_request_created": false,
+    "jira_write": false,
+    "real_fanout": false
+  }
+}

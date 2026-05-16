@@ -2,6 +2,7 @@ import { appendFile, mkdir } from 'node:fs/promises';
 import { dirname } from 'node:path';
 
 import type { AgentResult } from '../runtime/index.js';
+import { redactAuditExport } from '../security/index.js';
 import type { AuditTurnRecord, AuditTurnRecordV1 } from './types.js';
 
 export type { AuditTurnRecord } from './types.js';
@@ -28,10 +29,11 @@ export class AuditLogger {
 
   async logTurn(result: AgentResult): Promise<AuditTurnRecord> {
     const record = toAuditTurnRecord(result);
+    const redactedRecord = redactAuditExport(record).value;
     await mkdir(dirname(this.filePath), {
       recursive: true
     });
-    await appendFile(this.filePath, `${JSON.stringify(record)}\n`, 'utf8');
+    await appendFile(this.filePath, `${JSON.stringify(redactedRecord)}\n`, 'utf8');
     return record;
   }
 }
@@ -69,7 +71,7 @@ export function toAuditTurnRecord(result: AgentResult): AuditTurnRecord {
 }
 
 export function toAuditTurnRecordV1(record: AuditTurnRecord): AuditTurnRecordV1 {
-  return {
+  return redactAuditExport({
     timestamp: record.timestamp,
     task_id: record.taskId,
     ...(record.fleetSessionId !== undefined ? { fleet_session_id: record.fleetSessionId } : {}),
@@ -88,5 +90,5 @@ export function toAuditTurnRecordV1(record: AuditTurnRecord): AuditTurnRecordV1 
     prompt_version: record.promptVersion,
     capabilities: record.capabilities,
     otel_attributes: record.otelAttributes
-  };
+  }).value;
 }

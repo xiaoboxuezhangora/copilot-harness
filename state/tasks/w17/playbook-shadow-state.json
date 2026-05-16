@@ -1,0 +1,39 @@
+{
+  "schema_version": "w17-playbook-shadow-state@1",
+  "task_id": "w17-playbook-shadow",
+  "turn_state": "done",
+  "execution_mode": "shadow",
+  "generated_at": "2026-05-15T23:54:35.604Z",
+  "report_status": "PASS",
+  "playbook_count": 3,
+  "total_run_count": 15,
+  "metrics": {
+    "classification_pass_rate": 1,
+    "classification_pass_numerator": 15,
+    "classification_pass_denominator": 15,
+    "shadow_success_count": 0,
+    "needs_human_review_count": 0,
+    "blocked_missing_evidence_count": 15,
+    "blocked_high_risk_count": 0,
+    "unsafe_auto_success_count": 0,
+    "avg_handling_minutes": 96,
+    "review_queue_count": 0
+  },
+  "artifact_paths": {
+    "playbook_schema": "/Users/wangbo/own/copilot-harness/reports/w17/playbook.schema.json",
+    "playbooks_json": "/Users/wangbo/own/copilot-harness/reports/w17/playbooks.json",
+    "playbook_docs_dir": "/Users/wangbo/own/copilot-harness/reports/w17/playbooks",
+    "weekly_report_json": "/Users/wangbo/own/copilot-harness/reports/w17/weekly-shadow-report.json",
+    "weekly_report_md": "/Users/wangbo/own/copilot-harness/reports/w17/weekly-shadow-report.md",
+    "review_queue_json": "/Users/wangbo/own/copilot-harness/reports/w17/review-queue.json",
+    "next_week_fixes_md": "/Users/wangbo/own/copilot-harness/reports/w17/next-week-fixes.md",
+    "audit_jsonl": "/Users/wangbo/own/copilot-harness/reports/w17/audit.jsonl",
+    "task_state": "/Users/wangbo/own/copilot-harness/state/tasks/w17/playbook-shadow-state.json"
+  },
+  "external_writes": {
+    "git_push": false,
+    "merge_request_created": false,
+    "jira_write": false,
+    "auto_merge": false
+  }
+}
