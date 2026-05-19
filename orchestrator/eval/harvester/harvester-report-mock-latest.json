@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-15T23:54:32.620Z",
+  "generatedAt": "2026-05-16T04:13:33.326Z",
   "mode": "mock",
   "evidencePolicy": "regression_only",
   "acceptanceNote": "mock 模式仅用于离线回归，不可作为最终验收证据。",
@@ -52,12 +52,12 @@
     "json": [
       "/Users/wangbo/own/copilot-harness/orchestrator/eval/harvester-report.json",
       "/Users/wangbo/own/copilot-harness/orchestrator/eval/harvester/harvester-report-mock-latest.json",
-      "/Users/wangbo/own/copilot-harness/orchestrator/eval/harvester/harvester-report-mock-20260515T235432Z.json"
+      "/Users/wangbo/own/copilot-harness/orchestrator/eval/harvester/harvester-report-mock-20260516T041333Z.json"
     ],
     "markdown": [
       "/Users/wangbo/own/copilot-harness/orchestrator/eval/harvester-report.md",
       "/Users/wangbo/own/copilot-harness/orchestrator/eval/harvester/harvester-report-mock-latest.md",
-      "/Users/wangbo/own/copilot-harness/orchestrator/eval/harvester/harvester-report-mock-20260515T235432Z.md"
+      "/Users/wangbo/own/copilot-harness/orchestrator/eval/harvester/harvester-report-mock-20260516T041333Z.md"
     ]
   }
 }

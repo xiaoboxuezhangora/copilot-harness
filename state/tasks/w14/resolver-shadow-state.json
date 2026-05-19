@@ -3,7 +3,7 @@
   "task_id": "w14-resolver-shadow",
   "turn_state": "done",
   "execution_mode": "shadow",
-  "generated_at": "2026-05-15T23:54:32.546Z",
+  "generated_at": "2026-05-16T04:13:33.291Z",
   "resolver_packet_schema_version": "resolver_packet.v1",
   "sample_count": 100,
   "report_status": "PASS",

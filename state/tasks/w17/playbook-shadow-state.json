@@ -3,7 +3,7 @@
   "task_id": "w17-playbook-shadow",
   "turn_state": "done",
   "execution_mode": "shadow",
-  "generated_at": "2026-05-15T23:54:35.604Z",
+  "generated_at": "2026-05-16T04:13:41.495Z",
   "report_status": "PASS",
   "playbook_count": 3,
   "total_run_count": 15,
