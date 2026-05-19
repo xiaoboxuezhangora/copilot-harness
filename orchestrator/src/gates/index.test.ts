@@ -292,6 +292,55 @@ describe('gates', () => {
     });
   });
 
+  it('allows Jira Reader read-only tools and still rejects Jira write tools', () => {
+    const gate = new DefaultPolicyGate();
+    const jiraReadTools = [
+      'getServerInfo',
+      'getAttachmentMeta',
+      'getFields',
+      'getIssueDetails',
+      'getIssueAttachment',
+      'getIssueAttachmentContent',
+      'getProjectMetadata',
+      'getIssueRelations',
+      'getTransitions'
+    ] as const;
+
+    for (const toolName of jiraReadTools) {
+      expect(
+        gate.evaluate({
+          toolName,
+          declaredTools: [toolName],
+          toolDescriptor: {
+            name: toolName,
+            level: 'L0',
+            risk: 'read'
+          }
+        })
+      ).toEqual({
+        allowed: true,
+        decision: 'allow',
+        reason: `Tool ${toolName} allowed`
+      });
+    }
+
+    const writeTool = gate.evaluate({
+      toolName: 'transitionIssue',
+      declaredTools: ['transitionIssue'],
+      toolDescriptor: {
+        name: 'transitionIssue',
+        level: 'L2',
+        risk: 'write'
+      },
+      policyLevel: 'L2'
+    });
+    expect(writeTool).toEqual({
+      allowed: false,
+      decision: 'escalate',
+      reason: 'Tool transitionIssue is outside the read-only tool allowlist'
+    });
+  });
+
   it('rejects evidence packs without source_ref', () => {
     const validator = new DefaultValidator();
     const input: ValidatorInput = {
