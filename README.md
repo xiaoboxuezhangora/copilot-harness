@@ -9,14 +9,15 @@ workstreams.
 
 ## Repository Layout
 
-| Path                         | Purpose                                                  | W1 status              |
-| ---------------------------- | -------------------------------------------------------- | ---------------------- |
-| `orchestrator/`              | TypeScript orchestration service skeleton                | Active package         |
-| `mcp-servers/jira-reader/`   | Read-only Jira MCP server                                | W2 implementation      |
-| `skills/`                    | Agent Skill assets under `.github/skills/`               | Bootstrap placeholders |
-| `playbooks/`                 | Ordered workflow playbooks under `.github/playbooks/`    | Bootstrap placeholder  |
-| `docs/adr/`                  | Architecture decisions for repository and delivery shape | Monorepo ADRs          |
-| `docs/phase-0-w1-closure.md` | W1 completion evidence and remaining GitLab proof        | W1 closure note        |
+| Path                         | Purpose                                                        | W1 status               |
+| ---------------------------- | -------------------------------------------------------------- | ----------------------- |
+| `orchestrator/`              | TypeScript orchestration service skeleton                      | Active package          |
+| `mcp-servers/jira-reader/`   | Read-only Jira MCP server                                      | W2 implementation       |
+| `skills/`                    | Agent Skill assets under `.github/skills/`                     | Bootstrap placeholders  |
+| `playbooks/`                 | Ordered workflow playbooks under `.github/playbooks/`          | Bootstrap placeholder   |
+| `docs/framework/`            | Curated framework docs from Notion planning and local evidence | Current framework index |
+| `docs/adr/`                  | Architecture decisions for repository and delivery shape       | Monorepo ADRs           |
+| `docs/phase-0-w1-closure.md` | W1 completion evidence and remaining GitLab proof              | W1 closure note         |
 
 ## W1 Acceptance Shape
 
@@ -56,6 +57,14 @@ root scripts. Until a GitLab Runner is assigned to the project, the pipeline is 
 
 ## Key Documents
 
+- [Documentation index](docs/README.md)
+- [Framework documentation](docs/framework/README.md)
+- [Notion source map](docs/framework/01-notion-source-map.md)
+- [Market benchmark and adopted decisions](docs/framework/02-market-benchmark-and-adopted-decisions.md)
+- [Current architecture blueprint](docs/framework/03-architecture-blueprint.md)
+- [Roadmap and phase plan](docs/framework/04-roadmap-and-phase-plan.md)
+- [Implementation artifacts](docs/framework/05-implementation-artifacts.md)
+- [Operating boundaries and next steps](docs/framework/06-operating-boundaries-and-next-steps.md)
 - [Monorepo ADR](docs/adr/0001-w1-monorepo.md)
 - [W2-A runtime and MCP ownership ADR](docs/adr/0002-w2a-runtime-and-mcp-ownership.md)
 - [W1 closure note](docs/phase-0-w1-closure.md)

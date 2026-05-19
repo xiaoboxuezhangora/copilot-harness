@@ -8,8 +8,32 @@ import {
   parseJsonlContent,
   type ShowcaseSnapshotV1
 } from '../../scripts/showcase-export-lib.js';
+import { buildShowcaseIntegrationStatus } from '../../scripts/showcase-integration-status.js';
 
 describe('showcase export helper', () => {
+  it('builds redacted integration status from runtime env', () => {
+    const status = buildShowcaseIntegrationStatus({
+      JIRA_BASE_URL: 'https://user:password@jira.example.test/path?token=secret',
+      JIRA_USERNAME: 'jira-user',
+      JIRA_API_TOKEN: 'jira-secret',
+      JIRA_PROJECT_ALLOWLIST: 'APMIS',
+      GITLAB_BASE_URL: 'https://gitlab.example.test/group',
+      GITLAB_TOKEN: 'gitlab-secret'
+    });
+
+    expect(status.directApplySupported).toBe(false);
+    expect(status.restartRequired).toBe(true);
+    expect(status.endpoints.find((item) => item.id === 'jira')).toMatchObject({
+      configured: true,
+      credentialState: 'present',
+      displayUrl: 'https://jira.example.test/path'
+    });
+    expect(JSON.stringify(status)).not.toContain('jira-secret');
+    expect(JSON.stringify(status)).not.toContain('gitlab-secret');
+    expect(JSON.stringify(status)).not.toContain('password');
+    expect(JSON.stringify(status)).not.toContain('token=secret');
+  });
+
   it('parses jsonl and skips invalid lines with warnings', () => {
     const warnings: string[] = [];
     const parsed = parseJsonlContent(

@@ -1,6 +1,11 @@
 import { mkdir, readFile, readdir, stat, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 
+import {
+  buildShowcaseIntegrationStatus,
+  type ShowcaseIntegrationStatus,
+} from "./showcase-integration-status.js";
+
 export interface PresenceStat {
   present: number;
   missing: number;
@@ -25,6 +30,7 @@ export interface ShowcaseSnapshotV1 {
   evidencePacks: ShowcaseEvidencePack[];
   routeChains: ShowcaseRouteChain[];
   jiraIssues: ShowcaseJiraIssue[];
+  integrationStatus?: ShowcaseIntegrationStatus;
 }
 
 export interface ShowcaseTask {
@@ -300,6 +306,7 @@ export async function exportShowcaseSnapshot(
     evidencePacks,
     routeChains,
     jiraIssues,
+    integrationStatus: buildShowcaseIntegrationStatus(process.env),
   };
 
   snapshot.fieldPresence = buildFieldPresence(snapshot);

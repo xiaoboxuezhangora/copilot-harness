@@ -123,6 +123,7 @@ interface ShowcaseSnapshotV1 {
   mcpCalls: ShowcaseMcpCallV1[];
   evidencePacks: ShowcaseEvidencePackV1[];
   routeChains: ShowcaseRouteChainV1[];
+  integrationStatus?: ShowcaseIntegrationStatusV1;
 }
 ```
 
@@ -142,6 +143,7 @@ interface ShowcaseSnapshotV1 {
 | `metadata.phase0Readiness`       | enum         | DERIVED        | 若缺关键输入（`reports/audit.log` / `state/tasks/**/*.json` / 真实 MCP trace）或 `failedCount > 0`，则 `NOT_READY` |
 | `metadata.warnings`              | string[]     | DERIVED        | 缺文件、坏行、缺字段、demo trace 使用说明                                                                          |
 | `fieldPresence.*`                | object       | DERIVED        | 遍历快照目标字段，按 present/missing 计数，coverage=`present/(present+missing)`                                    |
+| `integrationStatus`              | object       | DERIVED        | 从运行环境变量脱敏生成 Jira/GitLab/Code Retrieval/MCP 当前配置状态；不包含 token 原文                              |
 | `tasks[].task_id`                | string       | DIRECT         | audit JSONL `taskId`                                                                                               |
 | `tasks[].fleet_session_id`       | string/null  | DIRECT         | W10 fleet audit `fleetSessionId` / `fleet_session_id`；无真实信号显示 `未接入`                                     |
 | `tasks[].parent_task_id`         | string/null  | DIRECT         | W10 fleet audit `parentTaskId` / `parent_task_id`                                                                  |

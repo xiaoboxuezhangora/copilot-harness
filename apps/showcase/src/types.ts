@@ -122,6 +122,29 @@ export interface ShowcaseJiraIssue {
   confidence: number | null;
 }
 
+export type ShowcaseIntegrationTone = "ok" | "warn" | "danger" | "neutral";
+
+export interface ShowcaseIntegrationEndpointStatus {
+  id: "jira" | "gitlab" | "codeRetrieval" | "mcp";
+  label: string;
+  configured: boolean;
+  tone: ShowcaseIntegrationTone;
+  displayUrl: string | null;
+  credentialState: "present" | "missing" | "not_required";
+  details: string[];
+  requiredEnv: string[];
+  applyMode: string;
+}
+
+export interface ShowcaseIntegrationStatus {
+  schemaVersion: "ShowcaseIntegrationStatusV1";
+  generatedAt: string;
+  source: "runtime-env";
+  directApplySupported: false;
+  restartRequired: true;
+  endpoints: ShowcaseIntegrationEndpointStatus[];
+}
+
 export interface ShowcaseSnapshotV1 {
   schemaVersion: "ShowcaseSnapshotV1";
   metadata: {
@@ -139,4 +162,5 @@ export interface ShowcaseSnapshotV1 {
   evidencePacks: ShowcaseEvidencePack[];
   routeChains: ShowcaseRouteChain[];
   jiraIssues?: ShowcaseJiraIssue[];
+  integrationStatus?: ShowcaseIntegrationStatus;
 }
