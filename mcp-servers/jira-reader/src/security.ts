@@ -30,9 +30,12 @@ export const JIRA_FIELD_WHITELIST = [
 
 export const DEFAULT_SEARCH_LIMIT = 20;
 export const MAX_SEARCH_LIMIT = 50;
+export const DEFAULT_ATTACHMENT_MAX_BYTES = 2 * 1024 * 1024;
+export const MAX_ATTACHMENT_MAX_BYTES = 5 * 1024 * 1024;
 
 const ISSUE_KEY_PATTERN = /^[A-Z][A-Z0-9_]+-\d+$/;
 const PROJECT_KEY_PATTERN = /^[A-Z][A-Z0-9_]+$/;
+const ATTACHMENT_ID_PATTERN = /^\d+$/;
 const PRIVATE_IPV4_PATTERN =
   /\b(?:10\.\d{1,3}\.\d{1,3}\.\d{1,3}|127\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|172\.(?:1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3})\b/g;
 const IPV4_PATTERN = /\b(?:\d{1,3}\.){3}\d{1,3}\b/g;
@@ -113,6 +116,43 @@ export function normalizeMaxResults(maxResults: number | undefined): number {
   }
 
   return maxResults;
+}
+
+export function normalizeAttachmentMaxBytes(
+  maxBytes: number | undefined,
+): number {
+  if (maxBytes === undefined) {
+    return DEFAULT_ATTACHMENT_MAX_BYTES;
+  }
+
+  if (
+    !Number.isInteger(maxBytes) ||
+    maxBytes < 1 ||
+    maxBytes > MAX_ATTACHMENT_MAX_BYTES
+  ) {
+    throw new JiraPolicyError(
+      `maxBytes must be between 1 and ${MAX_ATTACHMENT_MAX_BYTES}`,
+    );
+  }
+
+  return maxBytes;
+}
+
+export function assertAttachmentIdAllowed(attachmentId: string): void {
+  if (!ATTACHMENT_ID_PATTERN.test(attachmentId)) {
+    throw new JiraPolicyError("Attachment id must be numeric");
+  }
+}
+
+export function assertProjectKeyAllowed(
+  projectKey: string,
+  policy: JiraSecurityPolicy,
+): void {
+  if (!PROJECT_KEY_PATTERN.test(projectKey)) {
+    throw new JiraPolicyError("Project key is invalid");
+  }
+
+  assertProjectAllowed(projectKey, policy);
 }
 
 export function assertJqlAllowed(

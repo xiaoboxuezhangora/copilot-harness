@@ -5,8 +5,14 @@ import { JiraClient } from "./jiraClient.js";
 import { createJiraReaderServer } from "./tools.js";
 
 export {
+  emptyInputSchema,
+  getFieldsInputSchema,
   getCommentsInputSchema,
   getIssueInputSchema,
+  getIssueAttachmentContentInputSchema,
+  getIssueAttachmentInputSchema,
+  getIssueDetailsInputSchema,
+  getProjectMetadataInputSchema,
   searchIssuesInputSchema,
   TOOL_NAMES,
   createJiraReaderServer,
@@ -19,9 +25,20 @@ export { JIRA_FIELD_WHITELIST, MAX_SEARCH_LIMIT } from "./security.js";
 export type { MockJiraServer } from "./mockJiraServer.js";
 export type {
   JiraAttachment,
+  JiraAttachmentContent,
+  JiraAttachmentMeta,
   JiraComment,
+  JiraField,
+  JiraIssueLink,
+  JiraIssueRef,
+  JiraIssueDetails,
+  JiraIssueRelations,
   JiraIssue,
+  JiraProjectMetadata,
+  JiraRemoteLink,
   JiraSearchResult,
+  JiraServerInfo,
+  JiraTransition,
 } from "./types.js";
 
 export async function startStdioServer(): Promise<void> {

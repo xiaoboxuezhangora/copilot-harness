@@ -48,7 +48,7 @@ describe("jira-reader MCP tools", () => {
     await mockServer.close();
   });
 
-  it("exposes only the three read-only tools", async () => {
+  it("exposes the read-only Jira capability tools", async () => {
     const tools = await client.listTools();
 
     expect(tools.tools.map((tool) => tool.name).sort()).toEqual(
@@ -159,7 +159,7 @@ describe("jira-reader MCP tools", () => {
     });
 
     const tools = await client.listTools();
-    expect(tools.tools).toHaveLength(3);
+    expect(tools.tools).toHaveLength(TOOL_NAMES.length);
   });
 
   it("maps unreachable Jira requests to tool errors", async () => {
@@ -204,6 +204,205 @@ describe("jira-reader MCP tools", () => {
       },
     });
   });
+
+  it("reads Jira server, attachment, and field metadata", async () => {
+    const serverInfoResult = await client.callTool(
+      {
+        name: "getServerInfo",
+        arguments: {},
+      },
+      CallToolResultSchema,
+    );
+    const attachmentMetaResult = await client.callTool(
+      {
+        name: "getAttachmentMeta",
+        arguments: {},
+      },
+      CallToolResultSchema,
+    );
+    const fieldsResult = await client.callTool(
+      {
+        name: "getFields",
+        arguments: {
+          customOnly: true,
+          query: "目标",
+          maxResults: 5,
+        },
+      },
+      CallToolResultSchema,
+    );
+
+    expect(parseTextPayload(serverInfoResult.content)).toMatchObject({
+      serverInfo: {
+        version: "7.10.1",
+        deploymentType: "Server",
+      },
+    });
+    expect(parseTextPayload(attachmentMetaResult.content)).toMatchObject({
+      attachmentMeta: {
+        enabled: true,
+        uploadLimit: 10485760,
+      },
+    });
+    expect(parseTextPayload(fieldsResult.content)).toMatchObject({
+      fields: [
+        {
+          id: "customfield_13301",
+          name: "目标版本",
+          custom: true,
+        },
+      ],
+    });
+  });
+
+  it("reads issue details with expanded names and changelog", async () => {
+    const result = await client.callTool(
+      {
+        name: "getIssueDetails",
+        arguments: {
+          issueKey: "OPS-1",
+          includeRenderedFields: true,
+          includeChangelog: true,
+          maxChangelogEntries: 1,
+        },
+      },
+      CallToolResultSchema,
+    );
+
+    expect(parseTextPayload(result.content)).toMatchObject({
+      issueDetails: {
+        issue: {
+          key: "OPS-1",
+        },
+        names: {
+          customfield_13301: "目标版本",
+        },
+        changelog: {
+          histories: [
+            {
+              id: "70001",
+            },
+          ],
+        },
+      },
+    });
+  });
+
+  it("returns scoped issue attachment metadata and image content", async () => {
+    const metadataResult = await client.callTool(
+      {
+        name: "getIssueAttachment",
+        arguments: {
+          issueKey: "OPS-1",
+          attachmentId: "10001",
+        },
+      },
+      CallToolResultSchema,
+    );
+    const contentResult = await client.callTool(
+      {
+        name: "getIssueAttachmentContent",
+        arguments: {
+          issueKey: "OPS-1",
+          attachmentId: "10001",
+          maxBytes: 100,
+        },
+      },
+      CallToolResultSchema,
+    );
+
+    expect(
+      JSON.stringify(parseTextPayload(metadataResult.content)),
+    ).not.toContain("@example.com");
+    expect(parseTextPayload(metadataResult.content)).toMatchObject({
+      attachment: {
+        id: "10001",
+        filename: "screenshot.png",
+        mimeType: "image/png",
+      },
+    });
+    expect(parseTextPayload(contentResult.content)).toMatchObject({
+      attachmentContent: {
+        mimeType: "image/png",
+        byteLength: 10,
+        truncated: false,
+      },
+    });
+    expect(hasImageContent(contentResult.content)).toBe(true);
+  });
+
+  it("reads project metadata, issue relations, and transitions", async () => {
+    const projectResult = await client.callTool(
+      {
+        name: "getProjectMetadata",
+        arguments: {
+          projectKey: "OPS",
+        },
+      },
+      CallToolResultSchema,
+    );
+    const relationsResult = await client.callTool(
+      {
+        name: "getIssueRelations",
+        arguments: {
+          issueKey: "OPS-1",
+        },
+      },
+      CallToolResultSchema,
+    );
+    const transitionsResult = await client.callTool(
+      {
+        name: "getTransitions",
+        arguments: {
+          issueKey: "OPS-1",
+        },
+      },
+      CallToolResultSchema,
+    );
+
+    expect(parseTextPayload(projectResult.content)).toMatchObject({
+      projectMetadata: {
+        project: {
+          key: "OPS",
+        },
+        components: [
+          {
+            name: "Login",
+          },
+        ],
+      },
+    });
+    expect(parseTextPayload(relationsResult.content)).toMatchObject({
+      issueRelations: {
+        issueKey: "OPS-1",
+        parent: {
+          key: "OPS-0",
+        },
+        subtasks: [
+          {
+            key: "OPS-3",
+          },
+        ],
+        issueLinks: [
+          {
+            direction: "outward",
+            issue: {
+              key: "OPS-4",
+            },
+          },
+        ],
+      },
+    });
+    expect(parseTextPayload(transitionsResult.content)).toMatchObject({
+      transitions: [
+        {
+          id: "21",
+          name: "开发完成",
+          to: "Done",
+        },
+      ],
+    });
+  });
 });
 
 function parseTextPayload(content: unknown): Record<string, unknown> {
@@ -227,6 +426,19 @@ function parseTextPayload(content: unknown): Record<string, unknown> {
 function isTextContent(value: unknown): value is TextContent {
   return (
     isRecord(value) && value.type === "text" && typeof value.text === "string"
+  );
+}
+
+function hasImageContent(content: unknown): boolean {
+  return (
+    Array.isArray(content) &&
+    content.some(
+      (item) =>
+        isRecord(item) &&
+        item.type === "image" &&
+        typeof item.data === "string" &&
+        item.mimeType === "image/png",
+    )
   );
 }
 

@@ -22,7 +22,9 @@ export interface JiraAttachment {
   readonly mimeType?: string;
   readonly size?: number;
   readonly contentUrl?: string;
+  readonly thumbnailUrl?: string;
   readonly created?: string;
+  readonly author?: JiraUser;
 }
 
 export interface JiraTimeTracking {
@@ -70,4 +72,125 @@ export interface JiraSearchResult {
   readonly maxResults: number;
   readonly total: number;
   readonly issues: readonly JiraIssue[];
+}
+
+export interface JiraServerInfo {
+  readonly baseUrl?: string;
+  readonly version?: string;
+  readonly versionNumbers: readonly number[];
+  readonly deploymentType?: string;
+  readonly buildNumber?: number;
+  readonly buildDate?: string;
+  readonly serverTitle?: string;
+}
+
+export interface JiraAttachmentMeta {
+  readonly enabled: boolean;
+  readonly uploadLimit?: number;
+}
+
+export interface JiraFieldSchema {
+  readonly type?: string;
+  readonly items?: string;
+  readonly system?: string;
+  readonly custom?: string;
+  readonly customId?: number;
+}
+
+export interface JiraField {
+  readonly id: string;
+  readonly name: string;
+  readonly custom: boolean;
+  readonly orderable?: boolean;
+  readonly navigable?: boolean;
+  readonly searchable?: boolean;
+  readonly clauseNames: readonly string[];
+  readonly schema?: JiraFieldSchema;
+}
+
+export interface JiraIssueDetails {
+  readonly issue: JiraIssue;
+  readonly names?: Record<string, string>;
+  readonly schema?: Record<string, unknown>;
+  readonly renderedFields?: Record<string, unknown>;
+  readonly changelog?: Record<string, unknown>;
+}
+
+export interface JiraAttachmentContent {
+  readonly attachment: JiraAttachment;
+  readonly mimeType: string;
+  readonly byteLength: number;
+  readonly base64: string;
+  readonly truncated: boolean;
+}
+
+export interface JiraProjectComponent {
+  readonly id?: string;
+  readonly name?: string;
+  readonly description?: string;
+}
+
+export interface JiraProjectVersion {
+  readonly id?: string;
+  readonly name?: string;
+  readonly released?: boolean;
+  readonly archived?: boolean;
+  readonly releaseDate?: string;
+}
+
+export interface JiraProjectStatus {
+  readonly id?: string;
+  readonly name?: string;
+  readonly issueTypes: readonly {
+    readonly id?: string;
+    readonly name?: string;
+    readonly statuses: readonly {
+      readonly id?: string;
+      readonly name?: string;
+      readonly statusCategory?: string;
+    }[];
+  }[];
+}
+
+export interface JiraProjectMetadata {
+  readonly project: JiraProject;
+  readonly components: readonly JiraProjectComponent[];
+  readonly versions: readonly JiraProjectVersion[];
+  readonly statuses: readonly JiraProjectStatus[];
+}
+
+export interface JiraIssueRef {
+  readonly key?: string;
+  readonly summary?: string;
+  readonly status?: string;
+}
+
+export interface JiraIssueLink {
+  readonly id?: string;
+  readonly type?: string;
+  readonly direction?: "inward" | "outward";
+  readonly description?: string;
+  readonly issue?: JiraIssueRef;
+}
+
+export interface JiraRemoteLink {
+  readonly id?: number;
+  readonly globalId?: string;
+  readonly title?: string;
+  readonly url?: string;
+  readonly relationship?: string;
+}
+
+export interface JiraIssueRelations {
+  readonly issueKey: string;
+  readonly parent?: JiraIssueRef;
+  readonly subtasks: readonly JiraIssueRef[];
+  readonly issueLinks: readonly JiraIssueLink[];
+  readonly remoteLinks: readonly JiraRemoteLink[];
+}
+
+export interface JiraTransition {
+  readonly id: string;
+  readonly name: string;
+  readonly to?: string;
 }
