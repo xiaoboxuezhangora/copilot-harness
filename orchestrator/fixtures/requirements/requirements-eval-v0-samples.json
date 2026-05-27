@@ -1,0 +1,2276 @@
+{
+  "schemaVersion": "requirements-analysis-eval-v0-samples@1",
+  "samples": [
+    {
+      "sampleId": "jira-filter-86004-apmis-2271",
+      "issueKey": "APMIS-2271",
+      "evidencePack": {
+        "schemaVersion": "JiraEvidencePackV2",
+        "issue": {
+          "key": "APMIS-2271",
+          "summary": "【盛京医院-输血闭环】备转输确认返回失败",
+          "description": "【盛京医院-输血闭环】备转输确认返回失败",
+          "issueType": "缺陷",
+          "status": "处理中",
+          "priority": "中",
+          "assignee": "b.w_neu",
+          "labels": [],
+          "projectKey": "APMIS",
+          "projectName": "新手麻",
+          "created": "2026-05-19T17:12:36.000+0800",
+          "updated": "2026-05-20T09:02:59.000+0800",
+          "dueDate": "2026-06-04",
+          "sourceRef": "jira.issue:APMIS-2271"
+        },
+        "fields": [],
+        "fieldValues": [
+          {
+            "fieldKey": "targetVersion",
+            "valueKind": "string",
+            "valueString": "7.0.191.0",
+            "sourceRef": "jira.field-value:APMIS-2271:targetVersion"
+          },
+          {
+            "fieldKey": "productModule",
+            "valueKind": "string",
+            "valueString": "手麻 - 护理工作站",
+            "sourceRef": "jira.field-value:APMIS-2271:productModule"
+          },
+          {
+            "fieldKey": "defectCategory",
+            "valueKind": "string",
+            "valueString": "功能问题",
+            "sourceRef": "jira.field-value:APMIS-2271:defectCategory"
+          },
+          {
+            "fieldKey": "issueCategory",
+            "valueKind": "string",
+            "valueString": "核心",
+            "sourceRef": "jira.field-value:APMIS-2271:issueCategory"
+          },
+          {
+            "fieldKey": "projectSource",
+            "valueKind": "string",
+            "valueString": "Z总部集成测试",
+            "sourceRef": "jira.field-value:APMIS-2271:projectSource"
+          },
+          {
+            "fieldKey": "coreRecovery",
+            "valueKind": "string",
+            "valueString": "未分析未回收",
+            "sourceRef": "jira.field-value:APMIS-2271:coreRecovery"
+          },
+          {
+            "fieldKey": "requirementReleased",
+            "valueKind": "string",
+            "valueString": "是",
+            "sourceRef": "jira.field-value:APMIS-2271:requirementReleased"
+          },
+          {
+            "fieldKey": "timeTracking",
+            "valueKind": "time_tracking",
+            "valueTimeTracking": {
+              "originalEstimateSeconds": 14400,
+              "remainingEstimateSeconds": 14400
+            },
+            "sourceRef": "jira.field-value:APMIS-2271:timeTracking"
+          }
+        ],
+        "comments": [],
+        "attachments": [
+          {
+            "id": "428404",
+            "filename": "screenshot-1.png",
+            "mimeType": "image/png",
+            "size": 1144281,
+            "sourceRef": "jira.attachment:APMIS-2271:428404",
+            "securityDigest": null
+          }
+        ],
+        "mediaEvidence": [],
+        "projectMetadata": null,
+        "relations": [],
+        "transitions": [],
+        "sourceRefs": [
+          "jira.issue:APMIS-2271",
+          "jira.field-value:APMIS-2271:targetVersion",
+          "jira.field-value:APMIS-2271:productModule",
+          "jira.field-value:APMIS-2271:defectCategory",
+          "jira.field-value:APMIS-2271:issueCategory",
+          "jira.field-value:APMIS-2271:projectSource",
+          "jira.field-value:APMIS-2271:coreRecovery",
+          "jira.field-value:APMIS-2271:requirementReleased",
+          "jira.field-value:APMIS-2271:timeTracking",
+          "jira.attachment:APMIS-2271:428404"
+        ],
+        "generatedAt": "2026-05-20T00:00:00.000Z"
+      },
+      "expected": {
+        "profile": "Integration",
+        "investigationLight": "yellow",
+        "implementationLight": "red",
+        "keyGaps": [
+          "downstreamSystem",
+          "apiContract",
+          "fieldMapping",
+          "acceptanceAssertions",
+          "authBoundary",
+          "failureHandling",
+          "testFixtures"
+        ],
+        "requiredSourceRefs": [
+          "jira.issue:APMIS-2271",
+          "jira.attachment:APMIS-2271:428404"
+        ]
+      },
+      "review": {
+        "reviewer": "codex-jira-import",
+        "reviewedAt": "2026-05-20T00:00:00.000Z",
+        "reviewSourceRef": "jira.filter:86004:APMIS-2271",
+        "adjustmentReason": "真实 Jira filter=86004 partial replay；expected 由当前会话基于 issue 标题、描述、附件和字段粗标，待 Notion v2 50 样本人工复核。"
+      },
+      "metadata": {
+        "source": "manual-replay"
+      }
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-2270",
+      "issueKey": "APMIS-2270",
+      "evidencePack": {
+        "schemaVersion": "JiraEvidencePackV2",
+        "issue": {
+          "key": "APMIS-2270",
+          "summary": "【盛京医院-输血闭环】备血申请管理列表中的申请血量下方的数值，与表头错位显示",
+          "description": "【盛京医院-输血闭环】备血申请管理列表中的申请血量下方的数值，与表头错位显示",
+          "issueType": "缺陷",
+          "status": "处理中",
+          "priority": "中",
+          "assignee": "b.w_neu",
+          "labels": [],
+          "projectKey": "APMIS",
+          "projectName": "新手麻",
+          "created": "2026-05-19T16:57:45.000+0800",
+          "updated": "2026-05-20T09:02:40.000+0800",
+          "dueDate": "2026-06-04",
+          "sourceRef": "jira.issue:APMIS-2270"
+        },
+        "fields": [],
+        "fieldValues": [
+          {
+            "fieldKey": "targetVersion",
+            "valueKind": "string",
+            "valueString": "7.0.191.0",
+            "sourceRef": "jira.field-value:APMIS-2270:targetVersion"
+          },
+          {
+            "fieldKey": "productModule",
+            "valueKind": "string",
+            "valueString": "手麻 - 护理工作站",
+            "sourceRef": "jira.field-value:APMIS-2270:productModule"
+          },
+          {
+            "fieldKey": "defectCategory",
+            "valueKind": "string",
+            "valueString": "功能问题",
+            "sourceRef": "jira.field-value:APMIS-2270:defectCategory"
+          },
+          {
+            "fieldKey": "issueCategory",
+            "valueKind": "string",
+            "valueString": "核心",
+            "sourceRef": "jira.field-value:APMIS-2270:issueCategory"
+          },
+          {
+            "fieldKey": "projectSource",
+            "valueKind": "string",
+            "valueString": "Z总部集成测试",
+            "sourceRef": "jira.field-value:APMIS-2270:projectSource"
+          },
+          {
+            "fieldKey": "coreRecovery",
+            "valueKind": "string",
+            "valueString": "未分析未回收",
+            "sourceRef": "jira.field-value:APMIS-2270:coreRecovery"
+          },
+          {
+            "fieldKey": "requirementReleased",
+            "valueKind": "string",
+            "valueString": "是",
+            "sourceRef": "jira.field-value:APMIS-2270:requirementReleased"
+          },
+          {
+            "fieldKey": "timeTracking",
+            "valueKind": "time_tracking",
+            "valueTimeTracking": {
+              "originalEstimateSeconds": 14400,
+              "remainingEstimateSeconds": 14400
+            },
+            "sourceRef": "jira.field-value:APMIS-2270:timeTracking"
+          }
+        ],
+        "comments": [],
+        "attachments": [
+          {
+            "id": "428391",
+            "filename": "screenshot-1.png",
+            "mimeType": "image/png",
+            "size": 300168,
+            "sourceRef": "jira.attachment:APMIS-2270:428391",
+            "securityDigest": null
+          }
+        ],
+        "mediaEvidence": [],
+        "projectMetadata": null,
+        "relations": [],
+        "transitions": [],
+        "sourceRefs": [
+          "jira.issue:APMIS-2270",
+          "jira.field-value:APMIS-2270:targetVersion",
+          "jira.field-value:APMIS-2270:productModule",
+          "jira.field-value:APMIS-2270:defectCategory",
+          "jira.field-value:APMIS-2270:issueCategory",
+          "jira.field-value:APMIS-2270:projectSource",
+          "jira.field-value:APMIS-2270:coreRecovery",
+          "jira.field-value:APMIS-2270:requirementReleased",
+          "jira.field-value:APMIS-2270:timeTracking",
+          "jira.attachment:APMIS-2270:428391"
+        ],
+        "generatedAt": "2026-05-20T00:00:00.000Z"
+      },
+      "expected": {
+        "profile": "Visual",
+        "investigationLight": "yellow",
+        "implementationLight": "red",
+        "keyGaps": [
+          "expectedBehavior",
+          "baselineEvidence",
+          "viewport",
+          "acceptanceAssertions"
+        ],
+        "requiredSourceRefs": [
+          "jira.issue:APMIS-2270",
+          "jira.attachment:APMIS-2270:428391"
+        ]
+      },
+      "review": {
+        "reviewer": "codex-jira-import",
+        "reviewedAt": "2026-05-20T00:00:00.000Z",
+        "reviewSourceRef": "jira.filter:86004:APMIS-2270",
+        "adjustmentReason": "真实 Jira filter=86004 partial replay；expected 由当前会话基于 issue 标题、描述、附件和字段粗标，待 Notion v2 50 样本人工复核。"
+      },
+      "metadata": {
+        "source": "manual-replay"
+      }
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-2250",
+      "issueKey": "APMIS-2250",
+      "evidencePack": {
+        "schemaVersion": "JiraEvidencePackV2",
+        "issue": {
+          "key": "APMIS-2250",
+          "summary": "【angular17-急诊手术安排】进入急诊手术安排页面中，选择患者点击手术安排，急诊手术安排窗口一直处于加载中状态",
+          "description": "【angular17-急诊手术安排】进入急诊手术安排页面中，选择患者点击手术安排，急诊手术安排窗口一直处于加载中状态",
+          "issueType": "缺陷",
+          "status": "处理中",
+          "priority": "低",
+          "assignee": "b.w_neu",
+          "labels": [],
+          "projectKey": "APMIS",
+          "projectName": "新手麻",
+          "created": "2026-05-14T13:39:20.000+0800",
+          "updated": "2026-05-15T14:56:52.000+0800",
+          "dueDate": "2026-06-04",
+          "sourceRef": "jira.issue:APMIS-2250"
+        },
+        "fields": [],
+        "fieldValues": [
+          {
+            "fieldKey": "targetVersion",
+            "valueKind": "string",
+            "valueString": "7.0.191.0",
+            "sourceRef": "jira.field-value:APMIS-2250:targetVersion"
+          },
+          {
+            "fieldKey": "productModule",
+            "valueKind": "string",
+            "valueString": "手麻 - 麻醉工作站",
+            "sourceRef": "jira.field-value:APMIS-2250:productModule"
+          },
+          {
+            "fieldKey": "defectCategory",
+            "valueKind": "string",
+            "valueString": "功能问题",
+            "sourceRef": "jira.field-value:APMIS-2250:defectCategory"
+          },
+          {
+            "fieldKey": "issueCategory",
+            "valueKind": "string",
+            "valueString": "核心",
+            "sourceRef": "jira.field-value:APMIS-2250:issueCategory"
+          },
+          {
+            "fieldKey": "projectSource",
+            "valueKind": "string",
+            "valueString": "Z总部集成测试",
+            "sourceRef": "jira.field-value:APMIS-2250:projectSource"
+          },
+          {
+            "fieldKey": "coreRecovery",
+            "valueKind": "string",
+            "valueString": "未分析未回收",
+            "sourceRef": "jira.field-value:APMIS-2250:coreRecovery"
+          },
+          {
+            "fieldKey": "requirementReleased",
+            "valueKind": "string",
+            "valueString": "是",
+            "sourceRef": "jira.field-value:APMIS-2250:requirementReleased"
+          },
+          {
+            "fieldKey": "timeTracking",
+            "valueKind": "time_tracking",
+            "valueTimeTracking": {
+              "originalEstimateSeconds": 14400,
+              "remainingEstimateSeconds": 14400
+            },
+            "sourceRef": "jira.field-value:APMIS-2250:timeTracking"
+          }
+        ],
+        "comments": [],
+        "attachments": [
+          {
+            "id": "426490",
+            "filename": "image-2026-05-14-13-39-16-868.png",
+            "mimeType": "image/png",
+            "size": 276032,
+            "sourceRef": "jira.attachment:APMIS-2250:426490",
+            "securityDigest": null
+          }
+        ],
+        "mediaEvidence": [],
+        "projectMetadata": null,
+        "relations": [],
+        "transitions": [],
+        "sourceRefs": [
+          "jira.issue:APMIS-2250",
+          "jira.field-value:APMIS-2250:targetVersion",
+          "jira.field-value:APMIS-2250:productModule",
+          "jira.field-value:APMIS-2250:defectCategory",
+          "jira.field-value:APMIS-2250:issueCategory",
+          "jira.field-value:APMIS-2250:projectSource",
+          "jira.field-value:APMIS-2250:coreRecovery",
+          "jira.field-value:APMIS-2250:requirementReleased",
+          "jira.field-value:APMIS-2250:timeTracking",
+          "jira.attachment:APMIS-2250:426490"
+        ],
+        "generatedAt": "2026-05-20T00:00:00.000Z"
+      },
+      "expected": {
+        "profile": "Workflow",
+        "investigationLight": "yellow",
+        "implementationLight": "red",
+        "keyGaps": [
+          "roles",
+          "businessRules",
+          "exceptionPaths",
+          "auditTrail",
+          "acceptanceAssertions"
+        ],
+        "requiredSourceRefs": [
+          "jira.issue:APMIS-2250",
+          "jira.attachment:APMIS-2250:426490"
+        ]
+      },
+      "review": {
+        "reviewer": "codex-jira-import",
+        "reviewedAt": "2026-05-20T00:00:00.000Z",
+        "reviewSourceRef": "jira.filter:86004:APMIS-2250",
+        "adjustmentReason": "真实 Jira filter=86004 partial replay；expected 由当前会话基于 issue 标题、描述、附件和字段粗标，待 Notion v2 50 样本人工复核。"
+      },
+      "metadata": {
+        "source": "manual-replay"
+      }
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-2234",
+      "issueKey": "APMIS-2234",
+      "evidencePack": {
+        "schemaVersion": "JiraEvidencePackV2",
+        "issue": {
+          "key": "APMIS-2234",
+          "summary": "【Angular17-登录页】登录页的用户名和密码以及登录按钮样式与原系统不一致",
+          "description": "【Angular17-登录页】登录页的用户名和密码以及登录按钮样式与原系统不一致",
+          "issueType": "缺陷",
+          "status": "处理中",
+          "priority": "中",
+          "assignee": "b.w_neu",
+          "labels": [],
+          "projectKey": "APMIS",
+          "projectName": "新手麻",
+          "created": "2026-05-09T11:05:56.000+0800",
+          "updated": "2026-05-15T14:58:12.000+0800",
+          "dueDate": "2026-06-04",
+          "sourceRef": "jira.issue:APMIS-2234"
+        },
+        "fields": [],
+        "fieldValues": [
+          {
+            "fieldKey": "targetVersion",
+            "valueKind": "string",
+            "valueString": "7.0.191.0",
+            "sourceRef": "jira.field-value:APMIS-2234:targetVersion"
+          },
+          {
+            "fieldKey": "productModule",
+            "valueKind": "string",
+            "valueString": "手麻 - 系统管理",
+            "sourceRef": "jira.field-value:APMIS-2234:productModule"
+          },
+          {
+            "fieldKey": "defectCategory",
+            "valueKind": "string",
+            "valueString": "功能问题",
+            "sourceRef": "jira.field-value:APMIS-2234:defectCategory"
+          },
+          {
+            "fieldKey": "issueCategory",
+            "valueKind": "string",
+            "valueString": "核心",
+            "sourceRef": "jira.field-value:APMIS-2234:issueCategory"
+          },
+          {
+            "fieldKey": "projectSource",
+            "valueKind": "string",
+            "valueString": "Z总部集成测试",
+            "sourceRef": "jira.field-value:APMIS-2234:projectSource"
+          },
+          {
+            "fieldKey": "coreRecovery",
+            "valueKind": "string",
+            "valueString": "未分析未回收",
+            "sourceRef": "jira.field-value:APMIS-2234:coreRecovery"
+          },
+          {
+            "fieldKey": "requirementReleased",
+            "valueKind": "string",
+            "valueString": "是",
+            "sourceRef": "jira.field-value:APMIS-2234:requirementReleased"
+          },
+          {
+            "fieldKey": "timeTracking",
+            "valueKind": "time_tracking",
+            "valueTimeTracking": {
+              "originalEstimateSeconds": 14400,
+              "remainingEstimateSeconds": 14400
+            },
+            "sourceRef": "jira.field-value:APMIS-2234:timeTracking"
+          }
+        ],
+        "comments": [],
+        "attachments": [
+          {
+            "id": "424255",
+            "filename": "image-2026-05-09-11-05-43-092.png",
+            "mimeType": "image/png",
+            "size": 720691,
+            "sourceRef": "jira.attachment:APMIS-2234:424255",
+            "securityDigest": null
+          },
+          {
+            "id": "424254",
+            "filename": "image-2026-05-09-11-05-50-102.png",
+            "mimeType": "image/png",
+            "size": 676653,
+            "sourceRef": "jira.attachment:APMIS-2234:424254",
+            "securityDigest": null
+          }
+        ],
+        "mediaEvidence": [],
+        "projectMetadata": null,
+        "relations": [],
+        "transitions": [],
+        "sourceRefs": [
+          "jira.issue:APMIS-2234",
+          "jira.field-value:APMIS-2234:targetVersion",
+          "jira.field-value:APMIS-2234:productModule",
+          "jira.field-value:APMIS-2234:defectCategory",
+          "jira.field-value:APMIS-2234:issueCategory",
+          "jira.field-value:APMIS-2234:projectSource",
+          "jira.field-value:APMIS-2234:coreRecovery",
+          "jira.field-value:APMIS-2234:requirementReleased",
+          "jira.field-value:APMIS-2234:timeTracking",
+          "jira.attachment:APMIS-2234:424255",
+          "jira.attachment:APMIS-2234:424254"
+        ],
+        "generatedAt": "2026-05-20T00:00:00.000Z"
+      },
+      "expected": {
+        "profile": "Visual",
+        "investigationLight": "yellow",
+        "implementationLight": "red",
+        "keyGaps": [
+          "baselineEvidence",
+          "viewport",
+          "acceptanceAssertions"
+        ],
+        "requiredSourceRefs": [
+          "jira.issue:APMIS-2234",
+          "jira.attachment:APMIS-2234:424255",
+          "jira.attachment:APMIS-2234:424254"
+        ]
+      },
+      "review": {
+        "reviewer": "codex-jira-import",
+        "reviewedAt": "2026-05-20T00:00:00.000Z",
+        "reviewSourceRef": "jira.filter:86004:APMIS-2234",
+        "adjustmentReason": "真实 Jira filter=86004 partial replay；expected 由当前会话基于 issue 标题、描述、附件和字段粗标，待 Notion v2 50 样本人工复核。"
+      },
+      "metadata": {
+        "source": "manual-replay"
+      }
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-2213",
+      "issueKey": "APMIS-2213",
+      "evidencePack": {
+        "schemaVersion": "JiraEvidencePackV2",
+        "issue": {
+          "key": "APMIS-2213",
+          "summary": "【Angular17-镇痛管理】选择患者进行配药，页面提示失败",
+          "description": "【Angular17-镇痛管理】选择患者进行配药，页面提示失败",
+          "issueType": "缺陷",
+          "status": "处理中",
+          "priority": "中",
+          "assignee": "b.w_neu",
+          "labels": [],
+          "projectKey": "APMIS",
+          "projectName": "新手麻",
+          "created": "2026-04-29T15:48:02.000+0800",
+          "updated": "2026-05-06T10:00:46.000+0800",
+          "dueDate": "2026-05-21",
+          "sourceRef": "jira.issue:APMIS-2213"
+        },
+        "fields": [],
+        "fieldValues": [
+          {
+            "fieldKey": "targetVersion",
+            "valueKind": "string",
+            "valueString": "7.0.190.0",
+            "sourceRef": "jira.field-value:APMIS-2213:targetVersion"
+          },
+          {
+            "fieldKey": "productModule",
+            "valueKind": "string",
+            "valueString": "手麻 - 麻醉工作站",
+            "sourceRef": "jira.field-value:APMIS-2213:productModule"
+          },
+          {
+            "fieldKey": "defectCategory",
+            "valueKind": "string",
+            "valueString": "功能问题",
+            "sourceRef": "jira.field-value:APMIS-2213:defectCategory"
+          },
+          {
+            "fieldKey": "issueCategory",
+            "valueKind": "string",
+            "valueString": "核心",
+            "sourceRef": "jira.field-value:APMIS-2213:issueCategory"
+          },
+          {
+            "fieldKey": "projectSource",
+            "valueKind": "string",
+            "valueString": "Z总部集成测试",
+            "sourceRef": "jira.field-value:APMIS-2213:projectSource"
+          },
+          {
+            "fieldKey": "coreRecovery",
+            "valueKind": "string",
+            "valueString": "未分析未回收",
+            "sourceRef": "jira.field-value:APMIS-2213:coreRecovery"
+          },
+          {
+            "fieldKey": "requirementReleased",
+            "valueKind": "string",
+            "valueString": "是",
+            "sourceRef": "jira.field-value:APMIS-2213:requirementReleased"
+          },
+          {
+            "fieldKey": "timeTracking",
+            "valueKind": "time_tracking",
+            "valueTimeTracking": {
+              "originalEstimateSeconds": 14400,
+              "remainingEstimateSeconds": 14400
+            },
+            "sourceRef": "jira.field-value:APMIS-2213:timeTracking"
+          }
+        ],
+        "comments": [],
+        "attachments": [
+          {
+            "id": "421760",
+            "filename": "image-2026-04-29-15-48-00-644.png",
+            "mimeType": "image/gif",
+            "size": 317934,
+            "sourceRef": "jira.attachment:APMIS-2213:421760",
+            "securityDigest": null
+          }
+        ],
+        "mediaEvidence": [],
+        "projectMetadata": null,
+        "relations": [],
+        "transitions": [],
+        "sourceRefs": [
+          "jira.issue:APMIS-2213",
+          "jira.field-value:APMIS-2213:targetVersion",
+          "jira.field-value:APMIS-2213:productModule",
+          "jira.field-value:APMIS-2213:defectCategory",
+          "jira.field-value:APMIS-2213:issueCategory",
+          "jira.field-value:APMIS-2213:projectSource",
+          "jira.field-value:APMIS-2213:coreRecovery",
+          "jira.field-value:APMIS-2213:requirementReleased",
+          "jira.field-value:APMIS-2213:timeTracking",
+          "jira.attachment:APMIS-2213:421760"
+        ],
+        "generatedAt": "2026-05-20T00:00:00.000Z"
+      },
+      "expected": {
+        "profile": "Workflow",
+        "investigationLight": "yellow",
+        "implementationLight": "red",
+        "keyGaps": [
+          "roles",
+          "businessRules",
+          "exceptionPaths",
+          "auditTrail",
+          "acceptanceAssertions"
+        ],
+        "requiredSourceRefs": [
+          "jira.issue:APMIS-2213",
+          "jira.attachment:APMIS-2213:421760"
+        ]
+      },
+      "review": {
+        "reviewer": "codex-jira-import",
+        "reviewedAt": "2026-05-20T00:00:00.000Z",
+        "reviewSourceRef": "jira.filter:86004:APMIS-2213",
+        "adjustmentReason": "真实 Jira filter=86004 partial replay；expected 由当前会话基于 issue 标题、描述、附件和字段粗标，待 Notion v2 50 样本人工复核。"
+      },
+      "metadata": {
+        "source": "manual-replay"
+      }
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-2096",
+      "issueKey": "APMIS-2096",
+      "evidencePack": {
+        "schemaVersion": "JiraEvidencePackV2",
+        "issue": {
+          "key": "APMIS-2096",
+          "summary": "【麻醉记录-系统管理】麻醉方法维护中，修改麻醉方法点击保存后不发布新版本，重新进入查看仍显示修改之前的麻醉方法，修改未生效",
+          "description": "【麻醉记录-系统管理】麻醉方法维护中，修改麻醉方法点击保存后不发布新版本，重新进入查看仍显示修改之前的麻醉方法，修改未生效",
+          "issueType": "缺陷",
+          "status": "处理中",
+          "priority": "低",
+          "assignee": "b.w_neu",
+          "labels": [],
+          "projectKey": "APMIS",
+          "projectName": "新手麻",
+          "created": "2026-03-26T15:14:55.000+0800",
+          "updated": "2026-04-14T14:57:40.000+0800",
+          "dueDate": "2026-03-27",
+          "sourceRef": "jira.issue:APMIS-2096"
+        },
+        "fields": [],
+        "fieldValues": [
+          {
+            "fieldKey": "productModule",
+            "valueKind": "string",
+            "valueString": "手麻 - 系统管理",
+            "sourceRef": "jira.field-value:APMIS-2096:productModule"
+          },
+          {
+            "fieldKey": "defectCategory",
+            "valueKind": "string",
+            "valueString": "功能问题",
+            "sourceRef": "jira.field-value:APMIS-2096:defectCategory"
+          },
+          {
+            "fieldKey": "issueCategory",
+            "valueKind": "string",
+            "valueString": "核心",
+            "sourceRef": "jira.field-value:APMIS-2096:issueCategory"
+          },
+          {
+            "fieldKey": "projectSource",
+            "valueKind": "string",
+            "valueString": "Z总部集成测试",
+            "sourceRef": "jira.field-value:APMIS-2096:projectSource"
+          },
+          {
+            "fieldKey": "coreRecovery",
+            "valueKind": "string",
+            "valueString": "未分析未回收",
+            "sourceRef": "jira.field-value:APMIS-2096:coreRecovery"
+          },
+          {
+            "fieldKey": "requirementReleased",
+            "valueKind": "string",
+            "valueString": "是",
+            "sourceRef": "jira.field-value:APMIS-2096:requirementReleased"
+          },
+          {
+            "fieldKey": "timeTracking",
+            "valueKind": "time_tracking",
+            "valueTimeTracking": {
+              "originalEstimateSeconds": 7200,
+              "remainingEstimateSeconds": 7200
+            },
+            "sourceRef": "jira.field-value:APMIS-2096:timeTracking"
+          }
+        ],
+        "comments": [],
+        "attachments": [
+          {
+            "id": "408883",
+            "filename": "image-2026-03-26-15-14-51-473.png",
+            "mimeType": "image/gif",
+            "size": 1327976,
+            "sourceRef": "jira.attachment:APMIS-2096:408883",
+            "securityDigest": null
+          }
+        ],
+        "mediaEvidence": [],
+        "projectMetadata": null,
+        "relations": [],
+        "transitions": [],
+        "sourceRefs": [
+          "jira.issue:APMIS-2096",
+          "jira.field-value:APMIS-2096:productModule",
+          "jira.field-value:APMIS-2096:defectCategory",
+          "jira.field-value:APMIS-2096:issueCategory",
+          "jira.field-value:APMIS-2096:projectSource",
+          "jira.field-value:APMIS-2096:coreRecovery",
+          "jira.field-value:APMIS-2096:requirementReleased",
+          "jira.field-value:APMIS-2096:timeTracking",
+          "jira.attachment:APMIS-2096:408883"
+        ],
+        "generatedAt": "2026-05-20T00:00:00.000Z"
+      },
+      "expected": {
+        "profile": "Workflow",
+        "investigationLight": "yellow",
+        "implementationLight": "red",
+        "keyGaps": [
+          "roles",
+          "businessRules",
+          "exceptionPaths",
+          "auditTrail",
+          "acceptanceAssertions"
+        ],
+        "requiredSourceRefs": [
+          "jira.issue:APMIS-2096",
+          "jira.attachment:APMIS-2096:408883"
+        ]
+      },
+      "review": {
+        "reviewer": "codex-jira-import",
+        "reviewedAt": "2026-05-20T00:00:00.000Z",
+        "reviewSourceRef": "jira.filter:86004:APMIS-2096",
+        "adjustmentReason": "真实 Jira filter=86004 partial replay；expected 由当前会话基于 issue 标题、描述、附件和字段粗标，待 Notion v2 50 样本人工复核。"
+      },
+      "metadata": {
+        "source": "manual-replay"
+      }
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-2090",
+      "issueKey": "APMIS-2090",
+      "evidencePack": {
+        "schemaVersion": "JiraEvidencePackV2",
+        "issue": {
+          "key": "APMIS-2090",
+          "summary": "【湖南医药学院总医院】收费是麻醉时长计算出错",
+          "description": "需要重新在麻单上页面重新填写结束麻醉时间才能正常。",
+          "issueType": "需求",
+          "status": "处理中",
+          "priority": "中",
+          "assignee": "b.w_neu",
+          "labels": [],
+          "projectKey": "APMIS",
+          "projectName": "新手麻",
+          "created": "2026-03-26T11:18:24.000+0800",
+          "updated": "2026-04-13T13:02:43.000+0800",
+          "dueDate": "2026-04-30",
+          "sourceRef": "jira.issue:APMIS-2090"
+        },
+        "fields": [],
+        "fieldValues": [
+          {
+            "fieldKey": "targetVersion",
+            "valueKind": "string",
+            "valueString": "7.0.189.0",
+            "sourceRef": "jira.field-value:APMIS-2090:targetVersion"
+          },
+          {
+            "fieldKey": "productModule",
+            "valueKind": "string",
+            "valueString": "手麻 - 麻醉工作站",
+            "sourceRef": "jira.field-value:APMIS-2090:productModule"
+          },
+          {
+            "fieldKey": "issueCategory",
+            "valueKind": "string",
+            "valueString": "本地化",
+            "sourceRef": "jira.field-value:APMIS-2090:issueCategory"
+          },
+          {
+            "fieldKey": "projectSource",
+            "valueKind": "string",
+            "valueString": "H怀化市第一人民医院",
+            "sourceRef": "jira.field-value:APMIS-2090:projectSource"
+          },
+          {
+            "fieldKey": "coreRecovery",
+            "valueKind": "string",
+            "valueString": "未分析未回收",
+            "sourceRef": "jira.field-value:APMIS-2090:coreRecovery"
+          },
+          {
+            "fieldKey": "requirementReleased",
+            "valueKind": "string",
+            "valueString": "是",
+            "sourceRef": "jira.field-value:APMIS-2090:requirementReleased"
+          },
+          {
+            "fieldKey": "timeTracking",
+            "valueKind": "time_tracking",
+            "valueTimeTracking": {
+              "originalEstimateSeconds": 14400,
+              "remainingEstimateSeconds": 14400
+            },
+            "sourceRef": "jira.field-value:APMIS-2090:timeTracking"
+          }
+        ],
+        "comments": [
+          {
+            "id": "417035",
+            "body": "补充麻醉方法收费配置页面相关截图",
+            "author": "li.ye.neu",
+            "created": "2026-03-27T09:21:08.000+0800",
+            "updated": "2026-03-27T09:21:08.000+0800",
+            "sourceRef": "jira.comment:APMIS-2090:417035"
+          },
+          {
+            "id": "419862",
+            "body": "应该跟麻醉方法收费配置无关，重新在麻单填一下结束麻醉时间就可以正常计算了",
+            "author": "zhu-shch",
+            "created": "2026-04-10T10:00:02.000+0800",
+            "updated": "2026-04-10T10:00:02.000+0800",
+            "sourceRef": "jira.comment:APMIS-2090:419862"
+          }
+        ],
+        "attachments": [
+          {
+            "id": "408732",
+            "filename": "image-2026-03-26-11-17-19-137.png",
+            "mimeType": "image/png",
+            "size": 229380,
+            "sourceRef": "jira.attachment:APMIS-2090:408732",
+            "securityDigest": null
+          },
+          {
+            "id": "413759",
+            "filename": "screenshot-1.png",
+            "mimeType": "image/png",
+            "size": 177400,
+            "sourceRef": "jira.attachment:APMIS-2090:413759",
+            "securityDigest": null
+          }
+        ],
+        "mediaEvidence": [],
+        "projectMetadata": null,
+        "relations": [],
+        "transitions": [],
+        "sourceRefs": [
+          "jira.issue:APMIS-2090",
+          "jira.field-value:APMIS-2090:targetVersion",
+          "jira.field-value:APMIS-2090:productModule",
+          "jira.field-value:APMIS-2090:issueCategory",
+          "jira.field-value:APMIS-2090:projectSource",
+          "jira.field-value:APMIS-2090:coreRecovery",
+          "jira.field-value:APMIS-2090:requirementReleased",
+          "jira.field-value:APMIS-2090:timeTracking",
+          "jira.comment:APMIS-2090:417035",
+          "jira.comment:APMIS-2090:419862",
+          "jira.attachment:APMIS-2090:408732",
+          "jira.attachment:APMIS-2090:413759"
+        ],
+        "generatedAt": "2026-05-20T00:00:00.000Z"
+      },
+      "expected": {
+        "profile": "Billing",
+        "investigationLight": "yellow",
+        "implementationLight": "red",
+        "keyGaps": [
+          "profileSupport",
+          "acceptanceAssertions"
+        ],
+        "requiredSourceRefs": [
+          "jira.issue:APMIS-2090",
+          "jira.attachment:APMIS-2090:408732",
+          "jira.attachment:APMIS-2090:413759"
+        ]
+      },
+      "review": {
+        "reviewer": "codex-jira-import",
+        "reviewedAt": "2026-05-20T00:00:00.000Z",
+        "reviewSourceRef": "jira.filter:86004:APMIS-2090",
+        "adjustmentReason": "真实 Jira filter=86004 partial replay；expected 由当前会话基于 issue 标题、描述、附件和字段粗标，待 Notion v2 50 样本人工复核。"
+      },
+      "metadata": {
+        "source": "manual-replay"
+      }
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-2088",
+      "issueKey": "APMIS-2088",
+      "evidencePack": {
+        "schemaVersion": "JiraEvidencePackV2",
+        "issue": {
+          "key": "APMIS-2088",
+          "summary": "【病案管理】病案管理列表中当列较多的时候，应该自动加滚动条显示所有，而不是像现在这样好多列显示不全",
+          "description": "【病案管理】病案管理列表中当列较多的时候，应该自动加滚动条显示所有，而不是像现在这样好多列显示不全",
+          "issueType": "缺陷",
+          "status": "处理中",
+          "priority": "低",
+          "assignee": "b.w_neu",
+          "labels": [],
+          "projectKey": "APMIS",
+          "projectName": "新手麻",
+          "created": "2026-03-26T10:23:49.000+0800",
+          "updated": "2026-03-27T09:54:44.000+0800",
+          "dueDate": "2026-04-16",
+          "sourceRef": "jira.issue:APMIS-2088"
+        },
+        "fields": [],
+        "fieldValues": [
+          {
+            "fieldKey": "targetVersion",
+            "valueKind": "string",
+            "valueString": "7.0.188.0",
+            "sourceRef": "jira.field-value:APMIS-2088:targetVersion"
+          },
+          {
+            "fieldKey": "productModule",
+            "valueKind": "string",
+            "valueString": "手麻 - 病案管理",
+            "sourceRef": "jira.field-value:APMIS-2088:productModule"
+          },
+          {
+            "fieldKey": "defectCategory",
+            "valueKind": "string",
+            "valueString": "功能问题",
+            "sourceRef": "jira.field-value:APMIS-2088:defectCategory"
+          },
+          {
+            "fieldKey": "issueCategory",
+            "valueKind": "string",
+            "valueString": "核心",
+            "sourceRef": "jira.field-value:APMIS-2088:issueCategory"
+          },
+          {
+            "fieldKey": "projectSource",
+            "valueKind": "string",
+            "valueString": "Z总部集成测试",
+            "sourceRef": "jira.field-value:APMIS-2088:projectSource"
+          },
+          {
+            "fieldKey": "coreRecovery",
+            "valueKind": "string",
+            "valueString": "未分析未回收",
+            "sourceRef": "jira.field-value:APMIS-2088:coreRecovery"
+          },
+          {
+            "fieldKey": "requirementReleased",
+            "valueKind": "string",
+            "valueString": "是",
+            "sourceRef": "jira.field-value:APMIS-2088:requirementReleased"
+          },
+          {
+            "fieldKey": "timeTracking",
+            "valueKind": "time_tracking",
+            "valueTimeTracking": {
+              "originalEstimateSeconds": 14400,
+              "remainingEstimateSeconds": 14400
+            },
+            "sourceRef": "jira.field-value:APMIS-2088:timeTracking"
+          }
+        ],
+        "comments": [],
+        "attachments": [
+          {
+            "id": "408657",
+            "filename": "image-2026-03-26-10-23-48-990.png",
+            "mimeType": "image/png",
+            "size": 201082,
+            "sourceRef": "jira.attachment:APMIS-2088:408657",
+            "securityDigest": null
+          }
+        ],
+        "mediaEvidence": [],
+        "projectMetadata": null,
+        "relations": [],
+        "transitions": [],
+        "sourceRefs": [
+          "jira.issue:APMIS-2088",
+          "jira.field-value:APMIS-2088:targetVersion",
+          "jira.field-value:APMIS-2088:productModule",
+          "jira.field-value:APMIS-2088:defectCategory",
+          "jira.field-value:APMIS-2088:issueCategory",
+          "jira.field-value:APMIS-2088:projectSource",
+          "jira.field-value:APMIS-2088:coreRecovery",
+          "jira.field-value:APMIS-2088:requirementReleased",
+          "jira.field-value:APMIS-2088:timeTracking",
+          "jira.attachment:APMIS-2088:408657"
+        ],
+        "generatedAt": "2026-05-20T00:00:00.000Z"
+      },
+      "expected": {
+        "profile": "Visual",
+        "investigationLight": "yellow",
+        "implementationLight": "red",
+        "keyGaps": [
+          "baselineEvidence",
+          "viewport",
+          "acceptanceAssertions"
+        ],
+        "requiredSourceRefs": [
+          "jira.issue:APMIS-2088",
+          "jira.attachment:APMIS-2088:408657"
+        ]
+      },
+      "review": {
+        "reviewer": "codex-jira-import",
+        "reviewedAt": "2026-05-20T00:00:00.000Z",
+        "reviewSourceRef": "jira.filter:86004:APMIS-2088",
+        "adjustmentReason": "真实 Jira filter=86004 partial replay；expected 由当前会话基于 issue 标题、描述、附件和字段粗标，待 Notion v2 50 样本人工复核。"
+      },
+      "metadata": {
+        "source": "manual-replay"
+      }
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-2062",
+      "issueKey": "APMIS-2062",
+      "evidencePack": {
+        "schemaVersion": "JiraEvidencePackV2",
+        "issue": {
+          "key": "APMIS-2062",
+          "summary": "【Angular17-系统管理】数据项目维护中，选择编辑单据项目配置，窗口中最下方相比原系统缺少一部分数据",
+          "description": "【Angular17-系统管理】数据项目维护中，选择编辑单据项目配置，窗口中最下方相比原系统缺少一部分数据",
+          "issueType": "缺陷",
+          "status": "处理中",
+          "priority": "中",
+          "assignee": "b.w_neu",
+          "labels": [],
+          "projectKey": "APMIS",
+          "projectName": "新手麻",
+          "created": "2026-03-23T14:42:06.000+0800",
+          "updated": "2026-05-06T10:01:29.000+0800",
+          "dueDate": "2026-04-02",
+          "sourceRef": "jira.issue:APMIS-2062"
+        },
+        "fields": [],
+        "fieldValues": [
+          {
+            "fieldKey": "targetVersion",
+            "valueKind": "string",
+            "valueString": "7.0.187.0",
+            "sourceRef": "jira.field-value:APMIS-2062:targetVersion"
+          },
+          {
+            "fieldKey": "productModule",
+            "valueKind": "string",
+            "valueString": "手麻 - 麻醉工作站",
+            "sourceRef": "jira.field-value:APMIS-2062:productModule"
+          },
+          {
+            "fieldKey": "defectCategory",
+            "valueKind": "string",
+            "valueString": "功能问题",
+            "sourceRef": "jira.field-value:APMIS-2062:defectCategory"
+          },
+          {
+            "fieldKey": "issueCategory",
+            "valueKind": "string",
+            "valueString": "核心",
+            "sourceRef": "jira.field-value:APMIS-2062:issueCategory"
+          },
+          {
+            "fieldKey": "projectSource",
+            "valueKind": "string",
+            "valueString": "Z总部集成测试",
+            "sourceRef": "jira.field-value:APMIS-2062:projectSource"
+          },
+          {
+            "fieldKey": "coreRecovery",
+            "valueKind": "string",
+            "valueString": "未分析未回收",
+            "sourceRef": "jira.field-value:APMIS-2062:coreRecovery"
+          },
+          {
+            "fieldKey": "requirementReleased",
+            "valueKind": "string",
+            "valueString": "是",
+            "sourceRef": "jira.field-value:APMIS-2062:requirementReleased"
+          },
+          {
+            "fieldKey": "timeTracking",
+            "valueKind": "time_tracking",
+            "valueTimeTracking": {
+              "originalEstimateSeconds": 14400,
+              "remainingEstimateSeconds": 14400
+            },
+            "sourceRef": "jira.field-value:APMIS-2062:timeTracking"
+          }
+        ],
+        "comments": [],
+        "attachments": [
+          {
+            "id": "406833",
+            "filename": "screenshot-1.png",
+            "mimeType": "image/png",
+            "size": 171332,
+            "sourceRef": "jira.attachment:APMIS-2062:406833",
+            "securityDigest": null
+          },
+          {
+            "id": "406834",
+            "filename": "screenshot-2.png",
+            "mimeType": "image/png",
+            "size": 158731,
+            "sourceRef": "jira.attachment:APMIS-2062:406834",
+            "securityDigest": null
+          }
+        ],
+        "mediaEvidence": [],
+        "projectMetadata": null,
+        "relations": [],
+        "transitions": [],
+        "sourceRefs": [
+          "jira.issue:APMIS-2062",
+          "jira.field-value:APMIS-2062:targetVersion",
+          "jira.field-value:APMIS-2062:productModule",
+          "jira.field-value:APMIS-2062:defectCategory",
+          "jira.field-value:APMIS-2062:issueCategory",
+          "jira.field-value:APMIS-2062:projectSource",
+          "jira.field-value:APMIS-2062:coreRecovery",
+          "jira.field-value:APMIS-2062:requirementReleased",
+          "jira.field-value:APMIS-2062:timeTracking",
+          "jira.attachment:APMIS-2062:406833",
+          "jira.attachment:APMIS-2062:406834"
+        ],
+        "generatedAt": "2026-05-20T00:00:00.000Z"
+      },
+      "expected": {
+        "profile": "Visual",
+        "investigationLight": "yellow",
+        "implementationLight": "red",
+        "keyGaps": [
+          "expectedBehavior",
+          "baselineEvidence",
+          "viewport",
+          "acceptanceAssertions"
+        ],
+        "requiredSourceRefs": [
+          "jira.issue:APMIS-2062",
+          "jira.attachment:APMIS-2062:406833",
+          "jira.attachment:APMIS-2062:406834"
+        ]
+      },
+      "review": {
+        "reviewer": "codex-jira-import",
+        "reviewedAt": "2026-05-20T00:00:00.000Z",
+        "reviewSourceRef": "jira.filter:86004:APMIS-2062",
+        "adjustmentReason": "真实 Jira filter=86004 partial replay；expected 由当前会话基于 issue 标题、描述、附件和字段粗标，待 Notion v2 50 样本人工复核。"
+      },
+      "metadata": {
+        "source": "manual-replay"
+      }
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-2061",
+      "issueKey": "APMIS-2061",
+      "evidencePack": {
+        "schemaVersion": "JiraEvidencePackV2",
+        "issue": {
+          "key": "APMIS-2061",
+          "summary": "【Angular17-系统管理】数据项目维护中，选择编辑单据项目配置，窗口中必填数据显示为空",
+          "description": "【Angular17-系统管理】数据项目维护中，选择编辑单据项目配置，窗口中必填数据显示为空",
+          "issueType": "缺陷",
+          "status": "处理中",
+          "priority": "中",
+          "assignee": "b.w_neu",
+          "labels": [],
+          "projectKey": "APMIS",
+          "projectName": "新手麻",
+          "created": "2026-03-23T14:39:41.000+0800",
+          "updated": "2026-05-06T10:01:33.000+0800",
+          "dueDate": "2026-04-02",
+          "sourceRef": "jira.issue:APMIS-2061"
+        },
+        "fields": [],
+        "fieldValues": [
+          {
+            "fieldKey": "targetVersion",
+            "valueKind": "string",
+            "valueString": "7.0.187.0",
+            "sourceRef": "jira.field-value:APMIS-2061:targetVersion"
+          },
+          {
+            "fieldKey": "productModule",
+            "valueKind": "string",
+            "valueString": "手麻 - 麻醉工作站",
+            "sourceRef": "jira.field-value:APMIS-2061:productModule"
+          },
+          {
+            "fieldKey": "defectCategory",
+            "valueKind": "string",
+            "valueString": "功能问题",
+            "sourceRef": "jira.field-value:APMIS-2061:defectCategory"
+          },
+          {
+            "fieldKey": "issueCategory",
+            "valueKind": "string",
+            "valueString": "核心",
+            "sourceRef": "jira.field-value:APMIS-2061:issueCategory"
+          },
+          {
+            "fieldKey": "projectSource",
+            "valueKind": "string",
+            "valueString": "Z总部集成测试",
+            "sourceRef": "jira.field-value:APMIS-2061:projectSource"
+          },
+          {
+            "fieldKey": "coreRecovery",
+            "valueKind": "string",
+            "valueString": "未分析未回收",
+            "sourceRef": "jira.field-value:APMIS-2061:coreRecovery"
+          },
+          {
+            "fieldKey": "requirementReleased",
+            "valueKind": "string",
+            "valueString": "是",
+            "sourceRef": "jira.field-value:APMIS-2061:requirementReleased"
+          },
+          {
+            "fieldKey": "timeTracking",
+            "valueKind": "time_tracking",
+            "valueTimeTracking": {
+              "originalEstimateSeconds": 14400,
+              "remainingEstimateSeconds": 14400
+            },
+            "sourceRef": "jira.field-value:APMIS-2061:timeTracking"
+          }
+        ],
+        "comments": [],
+        "attachments": [
+          {
+            "id": "406829",
+            "filename": "screenshot-1.png",
+            "mimeType": "image/png",
+            "size": 168852,
+            "sourceRef": "jira.attachment:APMIS-2061:406829",
+            "securityDigest": null
+          },
+          {
+            "id": "406831",
+            "filename": "screenshot-2.png",
+            "mimeType": "image/png",
+            "size": 170364,
+            "sourceRef": "jira.attachment:APMIS-2061:406831",
+            "securityDigest": null
+          }
+        ],
+        "mediaEvidence": [],
+        "projectMetadata": null,
+        "relations": [],
+        "transitions": [],
+        "sourceRefs": [
+          "jira.issue:APMIS-2061",
+          "jira.field-value:APMIS-2061:targetVersion",
+          "jira.field-value:APMIS-2061:productModule",
+          "jira.field-value:APMIS-2061:defectCategory",
+          "jira.field-value:APMIS-2061:issueCategory",
+          "jira.field-value:APMIS-2061:projectSource",
+          "jira.field-value:APMIS-2061:coreRecovery",
+          "jira.field-value:APMIS-2061:requirementReleased",
+          "jira.field-value:APMIS-2061:timeTracking",
+          "jira.attachment:APMIS-2061:406829",
+          "jira.attachment:APMIS-2061:406831"
+        ],
+        "generatedAt": "2026-05-20T00:00:00.000Z"
+      },
+      "expected": {
+        "profile": "Visual",
+        "investigationLight": "yellow",
+        "implementationLight": "red",
+        "keyGaps": [
+          "expectedBehavior",
+          "baselineEvidence",
+          "viewport",
+          "acceptanceAssertions"
+        ],
+        "requiredSourceRefs": [
+          "jira.issue:APMIS-2061",
+          "jira.attachment:APMIS-2061:406829",
+          "jira.attachment:APMIS-2061:406831"
+        ]
+      },
+      "review": {
+        "reviewer": "codex-jira-import",
+        "reviewedAt": "2026-05-20T00:00:00.000Z",
+        "reviewSourceRef": "jira.filter:86004:APMIS-2061",
+        "adjustmentReason": "真实 Jira filter=86004 partial replay；expected 由当前会话基于 issue 标题、描述、附件和字段粗标，待 Notion v2 50 样本人工复核。"
+      },
+      "metadata": {
+        "source": "manual-replay"
+      }
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-2045",
+      "issueKey": "APMIS-2045",
+      "evidencePack": {
+        "schemaVersion": "JiraEvidencePackV2",
+        "issue": {
+          "key": "APMIS-2045",
+          "summary": "【麻醉镇痛组件】药品列表中有的药品名称被常用量遮挡，显示不全",
+          "description": "【麻醉镇痛组件】药品列表中有的药品名称被常用量遮挡，显示不全",
+          "issueType": "缺陷",
+          "status": "处理中",
+          "priority": "中",
+          "assignee": "b.w_neu",
+          "labels": [],
+          "projectKey": "APMIS",
+          "projectName": "新手麻",
+          "created": "2026-03-20T15:08:05.000+0800",
+          "updated": "2026-03-27T10:04:40.000+0800",
+          "dueDate": "2026-04-16",
+          "sourceRef": "jira.issue:APMIS-2045"
+        },
+        "fields": [],
+        "fieldValues": [
+          {
+            "fieldKey": "targetVersion",
+            "valueKind": "string",
+            "valueString": "7.0.188.0",
+            "sourceRef": "jira.field-value:APMIS-2045:targetVersion"
+          },
+          {
+            "fieldKey": "productModule",
+            "valueKind": "string",
+            "valueString": "手麻 - 麻醉工作站",
+            "sourceRef": "jira.field-value:APMIS-2045:productModule"
+          },
+          {
+            "fieldKey": "defectCategory",
+            "valueKind": "string",
+            "valueString": "功能问题",
+            "sourceRef": "jira.field-value:APMIS-2045:defectCategory"
+          },
+          {
+            "fieldKey": "issueCategory",
+            "valueKind": "string",
+            "valueString": "核心",
+            "sourceRef": "jira.field-value:APMIS-2045:issueCategory"
+          },
+          {
+            "fieldKey": "projectSource",
+            "valueKind": "string",
+            "valueString": "Z总部集成测试",
+            "sourceRef": "jira.field-value:APMIS-2045:projectSource"
+          },
+          {
+            "fieldKey": "coreRecovery",
+            "valueKind": "string",
+            "valueString": "未分析未回收",
+            "sourceRef": "jira.field-value:APMIS-2045:coreRecovery"
+          },
+          {
+            "fieldKey": "requirementReleased",
+            "valueKind": "string",
+            "valueString": "是",
+            "sourceRef": "jira.field-value:APMIS-2045:requirementReleased"
+          },
+          {
+            "fieldKey": "timeTracking",
+            "valueKind": "time_tracking",
+            "valueTimeTracking": {
+              "originalEstimateSeconds": 14400,
+              "remainingEstimateSeconds": 14400
+            },
+            "sourceRef": "jira.field-value:APMIS-2045:timeTracking"
+          }
+        ],
+        "comments": [],
+        "attachments": [
+          {
+            "id": "406178",
+            "filename": "image-2026-03-20-15-08-02-887.png",
+            "mimeType": "image/png",
+            "size": 153019,
+            "sourceRef": "jira.attachment:APMIS-2045:406178",
+            "securityDigest": null
+          }
+        ],
+        "mediaEvidence": [],
+        "projectMetadata": null,
+        "relations": [],
+        "transitions": [],
+        "sourceRefs": [
+          "jira.issue:APMIS-2045",
+          "jira.field-value:APMIS-2045:targetVersion",
+          "jira.field-value:APMIS-2045:productModule",
+          "jira.field-value:APMIS-2045:defectCategory",
+          "jira.field-value:APMIS-2045:issueCategory",
+          "jira.field-value:APMIS-2045:projectSource",
+          "jira.field-value:APMIS-2045:coreRecovery",
+          "jira.field-value:APMIS-2045:requirementReleased",
+          "jira.field-value:APMIS-2045:timeTracking",
+          "jira.attachment:APMIS-2045:406178"
+        ],
+        "generatedAt": "2026-05-20T00:00:00.000Z"
+      },
+      "expected": {
+        "profile": "Visual",
+        "investigationLight": "yellow",
+        "implementationLight": "red",
+        "keyGaps": [
+          "baselineEvidence",
+          "viewport",
+          "acceptanceAssertions"
+        ],
+        "requiredSourceRefs": [
+          "jira.issue:APMIS-2045",
+          "jira.attachment:APMIS-2045:406178"
+        ]
+      },
+      "review": {
+        "reviewer": "codex-jira-import",
+        "reviewedAt": "2026-05-20T00:00:00.000Z",
+        "reviewSourceRef": "jira.filter:86004:APMIS-2045",
+        "adjustmentReason": "真实 Jira filter=86004 partial replay；expected 由当前会话基于 issue 标题、描述、附件和字段粗标，待 Notion v2 50 样本人工复核。"
+      },
+      "metadata": {
+        "source": "manual-replay"
+      }
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-2028",
+      "issueKey": "APMIS-2028",
+      "evidencePack": {
+        "schemaVersion": "JiraEvidencePackV2",
+        "issue": {
+          "key": "APMIS-2028",
+          "summary": "【Angular17-大屏】大屏的登录页页面布局变形了",
+          "description": "【Angular17-大屏】大屏的登录页页面布局变形了",
+          "issueType": "缺陷",
+          "status": "处理中",
+          "priority": "中",
+          "assignee": "b.w_neu",
+          "labels": [],
+          "projectKey": "APMIS",
+          "projectName": "新手麻",
+          "created": "2026-03-17T13:19:17.000+0800",
+          "updated": "2026-05-06T10:01:24.000+0800",
+          "dueDate": "2026-03-19",
+          "sourceRef": "jira.issue:APMIS-2028"
+        },
+        "fields": [],
+        "fieldValues": [
+          {
+            "fieldKey": "fixVersions",
+            "valueKind": "string_list",
+            "valueStrings": [
+              "7.0.186.0"
+            ],
+            "sourceRef": "jira.field-value:APMIS-2028:fixVersions"
+          },
+          {
+            "fieldKey": "targetVersion",
+            "valueKind": "string",
+            "valueString": "7.0.186.0",
+            "sourceRef": "jira.field-value:APMIS-2028:targetVersion"
+          },
+          {
+            "fieldKey": "productModule",
+            "valueKind": "string",
+            "valueString": "手麻 - 大屏",
+            "sourceRef": "jira.field-value:APMIS-2028:productModule"
+          },
+          {
+            "fieldKey": "defectCategory",
+            "valueKind": "string",
+            "valueString": "功能问题",
+            "sourceRef": "jira.field-value:APMIS-2028:defectCategory"
+          },
+          {
+            "fieldKey": "issueCategory",
+            "valueKind": "string",
+            "valueString": "核心",
+            "sourceRef": "jira.field-value:APMIS-2028:issueCategory"
+          },
+          {
+            "fieldKey": "projectSource",
+            "valueKind": "string",
+            "valueString": "Z总部集成测试",
+            "sourceRef": "jira.field-value:APMIS-2028:projectSource"
+          },
+          {
+            "fieldKey": "coreRecovery",
+            "valueKind": "string",
+            "valueString": "未分析未回收",
+            "sourceRef": "jira.field-value:APMIS-2028:coreRecovery"
+          },
+          {
+            "fieldKey": "requirementReleased",
+            "valueKind": "string",
+            "valueString": "是",
+            "sourceRef": "jira.field-value:APMIS-2028:requirementReleased"
+          },
+          {
+            "fieldKey": "timeTracking",
+            "valueKind": "time_tracking",
+            "valueTimeTracking": {
+              "originalEstimateSeconds": 14400,
+              "remainingEstimateSeconds": 14400
+            },
+            "sourceRef": "jira.field-value:APMIS-2028:timeTracking"
+          }
+        ],
+        "comments": [],
+        "attachments": [
+          {
+            "id": "404512",
+            "filename": "screenshot-1.png",
+            "mimeType": "image/png",
+            "size": 712933,
+            "sourceRef": "jira.attachment:APMIS-2028:404512",
+            "securityDigest": null
+          },
+          {
+            "id": "404513",
+            "filename": "screenshot-2.png",
+            "mimeType": "image/png",
+            "size": 698539,
+            "sourceRef": "jira.attachment:APMIS-2028:404513",
+            "securityDigest": null
+          }
+        ],
+        "mediaEvidence": [],
+        "projectMetadata": null,
+        "relations": [],
+        "transitions": [],
+        "sourceRefs": [
+          "jira.issue:APMIS-2028",
+          "jira.field-value:APMIS-2028:fixVersions",
+          "jira.field-value:APMIS-2028:targetVersion",
+          "jira.field-value:APMIS-2028:productModule",
+          "jira.field-value:APMIS-2028:defectCategory",
+          "jira.field-value:APMIS-2028:issueCategory",
+          "jira.field-value:APMIS-2028:projectSource",
+          "jira.field-value:APMIS-2028:coreRecovery",
+          "jira.field-value:APMIS-2028:requirementReleased",
+          "jira.field-value:APMIS-2028:timeTracking",
+          "jira.attachment:APMIS-2028:404512",
+          "jira.attachment:APMIS-2028:404513"
+        ],
+        "generatedAt": "2026-05-20T00:00:00.000Z"
+      },
+      "expected": {
+        "profile": "Visual",
+        "investigationLight": "yellow",
+        "implementationLight": "red",
+        "keyGaps": [
+          "baselineEvidence",
+          "viewport",
+          "acceptanceAssertions"
+        ],
+        "requiredSourceRefs": [
+          "jira.issue:APMIS-2028",
+          "jira.attachment:APMIS-2028:404512",
+          "jira.attachment:APMIS-2028:404513"
+        ]
+      },
+      "review": {
+        "reviewer": "codex-jira-import",
+        "reviewedAt": "2026-05-20T00:00:00.000Z",
+        "reviewSourceRef": "jira.filter:86004:APMIS-2028",
+        "adjustmentReason": "真实 Jira filter=86004 partial replay；expected 由当前会话基于 issue 标题、描述、附件和字段粗标，待 Notion v2 50 样本人工复核。"
+      },
+      "metadata": {
+        "source": "manual-replay"
+      }
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-2027",
+      "issueKey": "APMIS-2027",
+      "evidencePack": {
+        "schemaVersion": "JiraEvidencePackV2",
+        "issue": {
+          "key": "APMIS-2027",
+          "summary": "【Angular17-大屏】选择查看外屏，页面加载不出来显示为空",
+          "description": "【Angular17-大屏】选择查看外屏，页面加载不出来显示为空",
+          "issueType": "缺陷",
+          "status": "处理中",
+          "priority": "中",
+          "assignee": "b.w_neu",
+          "labels": [],
+          "projectKey": "APMIS",
+          "projectName": "新手麻",
+          "created": "2026-03-17T13:14:59.000+0800",
+          "updated": "2026-05-06T10:01:20.000+0800",
+          "dueDate": "2026-03-19",
+          "sourceRef": "jira.issue:APMIS-2027"
+        },
+        "fields": [],
+        "fieldValues": [
+          {
+            "fieldKey": "fixVersions",
+            "valueKind": "string_list",
+            "valueStrings": [
+              "7.0.186.0"
+            ],
+            "sourceRef": "jira.field-value:APMIS-2027:fixVersions"
+          },
+          {
+            "fieldKey": "targetVersion",
+            "valueKind": "string",
+            "valueString": "7.0.186.0",
+            "sourceRef": "jira.field-value:APMIS-2027:targetVersion"
+          },
+          {
+            "fieldKey": "productModule",
+            "valueKind": "string",
+            "valueString": "手麻 - 大屏",
+            "sourceRef": "jira.field-value:APMIS-2027:productModule"
+          },
+          {
+            "fieldKey": "defectCategory",
+            "valueKind": "string",
+            "valueString": "功能问题",
+            "sourceRef": "jira.field-value:APMIS-2027:defectCategory"
+          },
+          {
+            "fieldKey": "issueCategory",
+            "valueKind": "string",
+            "valueString": "核心",
+            "sourceRef": "jira.field-value:APMIS-2027:issueCategory"
+          },
+          {
+            "fieldKey": "projectSource",
+            "valueKind": "string",
+            "valueString": "Z总部集成测试",
+            "sourceRef": "jira.field-value:APMIS-2027:projectSource"
+          },
+          {
+            "fieldKey": "coreRecovery",
+            "valueKind": "string",
+            "valueString": "未分析未回收",
+            "sourceRef": "jira.field-value:APMIS-2027:coreRecovery"
+          },
+          {
+            "fieldKey": "requirementReleased",
+            "valueKind": "string",
+            "valueString": "是",
+            "sourceRef": "jira.field-value:APMIS-2027:requirementReleased"
+          },
+          {
+            "fieldKey": "timeTracking",
+            "valueKind": "time_tracking",
+            "valueTimeTracking": {
+              "originalEstimateSeconds": 14400,
+              "remainingEstimateSeconds": 14400
+            },
+            "sourceRef": "jira.field-value:APMIS-2027:timeTracking"
+          }
+        ],
+        "comments": [],
+        "attachments": [
+          {
+            "id": "404509",
+            "filename": "screenshot-1.png",
+            "mimeType": "image/png",
+            "size": 513166,
+            "sourceRef": "jira.attachment:APMIS-2027:404509",
+            "securityDigest": null
+          }
+        ],
+        "mediaEvidence": [],
+        "projectMetadata": null,
+        "relations": [],
+        "transitions": [],
+        "sourceRefs": [
+          "jira.issue:APMIS-2027",
+          "jira.field-value:APMIS-2027:fixVersions",
+          "jira.field-value:APMIS-2027:targetVersion",
+          "jira.field-value:APMIS-2027:productModule",
+          "jira.field-value:APMIS-2027:defectCategory",
+          "jira.field-value:APMIS-2027:issueCategory",
+          "jira.field-value:APMIS-2027:projectSource",
+          "jira.field-value:APMIS-2027:coreRecovery",
+          "jira.field-value:APMIS-2027:requirementReleased",
+          "jira.field-value:APMIS-2027:timeTracking",
+          "jira.attachment:APMIS-2027:404509"
+        ],
+        "generatedAt": "2026-05-20T00:00:00.000Z"
+      },
+      "expected": {
+        "profile": "Workflow",
+        "investigationLight": "yellow",
+        "implementationLight": "red",
+        "keyGaps": [
+          "roles",
+          "businessRules",
+          "exceptionPaths",
+          "auditTrail",
+          "acceptanceAssertions"
+        ],
+        "requiredSourceRefs": [
+          "jira.issue:APMIS-2027",
+          "jira.attachment:APMIS-2027:404509"
+        ]
+      },
+      "review": {
+        "reviewer": "codex-jira-import",
+        "reviewedAt": "2026-05-20T00:00:00.000Z",
+        "reviewSourceRef": "jira.filter:86004:APMIS-2027",
+        "adjustmentReason": "真实 Jira filter=86004 partial replay；expected 由当前会话基于 issue 标题、描述、附件和字段粗标，待 Notion v2 50 样本人工复核。"
+      },
+      "metadata": {
+        "source": "manual-replay"
+      }
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-2026",
+      "issueKey": "APMIS-2026",
+      "evidencePack": {
+        "schemaVersion": "JiraEvidencePackV2",
+        "issue": {
+          "key": "APMIS-2026",
+          "summary": "【Angular17-大屏】大屏的术间概览中的图标与原系统底色不一致",
+          "description": "【Angular17-大屏】大屏的术间概览中的图标与原系统底色不一致",
+          "issueType": "缺陷",
+          "status": "处理中",
+          "priority": "中",
+          "assignee": "b.w_neu",
+          "labels": [],
+          "projectKey": "APMIS",
+          "projectName": "新手麻",
+          "created": "2026-03-17T11:14:47.000+0800",
+          "updated": "2026-05-06T10:01:15.000+0800",
+          "dueDate": "2026-03-19",
+          "sourceRef": "jira.issue:APMIS-2026"
+        },
+        "fields": [],
+        "fieldValues": [
+          {
+            "fieldKey": "fixVersions",
+            "valueKind": "string_list",
+            "valueStrings": [
+              "7.0.186.0"
+            ],
+            "sourceRef": "jira.field-value:APMIS-2026:fixVersions"
+          },
+          {
+            "fieldKey": "targetVersion",
+            "valueKind": "string",
+            "valueString": "7.0.186.0",
+            "sourceRef": "jira.field-value:APMIS-2026:targetVersion"
+          },
+          {
+            "fieldKey": "productModule",
+            "valueKind": "string",
+            "valueString": "手麻 - 麻醉工作站",
+            "sourceRef": "jira.field-value:APMIS-2026:productModule"
+          },
+          {
+            "fieldKey": "defectCategory",
+            "valueKind": "string",
+            "valueString": "功能问题",
+            "sourceRef": "jira.field-value:APMIS-2026:defectCategory"
+          },
+          {
+            "fieldKey": "issueCategory",
+            "valueKind": "string",
+            "valueString": "核心",
+            "sourceRef": "jira.field-value:APMIS-2026:issueCategory"
+          },
+          {
+            "fieldKey": "projectSource",
+            "valueKind": "string",
+            "valueString": "Z总部集成测试",
+            "sourceRef": "jira.field-value:APMIS-2026:projectSource"
+          },
+          {
+            "fieldKey": "coreRecovery",
+            "valueKind": "string",
+            "valueString": "未分析未回收",
+            "sourceRef": "jira.field-value:APMIS-2026:coreRecovery"
+          },
+          {
+            "fieldKey": "requirementReleased",
+            "valueKind": "string",
+            "valueString": "是",
+            "sourceRef": "jira.field-value:APMIS-2026:requirementReleased"
+          },
+          {
+            "fieldKey": "timeTracking",
+            "valueKind": "time_tracking",
+            "valueTimeTracking": {
+              "originalEstimateSeconds": 14400,
+              "remainingEstimateSeconds": 14400
+            },
+            "sourceRef": "jira.field-value:APMIS-2026:timeTracking"
+          }
+        ],
+        "comments": [],
+        "attachments": [],
+        "mediaEvidence": [],
+        "projectMetadata": null,
+        "relations": [],
+        "transitions": [],
+        "sourceRefs": [
+          "jira.issue:APMIS-2026",
+          "jira.field-value:APMIS-2026:fixVersions",
+          "jira.field-value:APMIS-2026:targetVersion",
+          "jira.field-value:APMIS-2026:productModule",
+          "jira.field-value:APMIS-2026:defectCategory",
+          "jira.field-value:APMIS-2026:issueCategory",
+          "jira.field-value:APMIS-2026:projectSource",
+          "jira.field-value:APMIS-2026:coreRecovery",
+          "jira.field-value:APMIS-2026:requirementReleased",
+          "jira.field-value:APMIS-2026:timeTracking"
+        ],
+        "generatedAt": "2026-05-20T00:00:00.000Z"
+      },
+      "expected": {
+        "profile": "Visual",
+        "investigationLight": "yellow",
+        "implementationLight": "red",
+        "keyGaps": [
+          "visualEvidence",
+          "baselineEvidence",
+          "viewport",
+          "acceptanceAssertions"
+        ],
+        "requiredSourceRefs": [
+          "jira.issue:APMIS-2026"
+        ]
+      },
+      "review": {
+        "reviewer": "codex-jira-import",
+        "reviewedAt": "2026-05-20T00:00:00.000Z",
+        "reviewSourceRef": "jira.filter:86004:APMIS-2026",
+        "adjustmentReason": "真实 Jira filter=86004 partial replay；expected 由当前会话基于 issue 标题、描述、附件和字段粗标，待 Notion v2 50 样本人工复核。"
+      },
+      "metadata": {
+        "source": "manual-replay"
+      }
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-1988",
+      "issueKey": "APMIS-1988",
+      "evidencePack": {
+        "schemaVersion": "JiraEvidencePackV2",
+        "issue": {
+          "key": "APMIS-1988",
+          "summary": "【Angular17-麻醉收费】批量修改的图标，颜色与原系统不一致",
+          "description": "【Angular17-麻醉收费】批量修改的图标，颜色与原系统不一致",
+          "issueType": "缺陷",
+          "status": "处理中",
+          "priority": "低",
+          "assignee": "b.w_neu",
+          "labels": [],
+          "projectKey": "APMIS",
+          "projectName": "新手麻",
+          "created": "2026-03-09T15:56:10.000+0800",
+          "updated": "2026-05-06T10:01:37.000+0800",
+          "dueDate": "2026-04-02",
+          "sourceRef": "jira.issue:APMIS-1988"
+        },
+        "fields": [],
+        "fieldValues": [
+          {
+            "fieldKey": "targetVersion",
+            "valueKind": "string",
+            "valueString": "7.0.187.0",
+            "sourceRef": "jira.field-value:APMIS-1988:targetVersion"
+          },
+          {
+            "fieldKey": "productModule",
+            "valueKind": "string",
+            "valueString": "手麻 - 护士长工作站",
+            "sourceRef": "jira.field-value:APMIS-1988:productModule"
+          },
+          {
+            "fieldKey": "defectCategory",
+            "valueKind": "string",
+            "valueString": "功能问题",
+            "sourceRef": "jira.field-value:APMIS-1988:defectCategory"
+          },
+          {
+            "fieldKey": "issueCategory",
+            "valueKind": "string",
+            "valueString": "核心",
+            "sourceRef": "jira.field-value:APMIS-1988:issueCategory"
+          },
+          {
+            "fieldKey": "projectSource",
+            "valueKind": "string",
+            "valueString": "Z总部集成测试",
+            "sourceRef": "jira.field-value:APMIS-1988:projectSource"
+          },
+          {
+            "fieldKey": "coreRecovery",
+            "valueKind": "string",
+            "valueString": "未分析未回收",
+            "sourceRef": "jira.field-value:APMIS-1988:coreRecovery"
+          },
+          {
+            "fieldKey": "requirementReleased",
+            "valueKind": "string",
+            "valueString": "是",
+            "sourceRef": "jira.field-value:APMIS-1988:requirementReleased"
+          },
+          {
+            "fieldKey": "timeTracking",
+            "valueKind": "time_tracking",
+            "valueTimeTracking": {
+              "originalEstimateSeconds": 14400,
+              "remainingEstimateSeconds": 14400
+            },
+            "sourceRef": "jira.field-value:APMIS-1988:timeTracking"
+          }
+        ],
+        "comments": [],
+        "attachments": [
+          {
+            "id": "401704",
+            "filename": "screenshot-1.png",
+            "mimeType": "image/png",
+            "size": 106407,
+            "sourceRef": "jira.attachment:APMIS-1988:401704",
+            "securityDigest": null
+          },
+          {
+            "id": "401706",
+            "filename": "screenshot-2.png",
+            "mimeType": "image/png",
+            "size": 131723,
+            "sourceRef": "jira.attachment:APMIS-1988:401706",
+            "securityDigest": null
+          }
+        ],
+        "mediaEvidence": [],
+        "projectMetadata": null,
+        "relations": [],
+        "transitions": [],
+        "sourceRefs": [
+          "jira.issue:APMIS-1988",
+          "jira.field-value:APMIS-1988:targetVersion",
+          "jira.field-value:APMIS-1988:productModule",
+          "jira.field-value:APMIS-1988:defectCategory",
+          "jira.field-value:APMIS-1988:issueCategory",
+          "jira.field-value:APMIS-1988:projectSource",
+          "jira.field-value:APMIS-1988:coreRecovery",
+          "jira.field-value:APMIS-1988:requirementReleased",
+          "jira.field-value:APMIS-1988:timeTracking",
+          "jira.attachment:APMIS-1988:401704",
+          "jira.attachment:APMIS-1988:401706"
+        ],
+        "generatedAt": "2026-05-20T00:00:00.000Z"
+      },
+      "expected": {
+        "profile": "Visual",
+        "investigationLight": "yellow",
+        "implementationLight": "red",
+        "keyGaps": [
+          "baselineEvidence",
+          "viewport",
+          "acceptanceAssertions"
+        ],
+        "requiredSourceRefs": [
+          "jira.issue:APMIS-1988",
+          "jira.attachment:APMIS-1988:401704",
+          "jira.attachment:APMIS-1988:401706"
+        ]
+      },
+      "review": {
+        "reviewer": "codex-jira-import",
+        "reviewedAt": "2026-05-20T00:00:00.000Z",
+        "reviewSourceRef": "jira.filter:86004:APMIS-1988",
+        "adjustmentReason": "真实 Jira filter=86004 partial replay；expected 由当前会话基于 issue 标题、描述、附件和字段粗标，待 Notion v2 50 样本人工复核。"
+      },
+      "metadata": {
+        "source": "manual-replay"
+      }
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-1955",
+      "issueKey": "APMIS-1955",
+      "evidencePack": {
+        "schemaVersion": "JiraEvidencePackV2",
+        "issue": {
+          "key": "APMIS-1955",
+          "summary": "rs7签名组件对接",
+          "description": "rs7签名组件对接",
+          "issueType": "需求",
+          "status": "处理中",
+          "priority": "中",
+          "assignee": "b.w_neu",
+          "labels": [],
+          "projectKey": "APMIS",
+          "projectName": "新手麻",
+          "created": "2026-03-05T10:24:33.000+0800",
+          "updated": "2026-03-10T14:54:22.000+0800",
+          "dueDate": "2026-04-02",
+          "sourceRef": "jira.issue:APMIS-1955"
+        },
+        "fields": [],
+        "fieldValues": [
+          {
+            "fieldKey": "targetVersion",
+            "valueKind": "string",
+            "valueString": "7.0.187.0",
+            "sourceRef": "jira.field-value:APMIS-1955:targetVersion"
+          },
+          {
+            "fieldKey": "productModule",
+            "valueKind": "string",
+            "valueString": "手麻 - 接口平台",
+            "sourceRef": "jira.field-value:APMIS-1955:productModule"
+          },
+          {
+            "fieldKey": "issueCategory",
+            "valueKind": "string",
+            "valueString": "核心",
+            "sourceRef": "jira.field-value:APMIS-1955:issueCategory"
+          },
+          {
+            "fieldKey": "projectSource",
+            "valueKind": "string",
+            "valueString": "Z总部集成测试",
+            "sourceRef": "jira.field-value:APMIS-1955:projectSource"
+          },
+          {
+            "fieldKey": "coreRecovery",
+            "valueKind": "string",
+            "valueString": "未分析未回收",
+            "sourceRef": "jira.field-value:APMIS-1955:coreRecovery"
+          },
+          {
+            "fieldKey": "requirementReleased",
+            "valueKind": "string",
+            "valueString": "是",
+            "sourceRef": "jira.field-value:APMIS-1955:requirementReleased"
+          },
+          {
+            "fieldKey": "timeTracking",
+            "valueKind": "time_tracking",
+            "valueTimeTracking": {
+              "originalEstimateSeconds": 144000,
+              "remainingEstimateSeconds": 144000
+            },
+            "sourceRef": "jira.field-value:APMIS-1955:timeTracking"
+          }
+        ],
+        "comments": [],
+        "attachments": [],
+        "mediaEvidence": [],
+        "projectMetadata": null,
+        "relations": [],
+        "transitions": [],
+        "sourceRefs": [
+          "jira.issue:APMIS-1955",
+          "jira.field-value:APMIS-1955:targetVersion",
+          "jira.field-value:APMIS-1955:productModule",
+          "jira.field-value:APMIS-1955:issueCategory",
+          "jira.field-value:APMIS-1955:projectSource",
+          "jira.field-value:APMIS-1955:coreRecovery",
+          "jira.field-value:APMIS-1955:requirementReleased",
+          "jira.field-value:APMIS-1955:timeTracking"
+        ],
+        "generatedAt": "2026-05-20T00:00:00.000Z"
+      },
+      "expected": {
+        "profile": "Integration",
+        "investigationLight": "yellow",
+        "implementationLight": "red",
+        "keyGaps": [
+          "upstreamSystem",
+          "downstreamSystem",
+          "apiContract",
+          "fieldMapping",
+          "acceptanceAssertions",
+          "authBoundary",
+          "failureHandling",
+          "testFixtures"
+        ],
+        "requiredSourceRefs": [
+          "jira.issue:APMIS-1955"
+        ]
+      },
+      "review": {
+        "reviewer": "codex-jira-import",
+        "reviewedAt": "2026-05-20T00:00:00.000Z",
+        "reviewSourceRef": "jira.filter:86004:APMIS-1955",
+        "adjustmentReason": "真实 Jira filter=86004 partial replay；expected 由当前会话基于 issue 标题、描述、附件和字段粗标，待 Notion v2 50 样本人工复核。"
+      },
+      "metadata": {
+        "source": "manual-replay"
+      }
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-1004",
+      "issueKey": "APMIS-1004",
+      "evidencePack": {
+        "schemaVersion": "JiraEvidencePackV2",
+        "issue": {
+          "key": "APMIS-1004",
+          "summary": "【麻醉记录单-集中打印】麻醉记录单必填项未填写完全的情况，点击集中打印缺失校验拦截，集中打印按钮一直处于加载中，超时后才会报错提醒",
+          "description": "【麻醉记录单-集中打印】麻醉记录单必填项未填写完全的情况，点击集中打印缺失校验拦截，集中打印按钮一直处于加载中，超时后才会报错提醒",
+          "issueType": "缺陷",
+          "status": "处理中",
+          "priority": "低",
+          "assignee": "b.w_neu",
+          "labels": [],
+          "projectKey": "APMIS",
+          "projectName": "新手麻",
+          "created": "2025-08-29T14:05:14.000+0800",
+          "updated": "2025-09-18T09:41:29.000+0800",
+          "dueDate": "2025-09-25",
+          "sourceRef": "jira.issue:APMIS-1004"
+        },
+        "fields": [],
+        "fieldValues": [
+          {
+            "fieldKey": "targetVersion",
+            "valueKind": "string",
+            "valueString": "1.0.175.0",
+            "sourceRef": "jira.field-value:APMIS-1004:targetVersion"
+          },
+          {
+            "fieldKey": "productModule",
+            "valueKind": "string",
+            "valueString": "手麻 - 麻醉工作站",
+            "sourceRef": "jira.field-value:APMIS-1004:productModule"
+          },
+          {
+            "fieldKey": "defectCategory",
+            "valueKind": "string",
+            "valueString": "功能问题",
+            "sourceRef": "jira.field-value:APMIS-1004:defectCategory"
+          },
+          {
+            "fieldKey": "issueCategory",
+            "valueKind": "string",
+            "valueString": "核心",
+            "sourceRef": "jira.field-value:APMIS-1004:issueCategory"
+          },
+          {
+            "fieldKey": "projectSource",
+            "valueKind": "string",
+            "valueString": "Z总部集成测试",
+            "sourceRef": "jira.field-value:APMIS-1004:projectSource"
+          },
+          {
+            "fieldKey": "coreRecovery",
+            "valueKind": "string",
+            "valueString": "未分析未回收",
+            "sourceRef": "jira.field-value:APMIS-1004:coreRecovery"
+          },
+          {
+            "fieldKey": "requirementReleased",
+            "valueKind": "string",
+            "valueString": "是",
+            "sourceRef": "jira.field-value:APMIS-1004:requirementReleased"
+          },
+          {
+            "fieldKey": "timeTracking",
+            "valueKind": "time_tracking",
+            "valueTimeTracking": {
+              "originalEstimateSeconds": 14400,
+              "remainingEstimateSeconds": 14400
+            },
+            "sourceRef": "jira.field-value:APMIS-1004:timeTracking"
+          }
+        ],
+        "comments": [],
+        "attachments": [
+          {
+            "id": "346166",
+            "filename": "image-2025-08-29-14-04-54-228.png",
+            "mimeType": "image/png",
+            "size": 174151,
+            "sourceRef": "jira.attachment:APMIS-1004:346166",
+            "securityDigest": null
+          },
+          {
+            "id": "346165",
+            "filename": "image-2025-08-29-14-05-09-011.png",
+            "mimeType": "image/png",
+            "size": 174151,
+            "sourceRef": "jira.attachment:APMIS-1004:346165",
+            "securityDigest": null
+          }
+        ],
+        "mediaEvidence": [],
+        "projectMetadata": null,
+        "relations": [],
+        "transitions": [],
+        "sourceRefs": [
+          "jira.issue:APMIS-1004",
+          "jira.field-value:APMIS-1004:targetVersion",
+          "jira.field-value:APMIS-1004:productModule",
+          "jira.field-value:APMIS-1004:defectCategory",
+          "jira.field-value:APMIS-1004:issueCategory",
+          "jira.field-value:APMIS-1004:projectSource",
+          "jira.field-value:APMIS-1004:coreRecovery",
+          "jira.field-value:APMIS-1004:requirementReleased",
+          "jira.field-value:APMIS-1004:timeTracking",
+          "jira.attachment:APMIS-1004:346166",
+          "jira.attachment:APMIS-1004:346165"
+        ],
+        "generatedAt": "2026-05-20T00:00:00.000Z"
+      },
+      "expected": {
+        "profile": "Workflow",
+        "investigationLight": "yellow",
+        "implementationLight": "red",
+        "keyGaps": [
+          "roles",
+          "businessRules",
+          "exceptionPaths",
+          "auditTrail",
+          "acceptanceAssertions"
+        ],
+        "requiredSourceRefs": [
+          "jira.issue:APMIS-1004",
+          "jira.attachment:APMIS-1004:346166",
+          "jira.attachment:APMIS-1004:346165"
+        ]
+      },
+      "review": {
+        "reviewer": "codex-jira-import",
+        "reviewedAt": "2026-05-20T00:00:00.000Z",
+        "reviewSourceRef": "jira.filter:86004:APMIS-1004",
+        "adjustmentReason": "真实 Jira filter=86004 partial replay；expected 由当前会话基于 issue 标题、描述、附件和字段粗标，待 Notion v2 50 样本人工复核。"
+      },
+      "metadata": {
+        "source": "manual-replay"
+      }
+    }
+  ]
+}

@@ -1,0 +1,319 @@
+{
+  "schemaVersion": "profile-spec-v0-fixtures@1",
+  "samples": [
+    {
+      "id": "visual-spec-ready-01",
+      "expectedProfile": "Visual",
+      "evidencePack": {
+        "schemaVersion": "JiraEvidencePackV2",
+        "issue": {
+          "key": "OPS-401",
+          "summary": "结算页面按钮颜色错位（1920x1080）",
+          "description": "预期按钮颜色与设计稿 baseline-v3 一致，不应出现错位。",
+          "issueType": "Bug",
+          "status": "To Do",
+          "priority": "High",
+          "assignee": "",
+          "labels": ["frontend"],
+          "projectKey": "OPS",
+          "projectName": "Operations",
+          "created": "2026-05-19T00:00:00.000Z",
+          "updated": "2026-05-19T00:00:00.000Z",
+          "dueDate": "",
+          "sourceRef": "jira.issue:OPS-401"
+        },
+        "fields": [],
+        "fieldValues": [],
+        "comments": [
+          {
+            "id": "c-401-1",
+            "body": "应当与 Figma 设计稿保持一致。",
+            "author": "qa",
+            "created": "2026-05-19T00:00:00.000Z",
+            "updated": "2026-05-19T00:00:00.000Z",
+            "sourceRef": "jira.comment:OPS-401:c-401-1"
+          }
+        ],
+        "attachments": [
+          {
+            "id": "att-401-1",
+            "filename": "screenshot-billing-page.png",
+            "mimeType": "image/png",
+            "size": 20124,
+            "sourceRef": "jira.attachment:OPS-401:att-401-1",
+            "securityDigest": null
+          }
+        ],
+        "mediaEvidence": [],
+        "projectMetadata": null,
+        "relations": [],
+        "transitions": [],
+        "sourceRefs": [
+          "jira.issue:OPS-401",
+          "jira.comment:OPS-401:c-401-1",
+          "jira.attachment:OPS-401:att-401-1"
+        ],
+        "generatedAt": "2026-05-19T00:00:00.000Z"
+      }
+    },
+    {
+      "id": "visual-gap-01",
+      "expectedProfile": "Visual",
+      "evidencePack": {
+        "schemaVersion": "JiraEvidencePackV2",
+        "issue": {
+          "key": "OPS-402",
+          "summary": "登录页面样式异常",
+          "description": "按钮和列表布局出现错位。",
+          "issueType": "Bug",
+          "status": "To Do",
+          "priority": "High",
+          "assignee": "",
+          "labels": ["ui"],
+          "projectKey": "OPS",
+          "projectName": "Operations",
+          "created": "2026-05-19T00:00:00.000Z",
+          "updated": "2026-05-19T00:00:00.000Z",
+          "dueDate": "",
+          "sourceRef": "jira.issue:OPS-402"
+        },
+        "fields": [],
+        "fieldValues": [],
+        "comments": [],
+        "attachments": [
+          {
+            "id": "att-402-1",
+            "filename": "screenshot-login.png",
+            "mimeType": "image/png",
+            "size": 8021,
+            "sourceRef": "jira.attachment:OPS-402:att-402-1",
+            "securityDigest": null
+          }
+        ],
+        "mediaEvidence": [],
+        "projectMetadata": null,
+        "relations": [],
+        "transitions": [],
+        "sourceRefs": [
+          "jira.issue:OPS-402",
+          "jira.attachment:OPS-402:att-402-1"
+        ],
+        "generatedAt": "2026-05-19T00:00:00.000Z"
+      }
+    },
+    {
+      "id": "integration-gap-01",
+      "expectedProfile": "Integration",
+      "evidencePack": {
+        "schemaVersion": "JiraEvidencePackV2",
+        "issue": {
+          "key": "OPS-403",
+          "summary": "第三方 API 同步失败，字段映射报错",
+          "description": "上游 webhook 回调超时，需要重试，token 签名校验失败。",
+          "issueType": "Integration Task",
+          "status": "To Do",
+          "priority": "High",
+          "assignee": "",
+          "labels": ["api", "mapping"],
+          "projectKey": "OPS",
+          "projectName": "Operations",
+          "created": "2026-05-19T00:00:00.000Z",
+          "updated": "2026-05-19T00:00:00.000Z",
+          "dueDate": "",
+          "sourceRef": "jira.issue:OPS-403"
+        },
+        "fields": [],
+        "fieldValues": [
+          {
+            "fieldKey": "productModule",
+            "valueKind": "string",
+            "valueString": "integration-gateway",
+            "sourceRef": "jira.field-value:OPS-403:productModule"
+          }
+        ],
+        "comments": [
+          {
+            "id": "c-403-1",
+            "body": "接口契约见 payload-v2.json，字段映射 user_id -> uid，应在重试后同步成功。",
+            "author": "dev",
+            "created": "2026-05-19T00:00:00.000Z",
+            "updated": "2026-05-19T00:00:00.000Z",
+            "sourceRef": "jira.comment:OPS-403:c-403-1"
+          }
+        ],
+        "attachments": [
+          {
+            "id": "att-403-1",
+            "filename": "payload-v2.json",
+            "mimeType": "application/json",
+            "size": 1203,
+            "sourceRef": "jira.attachment:OPS-403:att-403-1",
+            "securityDigest": null
+          }
+        ],
+        "mediaEvidence": [],
+        "projectMetadata": null,
+        "relations": [],
+        "transitions": [],
+        "sourceRefs": [
+          "jira.issue:OPS-403",
+          "jira.field-value:OPS-403:productModule",
+          "jira.comment:OPS-403:c-403-1",
+          "jira.attachment:OPS-403:att-403-1"
+        ],
+        "generatedAt": "2026-05-19T00:00:00.000Z"
+      }
+    },
+    {
+      "id": "integration-spec-ready-01",
+      "expectedProfile": "Integration",
+      "evidencePack": {
+        "schemaVersion": "JiraEvidencePackV2",
+        "issue": {
+          "key": "OPS-408",
+          "summary": "上游 CRM webhook 与下游 HIS 同步字段映射需求",
+          "description": "上游系统 CRM 通过 webhook API 推送报文到下游 HIS；字段映射 customer_id -> patientId，token 签名失败后需要重试，并使用 fixture payload 进行回归。",
+          "issueType": "Integration Task",
+          "status": "To Do",
+          "priority": "High",
+          "assignee": "",
+          "labels": ["integration", "mapping"],
+          "projectKey": "OPS",
+          "projectName": "Operations",
+          "created": "2026-05-19T00:00:00.000Z",
+          "updated": "2026-05-19T00:00:00.000Z",
+          "dueDate": "",
+          "sourceRef": "jira.issue:OPS-408"
+        },
+        "fields": [],
+        "fieldValues": [
+          {
+            "fieldKey": "projectSource",
+            "valueKind": "string",
+            "valueString": "crm-his-integration",
+            "sourceRef": "jira.field-value:OPS-408:projectSource"
+          }
+        ],
+        "comments": [
+          {
+            "id": "c-408-1",
+            "body": "预期同步完成后状态应为 SUCCESS。",
+            "author": "qa",
+            "created": "2026-05-19T00:00:00.000Z",
+            "updated": "2026-05-19T00:00:00.000Z",
+            "sourceRef": "jira.comment:OPS-408:c-408-1"
+          }
+        ],
+        "attachments": [
+          {
+            "id": "att-408-1",
+            "filename": "crm-his-fixture-payload.json",
+            "mimeType": "application/json",
+            "size": 1351,
+            "sourceRef": "jira.attachment:OPS-408:att-408-1",
+            "securityDigest": null
+          }
+        ],
+        "mediaEvidence": [],
+        "projectMetadata": null,
+        "relations": [],
+        "transitions": [],
+        "sourceRefs": [
+          "jira.issue:OPS-408",
+          "jira.field-value:OPS-408:projectSource",
+          "jira.comment:OPS-408:c-408-1",
+          "jira.attachment:OPS-408:att-408-1"
+        ],
+        "generatedAt": "2026-05-19T00:00:00.000Z"
+      }
+    },
+    {
+      "id": "workflow-spec-ready-01",
+      "expectedProfile": "Workflow",
+      "evidencePack": {
+        "schemaVersion": "JiraEvidencePackV2",
+        "issue": {
+          "key": "OPS-404",
+          "summary": "审批流程在角色切换后卡在二审节点",
+          "description": "当申请人提交后触发审批流程，审批人必须在 24 小时内处理；驳回后回退到申请人并记录审计日志。",
+          "issueType": "Workflow Bug",
+          "status": "To Do",
+          "priority": "High",
+          "assignee": "",
+          "labels": ["workflow"],
+          "projectKey": "OPS",
+          "projectName": "Operations",
+          "created": "2026-05-19T00:00:00.000Z",
+          "updated": "2026-05-19T00:00:00.000Z",
+          "dueDate": "",
+          "sourceRef": "jira.issue:OPS-404"
+        },
+        "fields": [],
+        "fieldValues": [],
+        "comments": [
+          {
+            "id": "c-404-1",
+            "body": "预期流程完成后状态应变为已通过。",
+            "author": "qa",
+            "created": "2026-05-19T00:00:00.000Z",
+            "updated": "2026-05-19T00:00:00.000Z",
+            "sourceRef": "jira.comment:OPS-404:c-404-1"
+          }
+        ],
+        "attachments": [],
+        "mediaEvidence": [],
+        "projectMetadata": null,
+        "relations": [],
+        "transitions": [],
+        "sourceRefs": [
+          "jira.issue:OPS-404",
+          "jira.comment:OPS-404:c-404-1"
+        ],
+        "generatedAt": "2026-05-19T00:00:00.000Z"
+      }
+    },
+    {
+      "id": "billing-unsupported-01",
+      "expectedProfile": "Billing",
+      "evidencePack": {
+        "schemaVersion": "JiraEvidencePackV2",
+        "issue": {
+          "key": "OPS-405",
+          "summary": "医保结算金额计算偏差",
+          "description": "账单费用在退款后未回滚。",
+          "issueType": "Billing Defect",
+          "status": "To Do",
+          "priority": "High",
+          "assignee": "",
+          "labels": ["billing"],
+          "projectKey": "OPS",
+          "projectName": "Operations",
+          "created": "2026-05-19T00:00:00.000Z",
+          "updated": "2026-05-19T00:00:00.000Z",
+          "dueDate": "",
+          "sourceRef": "jira.issue:OPS-405"
+        },
+        "fields": [],
+        "fieldValues": [
+          {
+            "fieldKey": "issueCategory",
+            "valueKind": "string",
+            "valueString": "billing-settlement",
+            "sourceRef": "jira.field-value:OPS-405:issueCategory"
+          }
+        ],
+        "comments": [],
+        "attachments": [],
+        "mediaEvidence": [],
+        "projectMetadata": null,
+        "relations": [],
+        "transitions": [],
+        "sourceRefs": [
+          "jira.issue:OPS-405",
+          "jira.field-value:OPS-405:issueCategory"
+        ],
+        "generatedAt": "2026-05-19T00:00:00.000Z"
+      }
+    }
+  ]
+}

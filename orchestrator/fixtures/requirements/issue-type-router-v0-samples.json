@@ -1,0 +1,273 @@
+{
+  "schemaVersion": "issue-type-router-v0-fixtures@1",
+  "samples": [
+    {
+      "id": "visual-01",
+      "expectedProfile": "Visual",
+      "evidencePack": {
+        "schemaVersion": "JiraEvidencePackV2",
+        "issue": {
+          "key": "OPS-201",
+          "summary": "登录页面空白页且按钮颜色错位",
+          "description": "附带截图，页面布局与设计稿不一致。",
+          "issueType": "Bug",
+          "status": "To Do",
+          "priority": "High",
+          "assignee": "",
+          "labels": ["frontend"],
+          "projectKey": "OPS",
+          "projectName": "Operations",
+          "created": "2026-05-19T00:00:00.000Z",
+          "updated": "2026-05-19T00:00:00.000Z",
+          "dueDate": "",
+          "sourceRef": "jira.issue:OPS-201"
+        },
+        "fields": [],
+        "fieldValues": [],
+        "comments": [],
+        "attachments": [
+          {
+            "id": "att-visual-1",
+            "filename": "screenshot-login.png",
+            "mimeType": "image/png",
+            "size": 2048,
+            "sourceRef": "jira.attachment:OPS-201:att-visual-1",
+            "securityDigest": null
+          }
+        ],
+        "mediaEvidence": [],
+        "projectMetadata": null,
+        "relations": [],
+        "transitions": [],
+        "sourceRefs": [
+          "jira.issue:OPS-201",
+          "jira.attachment:OPS-201:att-visual-1"
+        ],
+        "generatedAt": "2026-05-19T00:00:00.000Z"
+      }
+    },
+    {
+      "id": "integration-01",
+      "expectedProfile": "Integration",
+      "evidencePack": {
+        "schemaVersion": "JiraEvidencePackV2",
+        "issue": {
+          "key": "OPS-202",
+          "summary": "第三方 API 同步失败，字段映射报错",
+          "description": "上游 webhook 回调超时，需增加重试。",
+          "issueType": "Integration Task",
+          "status": "To Do",
+          "priority": "High",
+          "assignee": "",
+          "labels": ["api", "mapping"],
+          "projectKey": "OPS",
+          "projectName": "Operations",
+          "created": "2026-05-19T00:00:00.000Z",
+          "updated": "2026-05-19T00:00:00.000Z",
+          "dueDate": "",
+          "sourceRef": "jira.issue:OPS-202"
+        },
+        "fields": [],
+        "fieldValues": [
+          {
+            "fieldKey": "productModule",
+            "valueKind": "string",
+            "valueString": "integration-gateway",
+            "sourceRef": "jira.field-value:OPS-202:productModule"
+          }
+        ],
+        "comments": [],
+        "attachments": [],
+        "mediaEvidence": [],
+        "projectMetadata": {
+          "projectKey": "OPS",
+          "projectName": "Operations",
+          "components": [
+            {
+              "id": "cmp-1",
+              "name": "connector-adapter",
+              "description": "external integration adapter"
+            }
+          ],
+          "versions": [],
+          "statuses": [],
+          "sourceRef": "jira.project-metadata:OPS"
+        },
+        "relations": [],
+        "transitions": [],
+        "sourceRefs": [
+          "jira.issue:OPS-202",
+          "jira.field-value:OPS-202:productModule",
+          "jira.project-metadata:OPS"
+        ],
+        "generatedAt": "2026-05-19T00:00:00.000Z"
+      }
+    },
+    {
+      "id": "workflow-01",
+      "expectedProfile": "Workflow",
+      "evidencePack": {
+        "schemaVersion": "JiraEvidencePackV2",
+        "issue": {
+          "key": "OPS-203",
+          "summary": "审批流程状态流转异常",
+          "description": "节点触发条件和业务规则不符合预期。",
+          "issueType": "Workflow Bug",
+          "status": "To Do",
+          "priority": "High",
+          "assignee": "",
+          "labels": ["approval"],
+          "projectKey": "OPS",
+          "projectName": "Operations",
+          "created": "2026-05-19T00:00:00.000Z",
+          "updated": "2026-05-19T00:00:00.000Z",
+          "dueDate": "",
+          "sourceRef": "jira.issue:OPS-203"
+        },
+        "fields": [],
+        "fieldValues": [],
+        "comments": [
+          {
+            "id": "c-203-1",
+            "body": "角色切换后任务流卡在审批节点。",
+            "author": "qa",
+            "created": "2026-05-19T00:00:00.000Z",
+            "updated": "2026-05-19T00:00:00.000Z",
+            "sourceRef": "jira.comment:OPS-203:c-203-1"
+          }
+        ],
+        "attachments": [],
+        "mediaEvidence": [],
+        "projectMetadata": null,
+        "relations": [],
+        "transitions": [],
+        "sourceRefs": [
+          "jira.issue:OPS-203",
+          "jira.comment:OPS-203:c-203-1"
+        ],
+        "generatedAt": "2026-05-19T00:00:00.000Z"
+      }
+    },
+    {
+      "id": "billing-01",
+      "expectedProfile": "Billing",
+      "evidencePack": {
+        "schemaVersion": "JiraEvidencePackV2",
+        "issue": {
+          "key": "OPS-204",
+          "summary": "医保结算金额计算偏差",
+          "description": "账单费用在退款后未回滚。",
+          "issueType": "Billing Defect",
+          "status": "To Do",
+          "priority": "High",
+          "assignee": "",
+          "labels": ["billing"],
+          "projectKey": "OPS",
+          "projectName": "Operations",
+          "created": "2026-05-19T00:00:00.000Z",
+          "updated": "2026-05-19T00:00:00.000Z",
+          "dueDate": "",
+          "sourceRef": "jira.issue:OPS-204"
+        },
+        "fields": [],
+        "fieldValues": [
+          {
+            "fieldKey": "issueCategory",
+            "valueKind": "string",
+            "valueString": "billing-settlement",
+            "sourceRef": "jira.field-value:OPS-204:issueCategory"
+          }
+        ],
+        "comments": [],
+        "attachments": [],
+        "mediaEvidence": [],
+        "projectMetadata": null,
+        "relations": [],
+        "transitions": [],
+        "sourceRefs": [
+          "jira.issue:OPS-204",
+          "jira.field-value:OPS-204:issueCategory"
+        ],
+        "generatedAt": "2026-05-19T00:00:00.000Z"
+      }
+    },
+    {
+      "id": "access-01",
+      "expectedProfile": "AccessControl",
+      "evidencePack": {
+        "schemaVersion": "JiraEvidencePackV2",
+        "issue": {
+          "key": "OPS-205",
+          "summary": "SSO 登录授权后租户角色仍无菜单权限",
+          "description": "OAuth token 签名校验失败。",
+          "issueType": "Access Control",
+          "status": "To Do",
+          "priority": "High",
+          "assignee": "",
+          "labels": ["auth", "tenant"],
+          "projectKey": "OPS",
+          "projectName": "Operations",
+          "created": "2026-05-19T00:00:00.000Z",
+          "updated": "2026-05-19T00:00:00.000Z",
+          "dueDate": "",
+          "sourceRef": "jira.issue:OPS-205"
+        },
+        "fields": [],
+        "fieldValues": [
+          {
+            "fieldKey": "defectCategory",
+            "valueKind": "string",
+            "valueString": "oauth-signature",
+            "sourceRef": "jira.field-value:OPS-205:defectCategory"
+          }
+        ],
+        "comments": [],
+        "attachments": [],
+        "mediaEvidence": [],
+        "projectMetadata": null,
+        "relations": [],
+        "transitions": [],
+        "sourceRefs": [
+          "jira.issue:OPS-205",
+          "jira.field-value:OPS-205:defectCategory"
+        ],
+        "generatedAt": "2026-05-19T00:00:00.000Z"
+      }
+    },
+    {
+      "id": "general-01",
+      "expectedProfile": "General",
+      "evidencePack": {
+        "schemaVersion": "JiraEvidencePackV2",
+        "issue": {
+          "key": "OPS-206",
+          "summary": "优化日志提示文案",
+          "description": "补充说明，不涉及业务模块。",
+          "issueType": "Task",
+          "status": "To Do",
+          "priority": "Low",
+          "assignee": "",
+          "labels": ["maintenance"],
+          "projectKey": "OPS",
+          "projectName": "Operations",
+          "created": "2026-05-19T00:00:00.000Z",
+          "updated": "2026-05-19T00:00:00.000Z",
+          "dueDate": "",
+          "sourceRef": "jira.issue:OPS-206"
+        },
+        "fields": [],
+        "fieldValues": [],
+        "comments": [],
+        "attachments": [],
+        "mediaEvidence": [],
+        "projectMetadata": null,
+        "relations": [],
+        "transitions": [],
+        "sourceRefs": [
+          "jira.issue:OPS-206"
+        ],
+        "generatedAt": "2026-05-19T00:00:00.000Z"
+      }
+    }
+  ]
+}

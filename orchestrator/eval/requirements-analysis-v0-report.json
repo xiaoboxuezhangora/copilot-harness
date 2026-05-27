@@ -1,0 +1,520 @@
+{
+  "schemaVersion": "requirements-analysis-eval-v0-report@1",
+  "generatedAt": "2026-05-20T06:42:24.410Z",
+  "status": "NOT_READY",
+  "dataset": {
+    "sampleCount": 17,
+    "requiredSampleCount": 50,
+    "realReviewedSampleCount": 0,
+    "missingReviewMetadataCount": 0
+  },
+  "metrics": {
+    "routerTop1Accuracy": 1,
+    "investigationGateAccuracy": 1,
+    "implementationGateAccuracy": 1,
+    "sourceRefCoverage": 1,
+    "profileFieldCompletenessAverage": 0.221,
+    "redRecall": 1,
+    "yellowFalsePositiveRate": 0,
+    "unsupportedProfileSampleCount": 1
+  },
+  "notReadyReasons": [
+    "sampleCount=17 < requiredSampleCount=50",
+    "realReviewedSampleCount=0 < requiredSampleCount=50"
+  ],
+  "failures": [
+    {
+      "sampleId": "jira-filter-86004-apmis-2234",
+      "issueKey": "APMIS-2234",
+      "category": "keyGaps",
+      "expected": [
+        "baselineEvidence",
+        "viewport",
+        "acceptanceAssertions"
+      ],
+      "actual": "missing_key_gaps",
+      "missingSourceRefs": [],
+      "missingGaps": [
+        "acceptanceAssertions"
+      ],
+      "reason": "关键缺口字段未覆盖。"
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-2213",
+      "issueKey": "APMIS-2213",
+      "category": "keyGaps",
+      "expected": [
+        "roles",
+        "businessRules",
+        "exceptionPaths",
+        "auditTrail",
+        "acceptanceAssertions"
+      ],
+      "actual": "missing_key_gaps",
+      "missingSourceRefs": [],
+      "missingGaps": [
+        "exceptionPaths"
+      ],
+      "reason": "关键缺口字段未覆盖。"
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-2096",
+      "issueKey": "APMIS-2096",
+      "category": "keyGaps",
+      "expected": [
+        "roles",
+        "businessRules",
+        "exceptionPaths",
+        "auditTrail",
+        "acceptanceAssertions"
+      ],
+      "actual": "missing_key_gaps",
+      "missingSourceRefs": [],
+      "missingGaps": [
+        "auditTrail"
+      ],
+      "reason": "关键缺口字段未覆盖。"
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-2088",
+      "issueKey": "APMIS-2088",
+      "category": "keyGaps",
+      "expected": [
+        "baselineEvidence",
+        "viewport",
+        "acceptanceAssertions"
+      ],
+      "actual": "missing_key_gaps",
+      "missingSourceRefs": [],
+      "missingGaps": [
+        "acceptanceAssertions"
+      ],
+      "reason": "关键缺口字段未覆盖。"
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-2026",
+      "issueKey": "APMIS-2026",
+      "category": "keyGaps",
+      "expected": [
+        "visualEvidence",
+        "baselineEvidence",
+        "viewport",
+        "acceptanceAssertions"
+      ],
+      "actual": "missing_key_gaps",
+      "missingSourceRefs": [],
+      "missingGaps": [
+        "acceptanceAssertions"
+      ],
+      "reason": "关键缺口字段未覆盖。"
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-1988",
+      "issueKey": "APMIS-1988",
+      "category": "keyGaps",
+      "expected": [
+        "baselineEvidence",
+        "viewport",
+        "acceptanceAssertions"
+      ],
+      "actual": "missing_key_gaps",
+      "missingSourceRefs": [],
+      "missingGaps": [
+        "acceptanceAssertions"
+      ],
+      "reason": "关键缺口字段未覆盖。"
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-1004",
+      "issueKey": "APMIS-1004",
+      "category": "keyGaps",
+      "expected": [
+        "roles",
+        "businessRules",
+        "exceptionPaths",
+        "auditTrail",
+        "acceptanceAssertions"
+      ],
+      "actual": "missing_key_gaps",
+      "missingSourceRefs": [],
+      "missingGaps": [
+        "businessRules",
+        "exceptionPaths",
+        "auditTrail"
+      ],
+      "reason": "关键缺口字段未覆盖。"
+    }
+  ],
+  "samples": [
+    {
+      "sampleId": "jira-filter-86004-apmis-2271",
+      "issueKey": "APMIS-2271",
+      "expectedProfile": "Integration",
+      "actualProfile": "Integration",
+      "expectedInvestigationLight": "yellow",
+      "actualInvestigationLight": "yellow",
+      "expectedImplementationLight": "red",
+      "actualImplementationLight": "red",
+      "routerTop1Pass": true,
+      "investigationGatePass": true,
+      "implementationGatePass": true,
+      "keyGapsPass": true,
+      "sourceRefCoveragePass": true,
+      "profileFieldCompleteness": 0,
+      "profileFieldCompletenessSupported": true,
+      "failureReasons": [],
+      "missingSourceRefs": [],
+      "missingGaps": []
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-2270",
+      "issueKey": "APMIS-2270",
+      "expectedProfile": "Visual",
+      "actualProfile": "Visual",
+      "expectedInvestigationLight": "yellow",
+      "actualInvestigationLight": "yellow",
+      "expectedImplementationLight": "red",
+      "actualImplementationLight": "red",
+      "routerTop1Pass": true,
+      "investigationGatePass": true,
+      "implementationGatePass": true,
+      "keyGapsPass": true,
+      "sourceRefCoveragePass": true,
+      "profileFieldCompleteness": 0.2857,
+      "profileFieldCompletenessSupported": true,
+      "failureReasons": [],
+      "missingSourceRefs": [],
+      "missingGaps": []
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-2250",
+      "issueKey": "APMIS-2250",
+      "expectedProfile": "Workflow",
+      "actualProfile": "Workflow",
+      "expectedInvestigationLight": "yellow",
+      "actualInvestigationLight": "yellow",
+      "expectedImplementationLight": "red",
+      "actualImplementationLight": "red",
+      "routerTop1Pass": true,
+      "investigationGatePass": true,
+      "implementationGatePass": true,
+      "keyGapsPass": true,
+      "sourceRefCoveragePass": true,
+      "profileFieldCompleteness": 0.25,
+      "profileFieldCompletenessSupported": true,
+      "failureReasons": [],
+      "missingSourceRefs": [],
+      "missingGaps": []
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-2234",
+      "issueKey": "APMIS-2234",
+      "expectedProfile": "Visual",
+      "actualProfile": "Visual",
+      "expectedInvestigationLight": "yellow",
+      "actualInvestigationLight": "yellow",
+      "expectedImplementationLight": "red",
+      "actualImplementationLight": "red",
+      "routerTop1Pass": true,
+      "investigationGatePass": true,
+      "implementationGatePass": true,
+      "keyGapsPass": false,
+      "sourceRefCoveragePass": true,
+      "profileFieldCompleteness": 0.7143,
+      "profileFieldCompletenessSupported": true,
+      "failureReasons": [
+        "missing keyGaps: acceptanceAssertions"
+      ],
+      "missingSourceRefs": [],
+      "missingGaps": [
+        "acceptanceAssertions"
+      ]
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-2213",
+      "issueKey": "APMIS-2213",
+      "expectedProfile": "Workflow",
+      "actualProfile": "Workflow",
+      "expectedInvestigationLight": "yellow",
+      "actualInvestigationLight": "yellow",
+      "expectedImplementationLight": "red",
+      "actualImplementationLight": "red",
+      "routerTop1Pass": true,
+      "investigationGatePass": true,
+      "implementationGatePass": true,
+      "keyGapsPass": false,
+      "sourceRefCoveragePass": true,
+      "profileFieldCompleteness": 0,
+      "profileFieldCompletenessSupported": true,
+      "failureReasons": [
+        "missing keyGaps: exceptionPaths"
+      ],
+      "missingSourceRefs": [],
+      "missingGaps": [
+        "exceptionPaths"
+      ]
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-2096",
+      "issueKey": "APMIS-2096",
+      "expectedProfile": "Workflow",
+      "actualProfile": "Workflow",
+      "expectedInvestigationLight": "yellow",
+      "actualInvestigationLight": "yellow",
+      "expectedImplementationLight": "red",
+      "actualImplementationLight": "red",
+      "routerTop1Pass": true,
+      "investigationGatePass": true,
+      "implementationGatePass": true,
+      "keyGapsPass": false,
+      "sourceRefCoveragePass": true,
+      "profileFieldCompleteness": 0,
+      "profileFieldCompletenessSupported": true,
+      "failureReasons": [
+        "missing keyGaps: auditTrail"
+      ],
+      "missingSourceRefs": [],
+      "missingGaps": [
+        "auditTrail"
+      ]
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-2090",
+      "issueKey": "APMIS-2090",
+      "expectedProfile": "Billing",
+      "actualProfile": "Billing",
+      "expectedInvestigationLight": "yellow",
+      "actualInvestigationLight": "yellow",
+      "expectedImplementationLight": "red",
+      "actualImplementationLight": "red",
+      "routerTop1Pass": true,
+      "investigationGatePass": true,
+      "implementationGatePass": true,
+      "keyGapsPass": true,
+      "sourceRefCoveragePass": true,
+      "profileFieldCompleteness": null,
+      "profileFieldCompletenessSupported": false,
+      "failureReasons": [],
+      "missingSourceRefs": [],
+      "missingGaps": []
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-2088",
+      "issueKey": "APMIS-2088",
+      "expectedProfile": "Visual",
+      "actualProfile": "Visual",
+      "expectedInvestigationLight": "yellow",
+      "actualInvestigationLight": "yellow",
+      "expectedImplementationLight": "red",
+      "actualImplementationLight": "red",
+      "routerTop1Pass": true,
+      "investigationGatePass": true,
+      "implementationGatePass": true,
+      "keyGapsPass": false,
+      "sourceRefCoveragePass": true,
+      "profileFieldCompleteness": 0.4286,
+      "profileFieldCompletenessSupported": true,
+      "failureReasons": [
+        "missing keyGaps: acceptanceAssertions"
+      ],
+      "missingSourceRefs": [],
+      "missingGaps": [
+        "acceptanceAssertions"
+      ]
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-2062",
+      "issueKey": "APMIS-2062",
+      "expectedProfile": "Visual",
+      "actualProfile": "Visual",
+      "expectedInvestigationLight": "yellow",
+      "actualInvestigationLight": "yellow",
+      "expectedImplementationLight": "red",
+      "actualImplementationLight": "red",
+      "routerTop1Pass": true,
+      "investigationGatePass": true,
+      "implementationGatePass": true,
+      "keyGapsPass": true,
+      "sourceRefCoveragePass": true,
+      "profileFieldCompleteness": 0.1429,
+      "profileFieldCompletenessSupported": true,
+      "failureReasons": [],
+      "missingSourceRefs": [],
+      "missingGaps": []
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-2061",
+      "issueKey": "APMIS-2061",
+      "expectedProfile": "Visual",
+      "actualProfile": "Visual",
+      "expectedInvestigationLight": "yellow",
+      "actualInvestigationLight": "yellow",
+      "expectedImplementationLight": "red",
+      "actualImplementationLight": "red",
+      "routerTop1Pass": true,
+      "investigationGatePass": true,
+      "implementationGatePass": true,
+      "keyGapsPass": true,
+      "sourceRefCoveragePass": true,
+      "profileFieldCompleteness": 0.1429,
+      "profileFieldCompletenessSupported": true,
+      "failureReasons": [],
+      "missingSourceRefs": [],
+      "missingGaps": []
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-2045",
+      "issueKey": "APMIS-2045",
+      "expectedProfile": "Visual",
+      "actualProfile": "Visual",
+      "expectedInvestigationLight": "yellow",
+      "actualInvestigationLight": "yellow",
+      "expectedImplementationLight": "red",
+      "actualImplementationLight": "red",
+      "routerTop1Pass": true,
+      "investigationGatePass": true,
+      "implementationGatePass": true,
+      "keyGapsPass": true,
+      "sourceRefCoveragePass": true,
+      "profileFieldCompleteness": 0.2857,
+      "profileFieldCompletenessSupported": true,
+      "failureReasons": [],
+      "missingSourceRefs": [],
+      "missingGaps": []
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-2028",
+      "issueKey": "APMIS-2028",
+      "expectedProfile": "Visual",
+      "actualProfile": "Visual",
+      "expectedInvestigationLight": "yellow",
+      "actualInvestigationLight": "yellow",
+      "expectedImplementationLight": "red",
+      "actualImplementationLight": "red",
+      "routerTop1Pass": true,
+      "investigationGatePass": true,
+      "implementationGatePass": true,
+      "keyGapsPass": true,
+      "sourceRefCoveragePass": true,
+      "profileFieldCompleteness": 0.2857,
+      "profileFieldCompletenessSupported": true,
+      "failureReasons": [],
+      "missingSourceRefs": [],
+      "missingGaps": []
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-2027",
+      "issueKey": "APMIS-2027",
+      "expectedProfile": "Workflow",
+      "actualProfile": "Workflow",
+      "expectedInvestigationLight": "yellow",
+      "actualInvestigationLight": "yellow",
+      "expectedImplementationLight": "red",
+      "actualImplementationLight": "red",
+      "routerTop1Pass": true,
+      "investigationGatePass": true,
+      "implementationGatePass": true,
+      "keyGapsPass": true,
+      "sourceRefCoveragePass": true,
+      "profileFieldCompleteness": 0,
+      "profileFieldCompletenessSupported": true,
+      "failureReasons": [],
+      "missingSourceRefs": [],
+      "missingGaps": []
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-2026",
+      "issueKey": "APMIS-2026",
+      "expectedProfile": "Visual",
+      "actualProfile": "Visual",
+      "expectedInvestigationLight": "yellow",
+      "actualInvestigationLight": "yellow",
+      "expectedImplementationLight": "red",
+      "actualImplementationLight": "red",
+      "routerTop1Pass": true,
+      "investigationGatePass": true,
+      "implementationGatePass": true,
+      "keyGapsPass": false,
+      "sourceRefCoveragePass": true,
+      "profileFieldCompleteness": 0.4286,
+      "profileFieldCompletenessSupported": true,
+      "failureReasons": [
+        "missing keyGaps: acceptanceAssertions"
+      ],
+      "missingSourceRefs": [],
+      "missingGaps": [
+        "acceptanceAssertions"
+      ]
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-1988",
+      "issueKey": "APMIS-1988",
+      "expectedProfile": "Visual",
+      "actualProfile": "Visual",
+      "expectedInvestigationLight": "yellow",
+      "actualInvestigationLight": "yellow",
+      "expectedImplementationLight": "red",
+      "actualImplementationLight": "red",
+      "routerTop1Pass": true,
+      "investigationGatePass": true,
+      "implementationGatePass": true,
+      "keyGapsPass": false,
+      "sourceRefCoveragePass": true,
+      "profileFieldCompleteness": 0.5714,
+      "profileFieldCompletenessSupported": true,
+      "failureReasons": [
+        "missing keyGaps: acceptanceAssertions"
+      ],
+      "missingSourceRefs": [],
+      "missingGaps": [
+        "acceptanceAssertions"
+      ]
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-1955",
+      "issueKey": "APMIS-1955",
+      "expectedProfile": "Integration",
+      "actualProfile": "Integration",
+      "expectedInvestigationLight": "yellow",
+      "actualInvestigationLight": "yellow",
+      "expectedImplementationLight": "red",
+      "actualImplementationLight": "red",
+      "routerTop1Pass": true,
+      "investigationGatePass": true,
+      "implementationGatePass": true,
+      "keyGapsPass": true,
+      "sourceRefCoveragePass": true,
+      "profileFieldCompleteness": 0,
+      "profileFieldCompletenessSupported": true,
+      "failureReasons": [],
+      "missingSourceRefs": [],
+      "missingGaps": []
+    },
+    {
+      "sampleId": "jira-filter-86004-apmis-1004",
+      "issueKey": "APMIS-1004",
+      "expectedProfile": "Workflow",
+      "actualProfile": "Workflow",
+      "expectedInvestigationLight": "yellow",
+      "actualInvestigationLight": "yellow",
+      "expectedImplementationLight": "red",
+      "actualImplementationLight": "red",
+      "routerTop1Pass": true,
+      "investigationGatePass": true,
+      "implementationGatePass": true,
+      "keyGapsPass": false,
+      "sourceRefCoveragePass": true,
+      "profileFieldCompleteness": 0,
+      "profileFieldCompletenessSupported": true,
+      "failureReasons": [
+        "missing keyGaps: businessRules, exceptionPaths, auditTrail"
+      ],
+      "missingSourceRefs": [],
+      "missingGaps": [
+        "businessRules",
+        "exceptionPaths",
+        "auditTrail"
+      ]
+    }
+  ]
+}
