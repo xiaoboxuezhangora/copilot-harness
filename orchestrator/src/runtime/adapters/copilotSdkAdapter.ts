@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 
-import { DEFAULT_MODEL, type ReasoningEffort } from '../types.js';
+import { DEFAULT_MODEL, type ReasoningEffort, type RuntimeModel } from '../types.js';
 import {
   createSkillAgentSessionConfig,
   resolveRepoRoot,
@@ -33,13 +33,14 @@ export interface CopilotSdkAdapterOptions {
 }
 
 export interface CopilotSdkSessionConfigInput {
+  readonly model?: RuntimeModel;
   readonly reasoningEffort: SdkReasoningEffort;
   readonly skillAgentConfig: SkillAgentSessionConfig;
   readonly enableConfigDiscovery: boolean;
 }
 
 export interface CopilotSdkSessionConfig {
-  readonly model: typeof DEFAULT_MODEL;
+  readonly model: RuntimeModel;
   readonly reasoningEffort: SdkReasoningEffort;
   readonly workingDirectory: string;
   readonly skillDirectories: string[];
@@ -151,6 +152,7 @@ export class CopilotSdkAdapter implements RuntimeAdapter {
     try {
       await client.start();
       const sessionConfig = createCopilotSdkSessionConfig({
+        model: request.model,
         reasoningEffort: effort,
         skillAgentConfig,
         enableConfigDiscovery: this.options.enableConfigDiscovery ?? true
@@ -196,7 +198,7 @@ export function createCopilotSdkSessionConfig(
   const allowedTools = new Set(activeAgent?.tools ?? []);
 
   return {
-    model: DEFAULT_MODEL,
+    model: input.model ?? DEFAULT_MODEL,
     reasoningEffort: input.reasoningEffort,
     workingDirectory: input.skillAgentConfig.workingDirectory,
     skillDirectories: [...input.skillAgentConfig.skillDirectories],

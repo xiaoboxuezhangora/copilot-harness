@@ -1,0 +1,10 @@
+version: 4
+
+accounts:
+  - id: stub_openai_main
+    provider_id: stub_openai
+    enabled: true
+    credential_ref: "vault://copilot-harness/stub-openai/main"
+    quota:
+      rpm: 30
+      tpm: 60000

@@ -6,12 +6,17 @@ import { spawn } from 'node:child_process';
 
 import {
   DEFAULT_MODEL,
+  DEFAULT_MODEL_REF,
   DEFAULT_RUN_OPTIONS,
   type AgentCapabilityFlags,
   type AgentResult,
   type AgentTask,
+  ModelRoutingGateError,
   type ReasoningEffort,
+  type RuntimeAdapterName,
   type RuntimeIdentity,
+  type RuntimeModelRoutingGate,
+  type RuntimeModelRouteDecision,
   type ToolCallRecord,
   type TurnContext
 } from '../types.js';
@@ -43,6 +48,99 @@ export function resolveReasoningEffort(task: AgentTask): ReasoningEffort {
   return task.runOptions?.reasoningEffort ?? DEFAULT_RUN_OPTIONS.reasoningEffort;
 }
 
+export function isDefaultModelRef(modelRef: {
+  readonly providerId: string;
+  readonly model: string;
+}): boolean {
+  return modelRef.providerId === DEFAULT_MODEL_REF.providerId && modelRef.model === DEFAULT_MODEL;
+}
+
+export function resolveModelRouteDecision(
+  task: AgentTask,
+  runtimeName: RuntimeAdapterName,
+  modelRoutingGate?: RuntimeModelRoutingGate
+): RuntimeModelRouteDecision {
+  const decision = task.routeDecision ?? routeDecisionFromRunOptions(task, runtimeName);
+  assertModelRouteDecisionAllowed(decision);
+  if (modelRoutingGate !== undefined) {
+    return modelRoutingGate.validate({
+      decision,
+      runtimeName
+    });
+  }
+  assertDefaultOnlyWithoutModelCatalog(decision);
+  return decision;
+}
+
+export function assertModelRouteDecisionAllowed(decision: RuntimeModelRouteDecision): void {
+  if (!isDefaultModelRef(decision)) {
+    if (decision.matchedRuleId === undefined || decision.matchedRuleId.trim().length === 0) {
+      throw new ModelRoutingGateError({
+        schema_version: 'model-routing-gate-error@1',
+        policy_decision: 'deny',
+        gate: 'ModelRoutingGate',
+        provider_id: decision.providerId,
+        model: decision.model,
+        reason: 'non-default model route is missing matchedRuleId'
+      });
+    }
+    if (decision.routeReason === undefined || decision.routeReason.trim().length === 0) {
+      throw new ModelRoutingGateError({
+        schema_version: 'model-routing-gate-error@1',
+        policy_decision: 'deny',
+        gate: 'ModelRoutingGate',
+        provider_id: decision.providerId,
+        model: decision.model,
+        reason: 'non-default model route is missing routeReason'
+      });
+    }
+  }
+}
+
+function assertDefaultOnlyWithoutModelCatalog(decision: RuntimeModelRouteDecision): void {
+  if (isDefaultModelRef(decision)) return;
+  throw new ModelRoutingGateError({
+    schema_version: 'model-routing-gate-error@1',
+    policy_decision: 'deny',
+    gate: 'ModelRoutingGate',
+    provider_id: decision.providerId,
+    model: decision.model,
+    reason: 'non-default model requires a configured ModelRoutingGate'
+  });
+}
+
+function routeDecisionFromRunOptions(
+  task: AgentTask,
+  runtimeName: RuntimeAdapterName
+): RuntimeModelRouteDecision {
+  const optionModelRef = task.runOptions?.modelRef;
+  if (optionModelRef !== undefined) {
+    return {
+      ...optionModelRef,
+      routeSource: 'run_options'
+    };
+  }
+
+  if (task.runOptions?.model !== undefined) {
+    return {
+      providerId: DEFAULT_MODEL_REF.providerId,
+      model: task.runOptions.model,
+      runtime: runtimeName,
+      routeSource: 'run_options'
+    };
+  }
+
+  return {
+    providerId: DEFAULT_MODEL_REF.providerId,
+    model: DEFAULT_MODEL,
+    runtime: runtimeName,
+    matchedRuleId: 'defaults.default_route',
+    routeReason: 'DEFAULT_MODEL fallback',
+    routeSource: 'default_route',
+    fallbackChain: []
+  };
+}
+
 export function createTraceId(taskId: string, runtimeName: string): string {
   return `${runtimeName}-${taskId}-${Date.now().toString(36)}`;
 }
@@ -52,11 +150,12 @@ export function buildContext(
   runtime: RuntimeIdentity,
   reasoningEffort: ReasoningEffort,
   auditTraceId: string,
-  toolCalls: readonly ToolCallRecord[]
+  toolCalls: readonly ToolCallRecord[],
+  routeDecision: RuntimeModelRouteDecision
 ): TurnContext {
   return {
     taskId: task.taskId,
-    model: DEFAULT_MODEL,
+    model: routeDecision.model,
     runtime,
     runOptions: {
       reasoningEffort,
@@ -73,6 +172,7 @@ export function buildResult(input: {
   readonly runtime: RuntimeIdentity;
   readonly reasoningEffort: ReasoningEffort;
   readonly auditTraceId: string;
+  readonly routeDecision: RuntimeModelRouteDecision;
   readonly adapterProbe: RuntimeAdapterProbe;
   readonly adapterResponse: RuntimeAdapterResponse;
 }): AgentResult {
@@ -102,8 +202,9 @@ export function buildResult(input: {
       confidence: input.adapterProbe.capabilities.capabilitySupported ? 0.8 : 0.6
     },
     auditTraceId: input.auditTraceId,
-    model: DEFAULT_MODEL,
+    model: input.routeDecision.model,
     runtime: input.runtime,
+    routeDecision: input.routeDecision,
     reasoningEffort: input.reasoningEffort,
     promptVersion: input.task.promptVersion,
     policyDecision: aggregatePolicyDecision(input.adapterResponse.toolCalls),

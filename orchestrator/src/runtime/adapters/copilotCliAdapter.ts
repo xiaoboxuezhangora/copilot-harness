@@ -157,7 +157,7 @@ export class CopilotCliAdapter implements RuntimeAdapter {
       };
     }
 
-    const args = ['--model', DEFAULT_MODEL, '--output-format', 'json', '--prompt', request.prompt];
+    const args = ['--model', request.model, '--output-format', 'json', '--prompt', request.prompt];
 
     const result = await runCommand(this.command, args, {
       ...(this.options.cwd !== undefined ? { cwd: this.options.cwd } : {}),

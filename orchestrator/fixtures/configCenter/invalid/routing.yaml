@@ -1,0 +1,21 @@
+version: 4
+
+defaults:
+  default_route:
+    provider_id: deepseek_contract
+    model: deepseek-coder-v3
+    runtime: openai-compatible
+    reason: "invalid route should be rejected"
+    fallback_chain: []
+
+provider_constraints: []
+jira_model_routes: []
+profile_routes: []
+task_routes: []
+route_precedence:
+  - provider_constraints
+  - data_classification
+  - jira_model_routes
+  - profile_routes
+  - task_routes
+  - defaults.default_route

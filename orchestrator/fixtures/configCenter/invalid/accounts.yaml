@@ -1,0 +1,7 @@
+version: 4
+
+accounts:
+  - id: forbidden_copilot_pool
+    provider_id: copilot
+    enabled: true
+    credential_ref: "vault://copilot-harness/copilot/forbidden"

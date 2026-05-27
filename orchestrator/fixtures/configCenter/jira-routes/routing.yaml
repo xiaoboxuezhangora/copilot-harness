@@ -1,0 +1,84 @@
+version: 4
+
+defaults:
+  default_route:
+    provider_id: copilot
+    model: gpt-5-mini
+    runtime: copilot-sdk
+    reason: "需求分析默认保持基线模型"
+    fallback_chain: []
+
+provider_constraints:
+  - id: medical_sensitive_neusoft_only
+    data_classification: medical_sensitive
+    must_use_providers: [neusoft_contract]
+    denied_providers: [deepseek_contract]
+    on_unavailable: deny
+    route:
+      provider_id: neusoft_contract
+      model: neu-coder-32b
+      runtime: openai-compatible
+      reason: "medical_sensitive 数据必须留在内部模型合同桩"
+      fallback_chain: []
+
+jira_model_routes:
+  - id: jira_apmis_oracle_high_risk
+    match:
+      project_keys: [APMIS]
+      issue_types: [Bug, Task]
+      labels_any: [oracle, sql]
+      components_any: [Database, Oracle]
+      priorities: [High, Highest]
+      risk_levels: [high, L3]
+    route:
+      provider_id: deepseek_contract
+      model: deepseek-coder-v3
+      runtime: openai-compatible
+      fallback_chain:
+        - { provider_id: copilot, model: gpt-5-mini, runtime: copilot-sdk }
+    reason: "APMIS 高风险 Oracle/SQL Jira 需要代码模型合同桩"
+
+  - id: jira_ops_frontend_review
+    match:
+      project_keys: [OPS]
+      labels_any: [frontend, ui]
+      priorities: [High]
+    route:
+      provider_id: copilot
+      model: gpt-4.1
+      runtime: copilot-sdk
+      fallback_chain:
+        - { provider_id: copilot, model: gpt-5-mini, runtime: copilot-sdk }
+    reason: "高优先级前端复核使用更强 Copilot 模型"
+
+profile_routes:
+  - id: profile_billing_contract
+    profiles: [Billing]
+    business_domains: [billing]
+    route:
+      provider_id: deepseek_contract
+      model: deepseek-chat
+      runtime: openai-compatible
+      fallback_chain:
+        - { provider_id: copilot, model: gpt-5-mini, runtime: copilot-sdk }
+    reason: "Billing profile 可走合同桩模型降本"
+
+task_routes:
+  - id: task_requirements_baseline
+    task_types: [requirements_analysis]
+    route:
+      provider_id: copilot
+      model: gpt-5-mini
+      runtime: copilot-sdk
+      fallback_chain: []
+    reason: "需求分析默认保持基线模型"
+
+route_precedence:
+  - provider_constraints
+  - data_classification
+  - jira_model_routes
+  - profile_routes
+  - task_routes
+  - defaults.default_route
+
+total_budget_ms: 30000

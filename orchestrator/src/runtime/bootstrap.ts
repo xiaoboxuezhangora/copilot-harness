@@ -6,6 +6,7 @@ import { CopilotSdkAdapter } from './adapters/copilotSdkAdapter.js';
 import type { RuntimeAdapter } from './adapters/types.js';
 import { CopilotCliRuntime } from './copilotCliRuntime.js';
 import { CopilotSdkRuntime } from './copilotSdkRuntime.js';
+import type { RuntimeModelRoutingGate } from './types.js';
 
 export interface RuntimeBootstrapAutoMemoryOptions {
   readonly enabled?: boolean;
@@ -17,6 +18,7 @@ export interface RuntimeBootstrapInput {
   readonly auditLogger?: AuditLogger;
   readonly adapter?: RuntimeAdapter;
   readonly allowExternalExecution?: boolean;
+  readonly modelRoutingGate?: RuntimeModelRoutingGate;
   readonly autoMemory?: RuntimeBootstrapAutoMemoryOptions;
 }
 
@@ -29,11 +31,13 @@ export function createBootstrappedRuntime(input: RuntimeBootstrapInput): Copilot
     input.runtime === 'sdk'
       ? new CopilotSdkRuntime({
           adapter: input.adapter ?? new CopilotSdkAdapter(adapterOptions),
-          ...(input.auditLogger !== undefined ? { auditLogger: input.auditLogger } : {})
+          ...(input.auditLogger !== undefined ? { auditLogger: input.auditLogger } : {}),
+          ...(input.modelRoutingGate !== undefined ? { modelRoutingGate: input.modelRoutingGate } : {})
         })
       : new CopilotCliRuntime({
           adapter: input.adapter ?? new CopilotCliAdapter(adapterOptions),
-          ...(input.auditLogger !== undefined ? { auditLogger: input.auditLogger } : {})
+          ...(input.auditLogger !== undefined ? { auditLogger: input.auditLogger } : {}),
+          ...(input.modelRoutingGate !== undefined ? { modelRoutingGate: input.modelRoutingGate } : {})
         });
 
   if (input.autoMemory?.enabled ?? true) {

@@ -1,7 +1,13 @@
 import { appendFile, mkdir } from 'node:fs/promises';
 import { dirname } from 'node:path';
 
-import type { AgentResult } from '../runtime/index.js';
+import { DEFAULT_MODEL, DEFAULT_MODEL_REF } from '../runtime/index.js';
+import type {
+  AgentResult,
+  ModelRef,
+  RuntimeAuditAttributeValue,
+  RuntimeModelRouteDecision
+} from '../runtime/index.js';
 import { redactAuditExport } from '../security/index.js';
 import type { AuditTurnRecord, AuditTurnRecordV1 } from './types.js';
 
@@ -41,6 +47,7 @@ export class AuditLogger {
 export function toAuditTurnRecord(result: AgentResult): AuditTurnRecord {
   const inputTokens = result.tokenUsage?.inputTokens ?? 0;
   const outputTokens = result.tokenUsage?.outputTokens ?? 0;
+  const routingAttributes = buildRoutingAuditAttributes(result);
 
   return {
     timestamp: new Date().toISOString(),
@@ -65,9 +72,62 @@ export function toAuditTurnRecord(result: AgentResult): AuditTurnRecord {
       'gen_ai.request.model': result.model,
       'gen_ai.usage.input_tokens': inputTokens,
       'gen_ai.usage.output_tokens': outputTokens,
-      'gen_ai.request.reasoning_effort': result.reasoningEffort
+      'gen_ai.request.reasoning_effort': result.reasoningEffort,
+      ...routingAttributes,
+      ...(result.auditAttributes ?? {})
     }
   };
+}
+
+function buildRoutingAuditAttributes(
+  result: AgentResult
+): Readonly<Record<string, RuntimeAuditAttributeValue>> {
+  const decision = result.routeDecision;
+  const providerId = decision?.providerId ?? DEFAULT_MODEL_REF.providerId;
+  const routeSource = decision?.routeSource ?? 'default_route';
+  const isDefault =
+    providerId === DEFAULT_MODEL_REF.providerId && result.model === DEFAULT_MODEL;
+  const attrs: Record<string, RuntimeAuditAttributeValue> = {
+    'harness.routing.source': routeSource,
+    'harness.model.id': `${providerId}/${result.model}`,
+    'harness.model.is_default': isDefault,
+    'harness.model.name': result.model,
+    'harness.provider.id': providerId,
+    'harness.runtime.adapter': result.runtime.name
+  };
+
+  addDecisionAttributes(attrs, decision);
+  return attrs;
+}
+
+function addDecisionAttributes(
+  attrs: Record<string, RuntimeAuditAttributeValue>,
+  decision: RuntimeModelRouteDecision | undefined
+): void {
+  if (decision === undefined) return;
+
+  if (decision.matchedRuleId !== undefined) {
+    attrs['harness.routing.rule_id'] = decision.matchedRuleId;
+  }
+  if (decision.routeReason !== undefined) {
+    attrs['harness.routing.reason'] = decision.routeReason;
+  }
+  if (decision.estimatedCostCny !== undefined) {
+    attrs['harness.budget.cost_cny'] = decision.estimatedCostCny;
+  }
+  if (decision.snapshotVersion !== undefined) {
+    attrs['harness.config.snapshot_version'] = decision.snapshotVersion;
+  }
+  if (decision.fallbackChain !== undefined) {
+    attrs['harness.routing.fallback_chain'] = formatFallbackChain(decision.fallbackChain);
+  }
+  if (decision.auditAttrs !== undefined) {
+    Object.assign(attrs, decision.auditAttrs);
+  }
+}
+
+function formatFallbackChain(chain: readonly ModelRef[]): string {
+  return chain.map((item) => `${item.providerId}/${item.model}`).join(' -> ');
 }
 
 export function toAuditTurnRecordV1(record: AuditTurnRecord): AuditTurnRecordV1 {

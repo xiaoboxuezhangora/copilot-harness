@@ -1,6 +1,6 @@
 export type TurnState = 'done' | 'continue_current' | 'await_human' | 'blocked' | 'handoff_needed';
 
-export type RuntimeModel = 'gpt-5-mini';
+export type RuntimeModel = string;
 
 export type ReasoningEffort = 'minimal' | 'low' | 'medium' | 'high';
 
@@ -10,17 +10,96 @@ export type ToolCallDecision = 'allow' | 'deny' | 'escalate';
 
 export const DEFAULT_MODEL: RuntimeModel = 'gpt-5-mini';
 
+export type RuntimeAdapterName =
+  | 'copilot_sdk'
+  | 'copilot_cli'
+  | 'openai_compatible'
+  | 'contract_stub';
+
+export interface ModelRef {
+  readonly providerId: string;
+  readonly model: RuntimeModel;
+  readonly runtime: RuntimeAdapterName;
+}
+
+export const DEFAULT_MODEL_REF = {
+  providerId: 'copilot',
+  model: DEFAULT_MODEL,
+  runtime: 'copilot_sdk'
+} as const satisfies ModelRef;
+
+export interface ModelCatalogEntry extends ModelRef {
+  readonly enabled: boolean;
+  readonly displayName?: string;
+}
+
+export interface ModelCatalog {
+  readonly snapshotVersion: string;
+  readonly defaultModel: ModelRef;
+  readonly models: readonly ModelCatalogEntry[];
+}
+
+export type RouteSource =
+  | 'provider_constraints'
+  | 'jira_model_routes'
+  | 'profile_routes'
+  | 'task_routes'
+  | 'default_route'
+  | 'run_options';
+
+export type RuntimeAuditAttributeValue = string | number | boolean;
+
+export interface RuntimeModelRouteDecision extends ModelRef {
+  readonly matchedRuleId?: string;
+  readonly routeReason?: string;
+  readonly routeSource?: RouteSource;
+  readonly fallbackChain?: readonly ModelRef[];
+  readonly estimatedCostCny?: number;
+  readonly snapshotVersion?: string;
+  readonly auditAttrs?: Readonly<Record<string, RuntimeAuditAttributeValue>>;
+}
+
+export interface RuntimeModelRoutingGateInput {
+  readonly decision: RuntimeModelRouteDecision;
+  readonly runtimeName: RuntimeAdapterName;
+}
+
+export interface RuntimeModelRoutingGate {
+  validate(input: RuntimeModelRoutingGateInput): RuntimeModelRouteDecision;
+}
+
+export interface ModelRoutingGateErrorDetails {
+  readonly schema_version: 'model-routing-gate-error@1';
+  readonly policy_decision: 'deny';
+  readonly gate: 'ModelRoutingGate';
+  readonly provider_id: string;
+  readonly model: RuntimeModel;
+  readonly reason: string;
+}
+
+export class ModelRoutingGateError extends Error {
+  readonly details: ModelRoutingGateErrorDetails;
+
+  constructor(details: ModelRoutingGateErrorDetails) {
+    super(`ModelRoutingGate denied ${details.provider_id}/${details.model}: ${details.reason}`);
+    this.name = 'ModelRoutingGateError';
+    this.details = details;
+  }
+}
+
 export const DEFAULT_RUN_OPTIONS = {
   reasoningEffort: 'medium'
 } as const satisfies Pick<Required<RunOptions>, 'reasoningEffort'>;
 
 export interface RunOptions {
   /**
-   * Defaults to "medium" when omitted. R9 keeps the model fixed separately
-   * through DEFAULT_MODEL, so this option only controls runtime reasoning depth.
+   * Defaults to "medium" when omitted. ModelRoutingGate keeps DEFAULT_MODEL as
+   * the fallback while allowing audited route decisions to select other models.
    */
   readonly reasoningEffort?: ReasoningEffort;
   readonly verbosity?: Verbosity;
+  readonly model?: RuntimeModel;
+  readonly modelRef?: ModelRef;
 }
 
 export interface BudgetLimit {
@@ -48,6 +127,7 @@ export interface AgentTask {
   readonly budgetLimit: BudgetLimit;
   readonly promptVersion: string;
   readonly runOptions?: RunOptions;
+  readonly routeDecision?: RuntimeModelRouteDecision;
 }
 
 export interface Evidence {
@@ -102,13 +182,17 @@ export function fromEvidencePackV1(pack: EvidencePackV1): EvidencePack {
 }
 
 export interface RuntimeIdentity {
-  readonly name: 'copilot_sdk' | 'copilot_cli' | 'contract_stub';
+  readonly name: RuntimeAdapterName;
   readonly version?: string;
 }
 
 export type RuntimeUnsupportedCapability = 'spawn' | 'resumeSession';
 
-export type RuntimeGateSemantic = 'AgentRuntimeV1' | 'BudgetGate' | 'ReleaseGate';
+export type RuntimeGateSemantic =
+  | 'AgentRuntimeV1'
+  | 'BudgetGate'
+  | 'ReleaseGate'
+  | 'ModelRoutingGate';
 
 export interface RuntimeUnsupportedCapabilityV1 {
   readonly schema_version: 'phase-1c-w9-runtime-unsupported-capability@1';
@@ -220,6 +304,8 @@ export interface AgentResult {
   readonly auditTraceId: string;
   readonly model: RuntimeModel;
   readonly runtime: RuntimeIdentity;
+  readonly routeDecision?: RuntimeModelRouteDecision;
+  readonly auditAttributes?: Readonly<Record<string, RuntimeAuditAttributeValue>>;
   readonly reasoningEffort: ReasoningEffort;
   readonly promptVersion: string;
   readonly policyDecision?: 'deny' | 'allow' | 'escalate';

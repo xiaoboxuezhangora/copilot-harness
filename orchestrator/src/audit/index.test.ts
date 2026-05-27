@@ -65,6 +65,49 @@ describe('audit logger', () => {
     expect(serialized).toContain('[redacted-email]');
     expect(serialized).toContain('[redacted-credential]');
   });
+
+  it('adds harness routing, Jira, and model audit attributes', () => {
+    const record = toAuditTurnRecord({
+      ...sampleResult(),
+      model: 'gpt-4.1',
+      routeDecision: {
+        providerId: 'copilot',
+        model: 'gpt-4.1',
+        runtime: 'copilot_sdk',
+        matchedRuleId: 'jira_ops_frontend_review',
+        routeReason: '高优先级前端复核使用更强 Copilot 模型',
+        routeSource: 'jira_model_routes',
+        fallbackChain: [
+          {
+            providerId: 'copilot',
+            model: 'gpt-5-mini',
+            runtime: 'copilot_sdk'
+          }
+        ],
+        estimatedCostCny: 0,
+        snapshotVersion: 'local-test',
+        auditAttrs: {
+          'harness.jira.project_key': 'OPS',
+          'harness.jira.issue_type': 'Bug'
+        }
+      }
+    });
+
+    expect(record.otelAttributes).toMatchObject({
+      'gen_ai.request.model': 'gpt-4.1',
+      'harness.routing.rule_id': 'jira_ops_frontend_review',
+      'harness.routing.source': 'jira_model_routes',
+      'harness.routing.reason': '高优先级前端复核使用更强 Copilot 模型',
+      'harness.model.id': 'copilot/gpt-4.1',
+      'harness.model.is_default': false,
+      'harness.provider.id': 'copilot',
+      'harness.runtime.adapter': 'contract_stub',
+      'harness.budget.cost_cny': 0,
+      'harness.config.snapshot_version': 'local-test',
+      'harness.jira.project_key': 'OPS',
+      'harness.jira.issue_type': 'Bug'
+    });
+  });
 });
 
 function sampleResult(): AgentResult {

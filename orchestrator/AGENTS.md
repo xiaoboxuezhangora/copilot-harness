@@ -12,7 +12,7 @@ R5 人工 Review Loop 不可跳过，CI Gate 红灯禁止合入。
 R6 审计日志（OTel trace + audit.log JSONL）必须覆盖每次 tool call。
 R7 敏感数据（密钥 / token / 内网 IP）禁止出现在 LLM context 或日志明文中。
 R8 子 Agent（/fleet）fanout 上限由 BudgetGate 控制，超限 hard-stop。
-R9 验证期锁定 gpt-5-mini 单模型；放宽需同时满足 2 周 Eval 不回退 + BudgetGate 压测达标 + 专项 ADR 通过。
+R9 ModelRoutingGate：默认模型为 copilot/gpt-5-mini；允许经配置、BudgetGate、EvalGate、Audit 约束的模型路由。非默认模型必须来自已登记 ModelCatalog，带 matchedRuleId、routeReason、fallbackChain、成本预估和 harness.* 审计属性；未登记模型、禁用 Provider 或违反 provider_constraints 的路由必须 hard-stop。
 
 ## turn_state 五态契约
 

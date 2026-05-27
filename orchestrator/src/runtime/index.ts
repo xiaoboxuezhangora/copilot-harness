@@ -21,11 +21,12 @@ export type {
   RuntimeAdapterRequest,
   RuntimeAdapterResponse
 } from './adapters/types.js';
-export { DEFAULT_MODEL, DEFAULT_RUN_OPTIONS } from './types.js';
+export { DEFAULT_MODEL, DEFAULT_MODEL_REF, DEFAULT_RUN_OPTIONS } from './types.js';
 export {
   createRuntimeUnsupportedCapabilityError,
   fromEvidencePackV1,
   isRuntimeCapabilityUnsupportedError,
+  ModelRoutingGateError,
   RuntimeCapabilityUnsupportedError,
   toEvidencePackV1
 } from './types.js';
@@ -41,11 +42,20 @@ export type {
   EvidenceAssumption,
   EvidencePack,
   EvidencePackV1,
+  ModelCatalog,
+  ModelCatalogEntry,
+  ModelRef,
   ReasoningEffort,
+  RouteSource,
   RunOptions,
+  RuntimeAdapterName,
+  RuntimeAuditAttributeValue,
   RuntimeIdentity,
   RuntimeGateSemantic,
   RuntimeModel,
+  RuntimeModelRoutingGate,
+  RuntimeModelRoutingGateInput,
+  RuntimeModelRouteDecision,
   RuntimeUnsupportedCapability,
   RuntimeUnsupportedCapabilityInput,
   RuntimeUnsupportedCapabilityV1,

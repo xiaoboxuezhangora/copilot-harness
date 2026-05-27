@@ -5,6 +5,8 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import { AuditLogger } from '../audit/index.js';
+import { parseConfigSnapshot } from '../configCenter/index.js';
+import { ConfigSnapshotModelRoutingGate, ModelRouter } from '../modelRouter/index.js';
 import {
   BLOOD_TRANSFUSION_SKILL_NAME,
   createSkillAgentSessionConfig,
@@ -21,6 +23,7 @@ import {
   CopilotSdkAdapter,
   CopilotSdkRuntime,
   createCopilotSdkSessionConfig,
+  ModelRoutingGateError,
   parseCliNdjsonOutput,
   RuntimeCapabilityUnsupportedError
 } from './index.js';
@@ -66,7 +69,7 @@ describe('runtime adapters', () => {
     expect(probe.capabilities.unsupportedReasons.join(' ')).toContain('not found');
   });
 
-  it('locks SDK runtime to gpt-5-mini and audits reasoning effort', async () => {
+  it('defaults SDK runtime to gpt-5-mini and audits reasoning effort', async () => {
     const tempDir = await mkdtemp(join(tmpdir(), 'runtime-audit-'));
     try {
       const auditPath = join(tempDir, 'audit.jsonl');
@@ -99,6 +102,141 @@ describe('runtime adapters', () => {
         recursive: true
       });
     }
+  });
+
+  it('allows legal ModelRouter output through Runtime ModelRoutingGate', async () => {
+    const snapshot = runtimeRoutingSnapshot();
+    const router = new ModelRouter({ snapshot });
+    const runtime = new CopilotSdkRuntime({
+      adapter: new FakeRuntimeAdapter('copilot_sdk'),
+      modelRoutingGate: new ConfigSnapshotModelRoutingGate(snapshot)
+    });
+    const routeDecision = router.route({
+      jira: {
+        projectKey: 'OPS',
+        labels: ['frontend'],
+        priority: 'High'
+      }
+    });
+    const result = await runtime.run({
+      ...baseTask,
+      routeDecision
+    });
+
+    expect(result.model).toBe('gpt-4.1');
+    expect(result.output).toBe('gpt-4.1:high');
+  });
+
+  it('rejects unregistered models before adapter execution', async () => {
+    const snapshot = runtimeRoutingSnapshot();
+    const router = new ModelRouter({ snapshot });
+    const runtime = new CopilotSdkRuntime({
+      adapter: new FakeRuntimeAdapter('copilot_sdk'),
+      modelRoutingGate: new ConfigSnapshotModelRoutingGate(snapshot)
+    });
+    const routeDecision = router.route({
+      jira: {
+        projectKey: 'OPS',
+        labels: ['frontend'],
+        priority: 'High'
+      }
+    });
+
+    await expect(
+      runtime.run({
+        ...baseTask,
+        routeDecision: {
+          ...routeDecision,
+          model: 'ghost-model'
+        }
+      })
+    ).rejects.toBeInstanceOf(ModelRoutingGateError);
+  });
+
+  it('rejects disabled providers before adapter execution', async () => {
+    const snapshot = runtimeRoutingSnapshot();
+    const disabledSnapshot = {
+      ...snapshot,
+      providers: {
+        ...snapshot.providers,
+        providers: snapshot.providers.providers.map((provider) =>
+          provider.id === 'copilot' ? { ...provider, enabled: false } : provider
+        )
+      }
+    };
+    const runtime = new CopilotSdkRuntime({
+      adapter: new FakeRuntimeAdapter('copilot_sdk'),
+      modelRoutingGate: new ConfigSnapshotModelRoutingGate(disabledSnapshot)
+    });
+
+    await expect(runtime.run(baseTask)).rejects.toBeInstanceOf(ModelRoutingGateError);
+  });
+
+  it('rejects forged routeDecision values that do not match the snapshot rule', async () => {
+    const snapshot = runtimeRoutingSnapshot();
+    const router = new ModelRouter({ snapshot });
+    const runtime = new CopilotSdkRuntime({
+      adapter: new FakeRuntimeAdapter('copilot_sdk'),
+      modelRoutingGate: new ConfigSnapshotModelRoutingGate(snapshot)
+    });
+    const routeDecision = router.route({
+      jira: {
+        projectKey: 'OPS',
+        labels: ['frontend'],
+        priority: 'High'
+      }
+    });
+
+    await expect(
+      runtime.run({
+        ...baseTask,
+        routeDecision: {
+          ...routeDecision,
+          model: 'gpt-5-mini'
+        }
+      })
+    ).rejects.toBeInstanceOf(ModelRoutingGateError);
+
+    await expect(
+      runtime.run({
+        ...baseTask,
+        routeDecision: {
+          ...routeDecision,
+          runtime: 'copilot_cli'
+        }
+      })
+    ).rejects.toBeInstanceOf(ModelRoutingGateError);
+
+    await expect(
+      runtime.run({
+        ...baseTask,
+        routeDecision: {
+          ...routeDecision,
+          auditAttrs: {
+            ...routeDecision.auditAttrs,
+            'harness.model.id': 'copilot/gpt-5-mini'
+          }
+        }
+      })
+    ).rejects.toBeInstanceOf(ModelRoutingGateError);
+  });
+
+  it('prevents runOptions.model from bypassing ModelCatalog for non-default models', async () => {
+    const snapshot = runtimeRoutingSnapshot();
+    const runtime = new CopilotSdkRuntime({
+      adapter: new FakeRuntimeAdapter('copilot_sdk'),
+      modelRoutingGate: new ConfigSnapshotModelRoutingGate(snapshot)
+    });
+
+    await expect(
+      runtime.run({
+        ...baseTask,
+        runOptions: {
+          ...baseTask.runOptions,
+          model: 'gpt-4.1'
+        }
+      })
+    ).rejects.toBeInstanceOf(ModelRoutingGateError);
   });
 
   it('returns auditable unsupported capability details for SDK fanout and resume gaps', async () => {
@@ -314,4 +452,64 @@ class FakeRuntimeAdapter implements RuntimeAdapter {
       capabilityNotes: []
     });
   }
+}
+
+function runtimeRoutingSnapshot() {
+  return parseConfigSnapshot({
+    version: 'runtime-test-snapshot',
+    loadedAt: '2026-05-26T00:00:00.000Z',
+    providersYaml: `
+version: 4
+feature_flags: {}
+providers:
+  - id: copilot
+    type: copilot_sdk
+    enabled: true
+    display_name: Copilot
+    runtime: copilot-sdk
+    auth_mode: user_passthrough
+    capabilities:
+      tool_calling: openai_v2
+      reasoning_effort: true
+      streaming: true
+      structured_output: json_schema
+      vision: true
+    pricing:
+      currency: USD
+      tiers:
+        - { name: standard, input_per_1k: 0, output_per_1k: 0 }
+    models: [gpt-5-mini, gpt-4.1]
+`,
+    accountsYaml: `
+version: 4
+accounts: []
+`,
+    routingYaml: `
+version: 4
+defaults:
+  default_route:
+    provider_id: copilot
+    model: gpt-5-mini
+    runtime: copilot-sdk
+    reason: default route
+    fallback_chain: []
+provider_constraints: []
+jira_model_routes:
+  - id: jira_ops_frontend_review
+    match:
+      project_keys: [OPS]
+      labels_any: [frontend]
+      priorities: [High]
+    route:
+      provider_id: copilot
+      model: gpt-4.1
+      runtime: copilot-sdk
+      fallback_chain:
+        - { provider_id: copilot, model: gpt-5-mini, runtime: copilot-sdk }
+    reason: 高优先级前端复核使用更强 Copilot 模型
+profile_routes: []
+task_routes: []
+route_precedence: [provider_constraints, jira_model_routes, profile_routes, task_routes, default_route]
+`
+  });
 }

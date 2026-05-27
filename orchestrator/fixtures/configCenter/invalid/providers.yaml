@@ -1,0 +1,42 @@
+version: 4
+
+feature_flags:
+  model_routing_gate: { enabled: true, rollout_pct: 100 }
+
+providers:
+  - id: copilot
+    type: copilot_sdk
+    enabled: true
+    display_name: "GitHub Copilot SDK"
+    runtime: copilot-sdk
+    auth_mode: user_passthrough
+    capabilities:
+      tool_calling: openai_v2
+      reasoning_effort: true
+      streaming: true
+      structured_output: json_schema
+      vision: true
+    pricing:
+      currency: USD
+      tiers:
+        - { name: standard, input_per_1k: 0, output_per_1k: 0 }
+    models: [gpt-5-mini]
+
+  - id: deepseek_contract
+    type: openai_compatible
+    enabled: false
+    display_name: "Disabled DeepSeek Contract Stub"
+    runtime: openai-compatible
+    base_url: "https://example.invalid/deepseek/v1"
+    auth_mode: pool
+    capabilities:
+      tool_calling: openai_v2
+      reasoning_effort: false
+      streaming: true
+      structured_output: json_schema
+      vision: false
+    pricing:
+      currency: CNY
+      tiers:
+        - { name: standard, input_per_1k: 0.001, output_per_1k: 0.002 }
+    models: [deepseek-chat]

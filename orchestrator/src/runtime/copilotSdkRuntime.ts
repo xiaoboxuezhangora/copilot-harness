@@ -1,5 +1,12 @@
 import { AuditLogger } from '../audit/index.js';
-import type { AgentResult, AgentRuntime, AgentTask, ToolCallHook, TurnEndHook } from './types.js';
+import type {
+  AgentResult,
+  AgentRuntime,
+  AgentTask,
+  RuntimeModelRoutingGate,
+  ToolCallHook,
+  TurnEndHook
+} from './types.js';
 import { createRuntimeUnsupportedCapabilityError } from './types.js';
 import { CopilotSdkAdapter } from './adapters/copilotSdkAdapter.js';
 import type { RuntimeAdapter } from './adapters/types.js';
@@ -7,12 +14,14 @@ import {
   buildContext,
   buildResult,
   createTraceId,
+  resolveModelRouteDecision,
   resolveReasoningEffort
 } from './adapters/shared.js';
 
 export interface CopilotSdkRuntimeOptions {
   readonly adapter?: RuntimeAdapter;
   readonly auditLogger?: AuditLogger;
+  readonly modelRoutingGate?: RuntimeModelRoutingGate;
 }
 
 export class CopilotSdkRuntime implements AgentRuntime {
@@ -20,20 +29,27 @@ export class CopilotSdkRuntime implements AgentRuntime {
   private readonly toolCallHooks: ToolCallHook[] = [];
   private readonly adapter: RuntimeAdapter;
   private readonly auditLogger: AuditLogger | undefined;
+  private readonly modelRoutingGate: RuntimeModelRoutingGate | undefined;
 
   constructor(options: CopilotSdkRuntimeOptions = {}) {
     this.adapter = options.adapter ?? new CopilotSdkAdapter();
     this.auditLogger = options.auditLogger;
+    this.modelRoutingGate = options.modelRoutingGate;
   }
 
   async run(task: AgentTask): Promise<AgentResult> {
     const reasoningEffort = resolveReasoningEffort(task);
     const adapterProbe = await this.adapter.probe();
+    const routeDecision = resolveModelRouteDecision(
+      task,
+      adapterProbe.runtime.name,
+      this.modelRoutingGate
+    );
     const adapterResponse = await this.adapter.execute({
       taskId: task.taskId,
       prompt: task.prompt,
       taskDescription: `${task.intent}\n${task.prompt}`,
-      model: 'gpt-5-mini',
+      model: routeDecision.model,
       reasoningEffort,
       ...(task.budgetLimit.timeoutMs !== undefined ? { timeoutMs: task.budgetLimit.timeoutMs } : {})
     });
@@ -43,6 +59,7 @@ export class CopilotSdkRuntime implements AgentRuntime {
       runtime: adapterProbe.runtime,
       reasoningEffort,
       auditTraceId,
+      routeDecision,
       adapterProbe,
       adapterResponse
     });
@@ -51,7 +68,8 @@ export class CopilotSdkRuntime implements AgentRuntime {
       adapterProbe.runtime,
       reasoningEffort,
       auditTraceId,
-      result.toolCalls
+      result.toolCalls,
+      routeDecision
     );
 
     if (this.auditLogger !== undefined) {
