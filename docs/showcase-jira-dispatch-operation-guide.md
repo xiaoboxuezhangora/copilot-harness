@@ -26,16 +26,37 @@
 在项目根目录执行：
 
 ```bash
-pnpm --filter @copilot-harness/showcase dev -- --host 127.0.0.1
+pnpm showcase:dev:live
 ```
 
 当前本地访问地址：
 
 ```text
-http://localhost:5173/
+http://127.0.0.1:5173/
 ```
 
 如果端口被占用，Vite 会提示新的本地地址，以终端输出为准。
+
+启动脚本会读取以下本地私有配置文件，凭据不入仓：
+
+```text
+secrets/jira.env
+secrets/gitlab.env
+secrets/showcase-live.env  # 可选，用于覆盖测试 JQL、端口、代码仓库映射
+```
+
+启动前可先执行运行配置检查：
+
+```bash
+pnpm showcase:dev:live:check
+```
+
+常用可选覆盖项：
+
+```bash
+SHOWCASE_PORT=5174 pnpm showcase:dev:live
+SHOWCASE_ENV_FILE=/absolute/path/to/showcase-live.env pnpm showcase:dev:live
+```
 
 ### 2.2 推荐浏览器状态
 

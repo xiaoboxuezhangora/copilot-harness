@@ -3,13 +3,21 @@ import * as THREE from "three";
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import mascotVirtualAssistant from "./assets/mascot/cow-hook-guide.png";
 import mascotStrategyAssistant from "./assets/mascot/cow-chief-presenter.png";
-import rawSnapshot from "./generated/snapshot.json";
+import rawRequirementsReviewSnapshot from "./generated/requirements-review-snapshot.json";
+import { getChinaDayType } from "./utils/chinaStatutoryCalendar";
+import { matchesCurrentUserAssignee } from "./utils/currentUserFilter";
 import type {
-  ShowcaseArenaSummary,
+  RequirementsReviewLight,
+  RequirementsReviewSample,
+  RequirementsReviewSpecType,
+  RequirementsReviewSnapshotV1,
   ShowcaseIntegrationEndpointStatus,
   ShowcaseIntegrationStatus,
+  ShowcaseDryRunPlanResponse,
+  ShowcaseJiraCurrentUser,
+  ShowcaseJiraCurrentUserResponse,
   ShowcaseJiraIssue,
-  ShowcaseSnapshotV1,
+  ShowcaseJiraIssuesResponse,
 } from "./types";
 
 type Tone = "ok" | "warn" | "danger" | "neutral";
@@ -141,6 +149,9 @@ interface CalendarDay {
   muted: boolean;
   today: boolean;
   hasPlan: boolean;
+  offday: boolean;
+  statutoryHoliday: boolean;
+  dayTypeLabel: string;
 }
 
 interface SkillCandidate {
@@ -154,22 +165,23 @@ interface SkillCandidate {
   tags: string[];
 }
 
-interface PipelineCard {
-  key: string;
-  summary: string;
-  skills: string[];
+interface IssueAgentExecution {
+  id: string;
+  label: string;
   agent: string;
-  status: DispatchStatus;
-  duration: string;
-  tone: Tone;
-  preview?: boolean;
+  skill: string;
+  status: StageRuntimeStatus;
+  statusLabel: string;
+  reason: string | null;
 }
 
-interface PipelineColumn {
-  id: string;
-  title: string;
-  count: number;
-  cards: PipelineCard[];
+interface IssueExecutionRow {
+  issue: EngineeringIssue;
+  dispatchStatus: DispatchStatus;
+  runtime: JiraOrchestrationRuntime;
+  assignedSkills: string[];
+  supplementReason: string;
+  lanes: IssueAgentExecution[];
 }
 
 interface AuditRecord {
@@ -182,6 +194,14 @@ interface AuditRecord {
   status: "已完成" | "运行中" | "等待" | "失败" | "草稿";
   artifacts: string[];
   time: string;
+}
+
+interface DryRunExecutionApproval {
+  issueKey: string;
+  runId: string;
+  approvedAt: string;
+  approver: string;
+  note: string;
 }
 
 interface OrchestrationStageRuntime {
@@ -362,13 +382,15 @@ interface ConfigChangeRequest {
   applyMode: string;
 }
 
-const snapshotData = rawSnapshot as unknown as ShowcaseSnapshotV1;
-const liveJiraIssues = buildLiveJiraIssues(snapshotData.jiraIssues ?? []);
+const requirementsReviewSnapshotData =
+  rawRequirementsReviewSnapshot as unknown as RequirementsReviewSnapshotV1;
 const defaultProjectFilter = "APMIS";
 const themeStorageKey = "showcase-theme-mode";
 const configStorageKey = "showcase-config-center-v2";
 const configChangeRequestStorageKey = "showcase-config-change-requests-v1";
 const integrationStatusApiPath = "/api/showcase/integration-status";
+const jiraCurrentUserApiPath = "/api/showcase/jira-current-user";
+const jiraIssuesApiPath = "/api/showcase/jira-issues";
 const angular17Repo = "apmis/odcbs/odcbs-frontend";
 const angular17Branch = "develop_to_angular17";
 const angular17SkillId = "angular17-regression";
@@ -378,7 +400,17 @@ const angular17AnalysisFocus = [
   "结合 Jira 描述、历史 MR 和模块标签定位 affected component。",
   "输出可验证修复建议：组件路径、样式/模板/状态变更点和回归测试命令。",
 ];
-const enabledNavItems = ["Jira 调度", "配置"] as const;
+const enabledNavItems = ["需求评审链路", "Jira 调度", "配置"] as const;
+const profileTypeLabels: Record<RequirementsReviewSpecType, string> = {
+  VisualDefectSpecV0: "Visual",
+  IntegrationSpecV0: "Integration",
+  WorkflowRequirementSpecV0: "Workflow",
+};
+const reqGateLightToneMap: Record<RequirementsReviewLight, Tone> = {
+  green: "ok",
+  yellow: "warn",
+  red: "danger",
+};
 const configSectionTitles: Record<ConfigSectionKey, string> = {
   jira: "Jira 配置",
   gitlab: "GitLab 配置",
@@ -543,7 +575,7 @@ function isConfigSectionKey(value: unknown): value is ConfigSectionKey {
 function buildFallbackIntegrationStatus(): ShowcaseIntegrationStatus {
   return {
     schemaVersion: "ShowcaseIntegrationStatusV1",
-    generatedAt: snapshotData.metadata.generatedAt,
+    generatedAt: new Date().toISOString(),
     source: "runtime-env",
     directApplySupported: false,
     restartRequired: true,
@@ -566,7 +598,7 @@ function buildFallbackIntegrationStatus(): ShowcaseIntegrationStatus {
         tone: "warn",
         displayUrl: null,
         credentialState: "missing",
-        details: ["未读取到本地运行状态接口；静态构建只显示快照状态。"],
+        details: ["未读取到本地运行状态接口。"],
         requiredEnv: ["GITLAB_BASE_URL", "GITLAB_TOKEN"],
         applyMode: "环境变量驱动；变更后需要重启 Code Retrieval MCP",
       },
@@ -671,17 +703,22 @@ const orchestrationStageBlueprint = [
 
 const currentTime = ref(new Date());
 const themeMode = ref<ThemeMode>(resolveInitialThemeMode());
-const selectedIssueKey = ref(liveJiraIssues[0]?.key ?? "");
+const selectedIssueKey = ref("");
+const selectedRequirementsSampleId = ref(
+  requirementsReviewSnapshotData.samples[0]?.id ?? "",
+);
 const acknowledgedDecisionIds = ref<string[]>([]);
 const searchQuery = ref("");
 const projectFilter = ref(defaultProjectFilter);
 const issueTypeFilter = ref("all");
 const statusFilter = ref("all");
-const assigneeScopeFilter = ref<"all" | "currentUser" | "selected">("all");
+const assigneeScopeFilter = ref<"all" | "currentUser" | "selected">(
+  "currentUser",
+);
 const assigneeFilter = ref("all");
-const filterCollapsed = ref(false);
-const drawerVisible = ref(true);
-const activeNavItem = ref("Jira 调度");
+const filterCollapsed = ref(true);
+const drawerVisible = ref(false);
+const activeNavItem = ref("需求评审链路");
 const moduleNotice = ref<ModuleNotice | null>(null);
 const selectedDrawerTab = ref<DrawerTab>("skills");
 const selectedRuntimeStageId = ref<string | null>(null);
@@ -714,11 +751,26 @@ const savedConfigState = ref<ConfigCenterState>(loadConfigStateFromStorage());
 const draftConfigState = ref<ConfigCenterState>(
   cloneConfigState(savedConfigState.value),
 );
+const jiraIssues = ref<ShowcaseJiraIssue[]>([]);
+const jiraIssuesLoading = ref(false);
+const jiraIssuesStatus = ref<"idle" | "ready" | "degraded">("idle");
+const jiraIssuesMessage = ref("Jira 队列未加载");
+const lastJiraSyncAt = ref<string | null>(null);
+const runtimeMcpCallsByTaskId = ref<Record<string, string[]>>({});
 const integrationStatus = ref<ShowcaseIntegrationStatus>(
-  snapshotData.integrationStatus ?? buildFallbackIntegrationStatus(),
+  buildFallbackIntegrationStatus(),
 );
 const integrationStatusLoading = ref(false);
 const integrationStatusError = ref<string | null>(null);
+const jiraCurrentUser = ref<ShowcaseJiraCurrentUser | null>(null);
+const jiraCurrentUserStatus = ref<"idle" | "ready" | "degraded">("idle");
+const jiraCurrentUserLoading = ref(false);
+const jiraCurrentUserMessage = ref("尚未读取 Jira 当前用户身份。");
+const jiraCurrentUserMayBeServiceAccount = ref(false);
+const dryRunPlanByIssueKey = ref<Record<string, ShowcaseDryRunPlanResponse>>({});
+const dryRunPlanLoadingIssueKey = ref<string | null>(null);
+const dryRunPlanError = ref<string | null>(null);
+const dryRunApprovalByIssueKey = ref<Record<string, DryRunExecutionApproval>>({});
 const configChangeRequests = ref<ConfigChangeRequest[]>(
   loadConfigChangeRequestsFromStorage(),
 );
@@ -742,6 +794,14 @@ const themeModeLabel = computed(() =>
 const themeToggleLabel = computed(() =>
   themeMode.value === "day" ? "切换到夜晚模式" : "切换到白天模式",
 );
+const lastJiraSyncLabel = computed(() =>
+  lastJiraSyncAt.value === null ? "未同步" : formatJiraDate(lastJiraSyncAt.value),
+);
+const jiraQueueStatusHint = computed(() => {
+  if (jiraIssuesLoading.value) return "Jira 队列加载中...";
+  if (jiraIssuesStatus.value === "ready") return jiraIssuesMessage.value;
+  return jiraIssuesMessage.value.length > 0 ? jiraIssuesMessage.value : "Jira 队列未加载";
+});
 let assistantMessageSeq = 0;
 
 const assistantQuickQuestions = [
@@ -751,9 +811,34 @@ const assistantQuickQuestions = [
 ];
 
 const isConfigCenter = computed(() => activeNavItem.value === "配置");
+const isRequirementsReviewPanel = computed(
+  () => activeNavItem.value === "需求评审链路",
+);
+const requirementsSamples = computed(
+  () => requirementsReviewSnapshotData.samples,
+);
+const selectedRequirementsSample = computed(() => {
+  const selected = requirementsSamples.value.find(
+    (item) => item.id === selectedRequirementsSampleId.value,
+  );
+  return selected ?? requirementsSamples.value[0] ?? null;
+});
+const selectedRequirementsSpecTypeLabel = computed(() => {
+  const sample = selectedRequirementsSample.value;
+  if (sample === null) return "Unknown";
+  return profileTypeLabels[sample.profileSpecResult.spec.kind];
+});
+const selectedRequirementsSourceRefCount = computed(() => {
+  const sample = selectedRequirementsSample.value;
+  if (sample === null) return 0;
+  return sample.reqGateResult.auditPayload.sourceRefs.length;
+});
 const integrationEndpointCards = computed(() => integrationStatus.value.endpoints);
 const jiraRuntimeStatus = computed(() => getIntegrationEndpoint("jira"));
 const gitlabRuntimeStatus = computed(() => getIntegrationEndpoint("gitlab"));
+const codeRetrievalRuntimeStatus = computed(() =>
+  getIntegrationEndpoint("codeRetrieval"),
+);
 const mcpRuntimeStatus = computed(() => getIntegrationEndpoint("mcp"));
 const pendingConfigRequestCount = computed(
   () =>
@@ -811,6 +896,7 @@ const jiraCodeAnalysisFlow = computed<CodeAnalysisFlowStep[]>(() => [
 ]);
 
 const navItems = [
+  "需求评审链路",
   "仪表盘",
   "Jira 调度",
   "工作流",
@@ -837,10 +923,10 @@ const drawerTabs: Array<{ id: DrawerTab; label: string }> = [
 ];
 
 const jiraProjectOptions = computed(() => {
-  const options = buildOptions(liveJiraIssues.map((issue) => issue.project))
+  const options = buildOptions(issues.value.map((issue) => issue.project))
     .filter((project) => project.length > 0)
     .map((project) => {
-      const match = liveJiraIssues.find((issue) => issue.project === project);
+      const match = issues.value.find((issue) => issue.project === project);
       const projectName = match?.projectName ?? project;
       return {
         value: project,
@@ -936,7 +1022,9 @@ const skillCandidates: SkillCandidate[] = [
   },
 ];
 
-const issues: EngineeringIssue[] = liveJiraIssues;
+const issues = computed<EngineeringIssue[]>(() =>
+  buildLiveJiraIssues(jiraIssues.value, runtimeMcpCallsByTaskId.value),
+);
 
 const decisionItems = computed<DecisionItem[]>(() =>
   filteredIssues.value
@@ -958,35 +1046,11 @@ const decisionItems = computed<DecisionItem[]>(() =>
     })),
 );
 
-const kpiCards = computed<KpiCard[]>(() => buildJiraKpiCards(issues));
+const kpiCards = computed<KpiCard[]>(() => buildJiraKpiCards(issues.value));
 
-const auditRecords = ref<AuditRecord[]>(
-  buildAuditRecordsFromSnapshot(snapshotData, issues),
-);
+const auditRecords = ref<AuditRecord[]>([]);
 
-const fleetAuditTasks = computed<FleetAuditTask[]>(() =>
-  snapshotData.tasks
-    .filter((task) => task.fleet_session_id !== null)
-    .map((task) => {
-      const arena = task.arena ?? null;
-      return {
-        id: `${task.task_id}-${task.agent_role ?? "unknown"}-${task.candidate_id ?? "none"}`,
-        role: formatIntegrationSignal(task.agent_role),
-        mode: task.worktree_mode ?? "未接入",
-        fanout: formatFleetFanout(task.budget_usage?.fleet_fanout ?? null),
-        candidateId: task.candidate_id ?? "未接入",
-        arenaCandidateCount: formatArenaCandidateCount(
-          arena?.candidate_count,
-        ),
-        winner: arena?.winner ?? "winner 未接入",
-        arenaScores: formatArenaScores(arena?.scores),
-        consistencyDelta: formatArenaDelta(arena?.consistency_delta),
-        archivePath: arena?.archive_path ?? "archive 未接入",
-        scorer: formatArenaScorer(arena),
-      };
-    })
-    .slice(0, 6),
-);
+const fleetAuditTasks = computed<FleetAuditTask[]>(() => []);
 
 const formattedDate = computed(() =>
   new Intl.DateTimeFormat("zh-CN", {
@@ -1022,6 +1086,7 @@ const calendarDays = computed<CalendarDay[]>(() => {
   return Array.from({ length: 35 }, (_, index) => {
     const date = new Date(start);
     date.setDate(start.getDate() + index);
+    const dayType = getChinaDayType(date);
     const sameDay =
       date.getFullYear() === today.getFullYear() &&
       date.getMonth() === today.getMonth() &&
@@ -1032,24 +1097,55 @@ const calendarDays = computed<CalendarDay[]>(() => {
       muted: date.getMonth() !== month,
       today: sameDay,
       hasPlan: [2, 6, 12, 18, 24].includes(date.getDate()) || sameDay,
+      offday: dayType.isRestDay,
+      statutoryHoliday: dayType.isStatutoryHoliday,
+      dayTypeLabel: dayType.label,
     };
   });
 });
 
 const issueTypeOptions = computed(() =>
-  buildOptions(issues.map((issue) => issue.issueType).filter(Boolean)),
+  buildOptions(issues.value.map((issue) => issue.issueType).filter(Boolean)),
 );
 const statusOptions = computed(() =>
-  buildOptions(issues.map((issue) => issue.status).filter(Boolean)),
+  buildOptions(issues.value.map((issue) => issue.status).filter(Boolean)),
 );
 const assigneeOptions = computed(() =>
-  buildOptions(issues.map((issue) => issue.assignee)),
+  buildOptions(issues.value.map((issue) => issue.assignee)),
 );
+const jiraCurrentUserIdentityLabel = computed(() => {
+  const user = jiraCurrentUser.value;
+  return (
+    user?.displayName ??
+    user?.name ??
+    user?.key ??
+    user?.accountId ??
+    "未识别"
+  );
+});
+const currentUserFilterHint = computed(() => {
+  if (assigneeScopeFilter.value !== "currentUser") return "";
+  if (jiraCurrentUserLoading.value) {
+    return "正在通过 Jira /myself 识别当前身份...";
+  }
+  if (jiraCurrentUserStatus.value !== "ready" || jiraCurrentUser.value === null) {
+    return `当前用户身份未确认：${jiraCurrentUserMessage.value}。当前用户筛选未生效，列表保持原结果。`;
+  }
+  if (jiraCurrentUserMayBeServiceAccount.value) {
+    return `当前 Jira 身份：${jiraCurrentUserIdentityLabel.value}（可能是服务账号）。筛选结果按该账号匹配，不代表业务登录人。`;
+  }
+  return `当前 Jira 身份：${jiraCurrentUserIdentityLabel.value}。若 Jira API 凭据改为服务账号，筛选也会按服务账号匹配。`;
+});
+const currentUserFilterTone = computed<Tone>(() => {
+  if (assigneeScopeFilter.value !== "currentUser") return "neutral";
+  if (jiraCurrentUserLoading.value) return "neutral";
+  return jiraCurrentUserStatus.value === "ready" ? "ok" : "warn";
+});
 
 const filteredIssues = computed(() => {
   const query = searchQuery.value.trim().toLowerCase();
 
-  return issues.filter((issue) => {
+  return issues.value.filter((issue) => {
     if (projectFilter.value !== "all" && issue.project !== projectFilter.value)
       return false;
     if (
@@ -1065,6 +1161,13 @@ const filteredIssues = computed(() => {
       issue.status !== statusFilter.value
     )
       return false;
+    if (assigneeScopeFilter.value === "currentUser") {
+      if (jiraCurrentUserStatus.value !== "ready" || jiraCurrentUser.value === null) {
+        return true;
+      }
+      if (!matchesCurrentUserAssignee(issue.assignee, jiraCurrentUser.value))
+        return false;
+    }
     if (
       assigneeFilter.value !== "all" &&
       assigneeScopeFilter.value === "selected" &&
@@ -1088,7 +1191,7 @@ const filteredIssues = computed(() => {
 
 const selectedBulkIssues = computed(() =>
   selectedIssueKeys.value
-    .map((issueKey) => issues.find((issue) => issue.key === issueKey))
+    .map((issueKey) => issues.value.find((issue) => issue.key === issueKey))
     .filter((issue): issue is EngineeringIssue => issue !== undefined),
 );
 
@@ -1096,11 +1199,11 @@ const selectedIssue = computed(() => {
   const fromFiltered = filteredIssues.value.find(
     (issue) => issue.key === selectedIssueKey.value,
   );
-  return fromFiltered ?? filteredIssues.value[0] ?? issues[0];
+  return fromFiltered ?? filteredIssues.value[0] ?? buildFallbackIssue();
 });
 
 const versionSummary = computed(() => {
-  const totalSp = issues.reduce((sum, issue) => sum + issue.storyPoints, 0);
+  const totalSp = issues.value.reduce((sum, issue) => sum + issue.storyPoints, 0);
   const filteredSp = filteredIssues.value.reduce(
     (sum, issue) => sum + issue.storyPoints,
     0,
@@ -1109,7 +1212,7 @@ const versionSummary = computed(() => {
     (issue) => issue.riskTone === "danger",
   ).length;
   return {
-    total: issues.length,
+    total: issues.value.length,
     visible: filteredIssues.value.length,
     totalSp,
     visibleSp: filteredSp,
@@ -1123,7 +1226,13 @@ const activeFilterPills = computed(() => {
   if (statusFilter.value === "open") pills.push("状态：未完成");
   if (statusFilter.value !== "all" && statusFilter.value !== "open")
     pills.push(`状态：${statusFilter.value}`);
-  if (assigneeScopeFilter.value === "currentUser") pills.push("经办人：当前用户");
+  if (assigneeScopeFilter.value === "currentUser") {
+    if (jiraCurrentUserStatus.value === "ready" && jiraCurrentUser.value !== null) {
+      pills.push(`经办人：当前用户（${jiraCurrentUserIdentityLabel.value}）`);
+    } else {
+      pills.push("经办人：当前用户（身份未确认，未过滤）");
+    }
+  }
   if (assigneeScopeFilter.value === "selected" && assigneeFilter.value !== "all")
     pills.push(`经办人：${assigneeFilter.value}`);
   if (searchQuery.value.trim().length > 0)
@@ -1158,6 +1267,30 @@ const totalSkillEstimate = computed(() =>
 const selectedDispatchStatus = computed(() =>
   getDispatchStatus(selectedIssue.value),
 );
+
+const selectedDryRunPlan = computed<ShowcaseDryRunPlanResponse | null>(
+  () => dryRunPlanByIssueKey.value[selectedIssue.value.key] ?? null,
+);
+
+const selectedDryRunPlanLoading = computed(
+  () => dryRunPlanLoadingIssueKey.value === selectedIssue.value.key,
+);
+
+const selectedDryRunApproval = computed<DryRunExecutionApproval | null>(
+  () => dryRunApprovalByIssueKey.value[selectedIssue.value.key] ?? null,
+);
+
+const selectedDryRunExecutable = computed(
+  () => selectedDryRunPlan.value?.status === "ready" && !selectedDryRunPlanLoading.value,
+);
+
+const selectedDryRunPlanTone = computed<Tone>(() => {
+  if (selectedDryRunPlanLoading.value) return "neutral";
+  if (selectedDryRunPlan.value?.status === "ready") return "ok";
+  if (selectedDryRunPlan.value?.status === "need_more_context") return "warn";
+  if (selectedDryRunPlan.value?.status === "degraded") return "danger";
+  return "neutral";
+});
 
 const selectedOrchestrationRuntime = computed<JiraOrchestrationRuntime>(() =>
   buildMockOrchestrationRuntime(
@@ -1218,6 +1351,11 @@ const preflightChecks = computed(() => [
     label: "GitLab 写入",
     value: selectedIssue.value.gitlabScore === null ? "未接入" : "需确认",
     tone: selectedIssue.value.gitlabScore === null ? "warn" : "neutral",
+  },
+  {
+    label: "Code Retrieval",
+    value: codeRetrievalRuntimeStatus.value?.configured === true ? "已配置" : "未配置",
+    tone: codeRetrievalRuntimeStatus.value?.configured === true ? "ok" : "warn",
   },
   {
     label: "MCP 白名单",
@@ -1317,49 +1455,34 @@ const executionSteps = computed(() =>
   })),
 );
 
-const pipelineColumns = computed<PipelineColumn[]>(() => {
-  const columns: PipelineColumn[] = [
-    { id: "understand", title: "待理解", count: 0, cards: [] },
-    { id: "assigned", title: "Skill 已分配", count: 0, cards: [] },
-    { id: "running", title: "Agent 执行中", count: 0, cards: [] },
-    { id: "review", title: "MR 待 Review", count: 0, cards: [] },
-    { id: "manual", title: "等待人工确认", count: 0, cards: [] },
-  ];
+const issueExecutionRows = computed<IssueExecutionRow[]>(() =>
+  filteredIssues.value.map((issue) => {
+    const dispatchStatus = getDispatchStatus(issue);
+    const runtime = buildMockOrchestrationRuntime(
+      issue,
+      dispatchStatus,
+      currentTime.value,
+    );
+    const assignedSkills = getAssignedSkillNames(issue);
 
-  filteredIssues.value.forEach((issue) => {
-    const status = getDispatchStatus(issue);
-    const target =
-      status === "Skill 已分配" || status === "草稿"
-        ? columns[1]
-        : status === "Agent 执行中"
-          ? columns[2]
-          : status === "MR 待 Review" || status === "已完成"
-            ? columns[3]
-            : status === "等待人工确认" || status === "失败"
-              ? columns[4]
-              : columns[0];
-
-    target.cards.push({
-      key: issue.key,
-      summary: issue.summary,
-      skills: getAssignedSkillNames(issue).slice(0, 2),
-      agent: resolveCurrentAgent(issue),
-      status,
-      duration: formatIssueDuration(issue),
-      tone: issue.riskTone,
-      preview:
-        issue.key === selectedIssue.value.key &&
-        status === "待编排" &&
-        getAssignedSkillNames(issue).length > 0,
-    });
-  });
-
-  return columns.map((column) => ({
-    ...column,
-    count: column.cards.length,
-    cards: column.cards.slice(0, 5),
-  }));
-});
+    return {
+      issue,
+      dispatchStatus,
+      runtime,
+      assignedSkills,
+      supplementReason: resolveSupplementReason(issue, dispatchStatus, runtime),
+      lanes: runtime.stages.map((stage) => ({
+        id: stage.id,
+        label: stage.name,
+        agent: stage.agent,
+        skill: stage.skill,
+        status: stage.status,
+        statusLabel: formatAgentLaneStatus(stage.status),
+        reason: stage.reason,
+      })),
+    };
+  }),
+);
 
 function buildJiraKpiCards(sourceIssues: EngineeringIssue[]): KpiCard[] {
   const total = sourceIssues.length;
@@ -1434,57 +1557,6 @@ function buildCountBars(value: number, max: number): number[] {
   return Array.from({ length: 6 }, (_, index) =>
     Math.max(6, Math.round(height * ((index + 1) / 6))),
   );
-}
-
-function formatIssueDuration(issue: EngineeringIssue) {
-  const seconds =
-    issue.remainingEstimateSeconds ??
-    issue.originalEstimateSeconds ??
-    issue.timeSpentSeconds;
-  if (seconds === undefined || seconds <= 0) return "未估算";
-  const hours = seconds / 3600;
-  if (hours >= 1) return `${stripTrailingZero(hours)}h`;
-  return `${Math.max(1, Math.round(seconds / 60))}m`;
-}
-
-function stripTrailingZero(value: number) {
-  return Number.isInteger(value) ? String(value) : value.toFixed(1);
-}
-
-function buildAuditRecordsFromSnapshot(
-  snapshot: ShowcaseSnapshotV1,
-  sourceIssues: EngineeringIssue[],
-): AuditRecord[] {
-  const issueByTaskId = new Map<string, EngineeringIssue>();
-  for (const issue of sourceIssues) {
-    if (!issueByTaskId.has(issue.taskId)) {
-      issueByTaskId.set(issue.taskId, issue);
-    }
-  }
-  const jiraTaskIds = new Set(issueByTaskId.keys());
-
-  return snapshot.mcpCalls
-    .filter(
-      (call) =>
-        jiraTaskIds.has(call.task_id) && call.mcp_server_name === "jira-reader",
-    )
-    .map((call, index) => {
-      const issue = issueByTaskId.get(call.task_id);
-      return {
-        id: `jira-audit-${call.task_id}-${call.mcp_tool_name ?? "unknown"}-${index}`,
-        issueKey: issue?.key ?? call.task_id,
-        skill: `JiraReader.${call.mcp_tool_name ?? "unknown"}`,
-        agent: "JiraReader MCP",
-        workflow: "jira_readonly",
-        duration:
-          call.latency_ms === null
-            ? "未记录"
-            : `${Math.round(call.latency_ms)}ms`,
-        status: call.success === false ? "失败" : "已完成",
-        artifacts: ["Trace", "Jira"],
-        time: "真实 trace",
-      };
-    });
 }
 
 function isHighPriority(priority: string) {
@@ -1698,7 +1770,7 @@ function toggleThemeMode() {
 
 onMounted(() => {
   setupAssistantAvatar();
-  void refreshIntegrationStatus();
+  void refreshRuntimeData();
   clockTimer = window.setInterval(() => {
     currentTime.value = new Date();
   }, 30_000);
@@ -1720,8 +1792,47 @@ function buildOptions(values: string[]): string[] {
   );
 }
 
+function buildFallbackIssue(): EngineeringIssue {
+  return {
+    taskId: "runtime-empty",
+    key: "JIRA-NOT-LOADED",
+    summary: "Jira 队列未加载",
+    project: defaultProjectFilter,
+    projectName: defaultProjectFilter,
+    fixVersion: "未设置",
+    sprint: "",
+    epic: "",
+    issueType: "未设置",
+    status: "未加载",
+    priority: "未设置",
+    assignee: "未识别",
+    assigneeRole: "Jira 负责人",
+    storyPoints: 0,
+    component: defaultProjectFilter,
+    labels: [],
+    gitlabMr: "未接入 GitLab",
+    gitlabScore: null,
+    mrUrl: "#",
+    riskLevel: "待评估",
+    riskTone: "warn",
+    observedTime: "未同步",
+    description: "",
+    expectation: "请检查 Jira 运行时配置并点击“刷新”。",
+    impactedRepos: [],
+    impactedModules: [],
+    aiUnderstanding: ["Jira 队列未加载。"],
+    plan: [],
+    skills: [],
+    mcpCalls: ["等待运行时证据"],
+    evidence: [{ name: "等待运行时证据", size: "pending" }],
+    reasoning: ["等待运行时证据。"],
+    decision: "当前无可执行 Jira，请先恢复运行时连接。",
+  };
+}
+
 function buildLiveJiraIssues(
   jiraIssues: ShowcaseJiraIssue[],
+  mcpCallsByTaskId: Readonly<Record<string, string[]>>,
 ): EngineeringIssue[] {
   return jiraIssues
     .filter((issue) => issue.execution_mode === "live")
@@ -1755,15 +1866,17 @@ function buildLiveJiraIssues(
           ? ["Angular17", "odcbs-frontend", angular17Branch]
           : []),
       ]);
-      const mcpCalls = snapshotData.mcpCalls
-        .filter(
-          (call) =>
-            call.task_id === issue.task_id &&
-            call.mcp_server_name === "jira-reader",
-        )
-        .map(
-          (call) => `JiraReader.${formatIntegrationSignal(call.mcp_tool_name)}`,
-        );
+      const mcpCalls =
+        mcpCallsByTaskId[issue.task_id]?.length > 0
+          ? mcpCallsByTaskId[issue.task_id]
+          : ["等待运行时证据"];
+      const evidence =
+        sourceRefs.length > 0
+          ? sourceRefs.map((sourceRef) => ({
+              name: sourceRef,
+              size: "live",
+            }))
+          : [{ name: "等待运行时证据", size: "pending" }];
       return {
         taskId: issue.task_id,
         key: issue.key,
@@ -1843,14 +1956,14 @@ function buildLiveJiraIssues(
         ],
         skills: angular17Matched ? ["Angular17 升级回归分析"] : [],
         mcpCalls,
-        evidence: sourceRefs.map((sourceRef) => ({
-          name: sourceRef,
-          size: "live",
-        })),
+        evidence,
         reasoning: [
           `Jira 状态：${issue.status ?? "未知"}`,
           `负责人：${issue.assignee ?? "未分配"}`,
           `更新时间：${formatJiraDate(issue.updated ?? issue.created)}`,
+          ...((mcpCallsByTaskId[issue.task_id]?.length ?? 0) === 0
+            ? ["等待运行时证据。"]
+            : []),
           ...(angular17Matched
             ? [
                 "命中 Angular17 前端升级规则，建议进入 odcbs-frontend/develop_to_angular17 做代码分析。",
@@ -1890,49 +2003,6 @@ function formatJiraDate(value: string | null | undefined) {
     minute: "2-digit",
     hour12: false,
   }).format(date);
-}
-
-function formatIntegrationSignal(value: string | null | undefined) {
-  if (
-    value === undefined ||
-    value === null ||
-    value.length === 0 ||
-    value === "unknown"
-  ) {
-    return "未接入";
-  }
-  return value;
-}
-
-function formatFleetFanout(value: number | null | undefined) {
-  if (value === undefined || value === null) return "fanout 未接入";
-  return `fanout ${value}`;
-}
-
-function formatArenaCandidateCount(value: number | null | undefined) {
-  if (value === undefined || value === null) return "arena 未接入";
-  return `arena ${value}候选`;
-}
-
-function formatArenaScores(
-  scores: ShowcaseArenaSummary["scores"] | null | undefined,
-) {
-  if (scores === undefined || scores === null) return "四维分 未接入";
-  return [
-    `C ${scores.correctness}`,
-    `S ${scores.style}`,
-    `T ${scores.testCoverage}`,
-    `D ${scores.diffMinimality}`,
-  ].join(" / ");
-}
-
-function formatArenaDelta(value: number | null | undefined) {
-  if (value === undefined || value === null) return "delta 未接入";
-  return `delta ${value}`;
-}
-
-function formatArenaScorer(arena: ShowcaseArenaSummary | null) {
-  return `${arena?.scorer_mode ?? "mock"}/${arena?.real_scorer ?? "未接入"}`;
 }
 
 function resolveJiraRiskTone(priority: string): Tone {
@@ -2401,21 +2471,36 @@ function mapRuntimeStageStatus(stageStatus: StageRuntimeStatus) {
   return "pending";
 }
 
+function formatAgentLaneStatus(stageStatus: StageRuntimeStatus) {
+  if (stageStatus === "done") return "完成";
+  if (stageStatus === "running") return "执行中";
+  if (stageStatus === "waiting") return "待补充";
+  if (stageStatus === "failed") return "失败";
+  return "未开始";
+}
+
+function resolveSupplementReason(
+  issue: EngineeringIssue,
+  dispatchStatus: DispatchStatus,
+  runtime: JiraOrchestrationRuntime,
+) {
+  if (runtime.failure_reason !== null) return runtime.failure_reason;
+  if (runtime.wait_reason !== null) return runtime.wait_reason;
+  if (dispatchStatus === "待编排") return "补充上下文或先分配 Skill";
+  if (dispatchStatus === "草稿") return "确认 Skill 顺序后进入校验";
+  if (dispatchStatus === "Agent 执行中") return "可补充证据、约束或验收口径";
+  if (dispatchStatus === "MR 待 Review") return "补充 Review 结论或回归口径";
+  if (dispatchStatus === "已完成") return "查看证据归档";
+  if (issue.riskTone === "danger") return "需要人工确认高风险写操作";
+  return "补充信息";
+}
+
 function formatSecondsLabel(seconds: number) {
   if (seconds <= 0) return "0m";
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.max(0, Math.round((seconds % 3600) / 60));
   if (hours === 0) return `${minutes}m`;
   return `${hours}h ${minutes}m`;
-}
-
-function resolveCurrentAgent(issue: EngineeringIssue) {
-  const status = getDispatchStatus(issue);
-  if (status === "Agent 执行中") return "Impact Analyst";
-  if (status === "MR 待 Review") return "Reviewer Agent";
-  if (status === "等待人工确认") return "PM Agent";
-  if (status === "Skill 已分配") return "Orchestrator";
-  return "PM Agent";
 }
 
 function selectIssue(issueKey: string) {
@@ -2427,13 +2512,54 @@ function selectIssue(issueKey: string) {
   mcpDetailExpanded.value = false;
 }
 
+function selectRequirementsSample(sampleId: string) {
+  selectedRequirementsSampleId.value = sampleId;
+}
+
+function getRequirementsSpecLabel(sample: RequirementsReviewSample) {
+  return profileTypeLabels[sample.profileSpecResult.spec.kind];
+}
+
+function joinTraceableTexts(values: readonly { text: string }[]) {
+  return values.map((item) => item.text).join(" / ");
+}
+
+function getClarificationQuestionsViewProjection(sample: RequirementsReviewSample) {
+  const viewProjection = sample.reqGateResult.clarificationQuestionsViewProjection;
+  if (viewProjection !== undefined && viewProjection.length > 0) {
+    return viewProjection;
+  }
+  return sample.reqGateResult.gaps
+    .filter((gap) => gap.clarificationQuestion.trim().length > 0)
+    .map((gap) => ({
+      question: gap.clarificationQuestion,
+      fromGapAxis: gap.axis,
+      fromGapField: gap.field,
+      sourceRefs: gap.sourceRefs,
+    }));
+}
+
+function formatConfidence(value: number) {
+  return `${Math.round(value * 100)}%`;
+}
+
+function formatReqGateLightLabel(light: RequirementsReviewLight) {
+  if (light === "green") return "GREEN";
+  if (light === "yellow") return "YELLOW";
+  return "RED";
+}
+
+function reqGateVerdictTone(light: RequirementsReviewLight): Tone {
+  return reqGateLightToneMap[light];
+}
+
 function isNavItemEnabled(item: string) {
   return enabledNavItems.includes(item as (typeof enabledNavItems)[number]);
 }
 
 function handleNavItemClick(item: string) {
   activeNavItem.value = item;
-  if (item === "Jira 调度" || item === "配置") {
+  if (item === "需求评审链路" || item === "Jira 调度" || item === "配置") {
     moduleNotice.value = null;
     return;
   }
@@ -2456,6 +2582,66 @@ function getIntegrationEndpoint(
   );
 }
 
+function syncIssueSelection() {
+  const queue = issues.value;
+  if (queue.length === 0) {
+    selectedIssueKey.value = "";
+    selectedIssueKeys.value = [];
+    return;
+  }
+
+  if (!queue.some((issue) => issue.key === selectedIssueKey.value)) {
+    selectedIssueKey.value = queue[0]?.key ?? "";
+  }
+  selectedIssueKeys.value = selectedIssueKeys.value.filter((issueKey) =>
+    queue.some((issue) => issue.key === issueKey),
+  );
+}
+
+async function refreshRuntimeData() {
+  await Promise.all([
+    refreshJiraIssues(),
+    refreshJiraCurrentUser(),
+    refreshIntegrationStatus(),
+  ]);
+}
+
+async function refreshJiraIssues() {
+  jiraIssuesLoading.value = true;
+  try {
+    const response = await fetch(jiraIssuesApiPath, {
+      method: "GET",
+      headers: { Accept: "application/json" },
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const payload = (await response.json()) as ShowcaseJiraIssuesResponse;
+    jiraIssues.value = payload.issues ?? [];
+    runtimeMcpCallsByTaskId.value = payload.mcpCallsByTaskId ?? {};
+    jiraIssuesStatus.value = payload.status;
+    jiraIssuesMessage.value = payload.message.length > 0 ? payload.message : "Jira 队列未加载";
+    if (payload.status !== "ready") {
+      jiraIssues.value = [];
+      runtimeMcpCallsByTaskId.value = {};
+      jiraIssuesMessage.value = `Jira 队列未加载：${payload.message}`;
+    }
+  } catch (error) {
+    jiraIssues.value = [];
+    runtimeMcpCallsByTaskId.value = {};
+    jiraIssuesStatus.value = "degraded";
+    jiraIssuesMessage.value =
+      error instanceof Error
+        ? `Jira 队列未加载：${error.message}`
+        : "Jira 队列未加载";
+  } finally {
+    lastJiraSyncAt.value = new Date().toISOString();
+    jiraIssuesLoading.value = false;
+    syncIssueSelection();
+  }
+}
+
 async function refreshIntegrationStatus() {
   integrationStatusLoading.value = true;
   integrationStatusError.value = null;
@@ -2473,8 +2659,43 @@ async function refreshIntegrationStatus() {
   } catch (error) {
     integrationStatusError.value =
       error instanceof Error ? error.message : "读取运行配置失败";
+    integrationStatus.value = buildFallbackIntegrationStatus();
   } finally {
     integrationStatusLoading.value = false;
+  }
+}
+
+async function refreshJiraCurrentUser() {
+  jiraCurrentUserLoading.value = true;
+  try {
+    const response = await fetch(jiraCurrentUserApiPath, {
+      method: "GET",
+      headers: { Accept: "application/json" },
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const payload = (await response.json()) as ShowcaseJiraCurrentUserResponse;
+    jiraCurrentUserMessage.value = payload.message;
+    jiraCurrentUserMayBeServiceAccount.value = payload.mayBeServiceAccount;
+
+    if (payload.status === "ready" && payload.currentUser !== undefined) {
+      jiraCurrentUser.value = payload.currentUser;
+      jiraCurrentUserStatus.value = "ready";
+      return;
+    }
+
+    jiraCurrentUser.value = null;
+    jiraCurrentUserStatus.value = "degraded";
+  } catch (error) {
+    jiraCurrentUser.value = null;
+    jiraCurrentUserStatus.value = "degraded";
+    jiraCurrentUserMayBeServiceAccount.value = false;
+    jiraCurrentUserMessage.value =
+      error instanceof Error ? error.message : "读取 Jira 当前用户失败";
+  } finally {
+    jiraCurrentUserLoading.value = false;
   }
 }
 
@@ -2760,6 +2981,29 @@ function openRuntimeDetails() {
   drawerVisible.value = true;
 }
 
+function openRuntimeStageForIssue(issueKey: string, stageId: string) {
+  selectedIssueKey.value = issueKey;
+  selectedRuntimeStageId.value = stageId;
+  selectedDrawerTab.value = "steps";
+  drawerVisible.value = true;
+}
+
+function openRuntimeDetailsForIssue(issueKey: string) {
+  selectedIssueKey.value = issueKey;
+  selectedRuntimeStageId.value = null;
+  selectedDrawerTab.value = "steps";
+  drawerVisible.value = true;
+}
+
+function openSupplementDrawer(issueKey: string) {
+  selectedIssueKey.value = issueKey;
+  selectedRuntimeStageId.value = null;
+  selectedDrawerTab.value = "overview";
+  drawerVisible.value = true;
+  descriptionExpanded.value = true;
+  mcpDetailExpanded.value = false;
+}
+
 function setDrawerTab(tab: DrawerTab) {
   selectedDrawerTab.value = tab;
 }
@@ -2808,9 +3052,13 @@ function moveSkill(skillId: string, direction: -1 | 1) {
 }
 
 function setDispatchStatus(status: DispatchStatus) {
+  setIssueDispatchStatus(selectedIssue.value.key, status);
+}
+
+function setIssueDispatchStatus(issueKey: string, status: DispatchStatus) {
   dispatchOverrides.value = {
     ...dispatchOverrides.value,
-    [selectedIssue.value.key]: status,
+    [issueKey]: status,
   };
 }
 
@@ -2845,7 +3093,7 @@ function applySkillTemplate(issueKeys = getBulkKeys()) {
   const nextAssignments = { ...skillAssignments.value };
   const nextOverrides = { ...dispatchOverrides.value };
   issueKeys.forEach((issueKey) => {
-    const issue = issues.find((item) => item.key === issueKey);
+    const issue = issues.value.find((item) => item.key === issueKey);
     if (!issue) return;
     nextAssignments[issueKey] = getRecommendedSkillIds(issue);
     nextOverrides[issueKey] = "草稿";
@@ -2862,7 +3110,7 @@ function applyBatchSkillTemplate() {
 function batchEnterValidation() {
   const nextOverrides = { ...dispatchOverrides.value };
   getBulkKeys().forEach((issueKey) => {
-    const issue = issues.find((item) => item.key === issueKey);
+    const issue = issues.value.find((item) => item.key === issueKey);
     if (!issue) return;
     nextOverrides[issueKey] =
       issue.riskTone === "danger" ? "等待人工确认" : "Skill 已分配";
@@ -2887,15 +3135,107 @@ function saveSkillPlan() {
   addAuditRecord("等待", "Skill 编排");
 }
 
-function validateAndTrigger() {
+async function validateAndTriggerIssue(issueKey: string) {
+  selectedIssueKey.value = issueKey;
+  selectedRuntimeStageId.value = null;
+  selectedDrawerTab.value = "steps";
+  drawerVisible.value = true;
+  await validateAndTrigger();
+}
+
+async function validateAndTrigger() {
   ensureSkillAssignment();
-  if (selectedIssue.value.riskTone === "danger") {
-    setDispatchStatus("等待人工确认");
-    addAuditRecord("等待", "高危确认");
+  const issue = selectedIssue.value;
+  const issueKey = issue.key;
+  const taskId = issue.taskId;
+  const skillIds = selectedSkillIds.value;
+  dryRunPlanLoadingIssueKey.value = issueKey;
+  dryRunPlanError.value = null;
+  dryRunApprovalByIssueKey.value = omitRecordKey(
+    dryRunApprovalByIssueKey.value,
+    issueKey,
+  );
+  setIssueDispatchStatus(issueKey, "Agent 执行中");
+  addAuditRecord("运行中", "Dry-run 方案生成", issue);
+
+  try {
+    const response = await fetch("/api/showcase/dry-run-plan", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        issueKey,
+        skillIds,
+        mode: "dry-run",
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const payload = (await response.json()) as ShowcaseDryRunPlanResponse;
+    dryRunPlanByIssueKey.value = {
+      ...dryRunPlanByIssueKey.value,
+      [issueKey]: payload,
+    };
+
+    if (payload.mcpCalls.length > 0) {
+      runtimeMcpCallsByTaskId.value = {
+        ...runtimeMcpCallsByTaskId.value,
+        [taskId]: payload.mcpCalls,
+      };
+    }
+
+    if (payload.status === "ready") {
+      setIssueDispatchStatus(issueKey, "等待人工确认");
+      addAuditRecord("已完成", "Dry-run 方案", issue);
+    } else if (payload.status === "need_more_context") {
+      setIssueDispatchStatus(issueKey, "等待人工确认");
+      addAuditRecord("等待", "补充代码证据", issue);
+    } else {
+      setIssueDispatchStatus(issueKey, "失败");
+      addAuditRecord("失败", "Dry-run 方案", issue);
+    }
+    selectedDrawerTab.value = "evidence";
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Dry-run 触发失败";
+    dryRunPlanError.value = message;
+    setIssueDispatchStatus(issueKey, "失败");
+    addAuditRecord("失败", "Dry-run 方案", issue);
+  } finally {
+    dryRunPlanLoadingIssueKey.value = null;
+  }
+}
+
+function approveDryRunExecution() {
+  const plan = selectedDryRunPlan.value;
+  if (plan === null || plan.status !== "ready" || plan.runId === null) {
+    dryRunPlanError.value = "只有 ready 状态的 dry-run 方案可以许可执行。";
     return;
   }
-  setDispatchStatus("Agent 执行中");
-  addAuditRecord("运行中", selectedSkillRows.value[1]?.name);
+
+  dryRunApprovalByIssueKey.value = {
+    ...dryRunApprovalByIssueKey.value,
+    [selectedIssue.value.key]: {
+      issueKey: selectedIssue.value.key,
+      runId: plan.runId,
+      approvedAt: new Date().toISOString(),
+      approver: jiraCurrentUserIdentityLabel.value,
+      note: "已记录人工许可。当前版本不会写 Jira/GitLab、不会创建 MR，等待正式执行器接管。",
+    },
+  };
+  setDispatchStatus("等待人工确认");
+  addAuditRecord("已完成", "许可执行");
+}
+
+function omitRecordKey<T>(record: Record<string, T>, key: string) {
+  const next = { ...record };
+  delete next[key];
+  return next;
 }
 
 function confirmHighRiskAndRun() {
@@ -2950,11 +3290,6 @@ function openAuditRecord(record: AuditRecord) {
   drawerVisible.value = true;
 }
 
-function filterPipelineColumn(column: PipelineColumn) {
-  const firstIssueKey = column.cards[0]?.key;
-  if (firstIssueKey !== undefined) selectIssue(firstIssueKey);
-}
-
 function openJiraIssue(issue: EngineeringIssue) {
   window.open(
     `http://10.100.77.22:8888/browse/${encodeURIComponent(issue.key)}`,
@@ -2963,14 +3298,15 @@ function openJiraIssue(issue: EngineeringIssue) {
   );
 }
 
-function refreshReadonly() {
+async function refreshReadonly() {
   currentTime.value = new Date();
+  await refreshRuntimeData();
   addAuditRecord("已完成", "只读刷新");
 }
 
-function syncAndTrigger() {
+async function syncAndTrigger() {
   currentTime.value = new Date();
-  validateAndTrigger();
+  await validateAndTrigger();
 }
 
 function downloadEvidencePack() {
@@ -3016,7 +3352,7 @@ function resetFilters() {
   projectFilter.value = defaultProjectFilter;
   issueTypeFilter.value = "all";
   statusFilter.value = "all";
-  assigneeScopeFilter.value = "all";
+  assigneeScopeFilter.value = "currentUser";
   assigneeFilter.value = "all";
 }
 
@@ -3162,7 +3498,7 @@ function askStrategyAssistant(question?: string) {
             </em>
           </header>
           <p v-if="integrationStatusError !== null" class="config-inline-status">
-            运行状态接口读取失败：{{ integrationStatusError }}。当前使用快照或兜底状态。
+            运行状态接口读取失败：{{ integrationStatusError }}。当前使用兜底状态。
           </p>
           <div class="config-runtime-grid">
             <article
@@ -3907,6 +4243,314 @@ function askStrategyAssistant(question?: string) {
           </div>
         </section>
       </section>
+      <section
+        v-else-if="isRequirementsReviewPanel"
+        class="requirements-review-page"
+      >
+        <header class="topbar command-topbar requirement-topbar">
+          <div class="brand-block">
+            <div class="brand-mark">RQ</div>
+            <div>
+              <span>Requirements Review Chain</span>
+              <strong>需求评审链路 Showcase</strong>
+            </div>
+            <em>Replay / Shadow / Read-only</em>
+          </div>
+          <div class="command-actions">
+            <button
+              type="button"
+              class="theme-toggle"
+              :aria-label="themeToggleLabel"
+              :aria-pressed="themeMode === 'day'"
+              @click="toggleThemeMode"
+            >
+              <span aria-hidden="true">{{ themeMode === "day" ? "日" : "夜" }}</span>
+              {{ themeModeLabel }}
+            </button>
+            <button type="button" class="time-chip" @click="currentTime = new Date()">
+              <span>{{ formattedDate }}</span>
+              <strong>{{ formattedTime }}</strong>
+              <em>fixture/replay/shadow</em>
+            </button>
+          </div>
+        </header>
+
+        <section class="module-notice requirements-mode-banner" role="status">
+          <div>
+            <span>只读模式</span>
+            <strong>本页面仅展示 W1-W4 回放链路，状态均为 replay/shadow/read-only</strong>
+            <p>
+              未接入 Jira/GitLab/Notion 写入，不包含状态流转、评论提交、MR/PR 创建能力。
+            </p>
+          </div>
+        </section>
+
+        <section class="requirements-review-layout">
+          <aside class="panel requirements-sample-panel">
+            <header class="panel-heading">
+              <div>
+                <span>样例切换</span>
+                <strong>Visual / Integration / Workflow</strong>
+              </div>
+              <em>{{ requirementsSamples.length }} 个 replay 样例</em>
+            </header>
+            <div class="requirements-sample-list">
+              <button
+                v-for="sample in requirementsSamples"
+                :key="sample.id"
+                type="button"
+                :class="{ active: selectedRequirementsSampleId === sample.id }"
+                @click="selectRequirementsSample(sample.id)"
+              >
+                <span>{{ getRequirementsSpecLabel(sample) }}</span>
+                <strong>{{ sample.jiraEvidencePack.issueKey }}</strong>
+                <em>{{ sample.jiraEvidencePack.summary }}</em>
+              </button>
+            </div>
+          </aside>
+
+          <!-- requirements-review-panel:start -->
+          <section
+            v-if="selectedRequirementsSample !== null"
+            class="panel requirements-detail-panel"
+          >
+            <header class="requirements-detail-head">
+              <div>
+                <span>当前样例</span>
+                <strong>
+                  {{ selectedRequirementsSample.jiraEvidencePack.issueKey }} ·
+                  {{ selectedRequirementsSpecTypeLabel }}
+                </strong>
+              </div>
+              <div class="requirements-mode-chips">
+                <mark>Replay: {{ selectedRequirementsSample.mode.replay ? "YES" : "NO" }}</mark>
+                <mark>Shadow: {{ selectedRequirementsSample.mode.shadow ? "YES" : "NO" }}</mark>
+                <mark>Read-only: {{ selectedRequirementsSample.mode.readOnly ? "YES" : "NO" }}</mark>
+              </div>
+            </header>
+
+            <section class="requirements-section">
+              <h3>证据摘要 / JiraEvidencePackV2</h3>
+              <div class="requirements-kv-grid">
+                <p><span>issue key</span><strong>{{ selectedRequirementsSample.jiraEvidencePack.issueKey }}</strong></p>
+                <p><span>summary</span><strong>{{ selectedRequirementsSample.jiraEvidencePack.summary }}</strong></p>
+                <p><span>issue type</span><strong>{{ selectedRequirementsSample.jiraEvidencePack.issueType }}</strong></p>
+                <p><span>status</span><strong>{{ selectedRequirementsSample.jiraEvidencePack.status }}</strong></p>
+                <p><span>priority</span><strong>{{ selectedRequirementsSample.jiraEvidencePack.priority }}</strong></p>
+                <p><span>comments / fields / attachments / mediaEvidence</span><strong>{{ selectedRequirementsSample.jiraEvidencePack.counts.comments }} / {{ selectedRequirementsSample.jiraEvidencePack.counts.fields }} / {{ selectedRequirementsSample.jiraEvidencePack.counts.attachments }} / {{ selectedRequirementsSample.jiraEvidencePack.counts.mediaEvidence }}</strong></p>
+                <p><span>sourceRef 覆盖</span><strong>{{ selectedRequirementsSample.jiraEvidencePack.sourceRefCoverage.covered }} / {{ selectedRequirementsSample.jiraEvidencePack.sourceRefCoverage.total }} (uncovered {{ selectedRequirementsSample.jiraEvidencePack.sourceRefCoverage.uncovered }})</strong></p>
+              </div>
+              <div class="chip-list compact">
+                <span
+                  v-for="highlight in selectedRequirementsSample.jiraEvidencePack.sourceRefCoverage.highlights"
+                  :key="highlight"
+                >
+                  {{ highlight }}
+                </span>
+              </div>
+            </section>
+
+            <section class="requirements-section">
+              <h3>Router 结果</h3>
+              <div class="requirements-kv-grid">
+                <p><span>profile</span><strong>{{ selectedRequirementsSample.router.profile }}</strong></p>
+                <p><span>confidence</span><strong>{{ formatConfidence(selectedRequirementsSample.router.confidence) }}</strong></p>
+                <p><span>rationale</span><strong>{{ selectedRequirementsSample.router.rationale }}</strong></p>
+              </div>
+              <div class="chip-list compact">
+                <span
+                  v-for="signal in selectedRequirementsSample.router.matchedSignals"
+                  :key="`${signal.kind}-${signal.value}-${signal.sourceRef}`"
+                >
+                  {{ signal.kind }} · {{ signal.value }} · {{ signal.profile }} · w={{ signal.weight }}
+                </span>
+              </div>
+              <div class="evidence-list compact">
+                <p v-for="sourceRef in selectedRequirementsSample.router.sourceRefs" :key="sourceRef">
+                  <span>{{ sourceRef }}</span>
+                </p>
+              </div>
+            </section>
+
+            <section class="requirements-section">
+              <h3>Profile Spec</h3>
+              <template v-if="selectedRequirementsSample.profileSpecResult.spec.kind === 'VisualDefectSpecV0'">
+                <div class="requirements-kv-grid">
+                  <p><span>pageOrComponent</span><strong>{{ joinTraceableTexts(selectedRequirementsSample.profileSpecResult.spec.pageOrComponent) }}</strong></p>
+                  <p><span>actualBehavior</span><strong>{{ joinTraceableTexts(selectedRequirementsSample.profileSpecResult.spec.actualBehavior) }}</strong></p>
+                  <p><span>expectedBehavior</span><strong>{{ joinTraceableTexts(selectedRequirementsSample.profileSpecResult.spec.expectedBehavior) }}</strong></p>
+                  <p><span>baselineEvidence</span><strong>{{ joinTraceableTexts(selectedRequirementsSample.profileSpecResult.spec.baselineEvidence) }}</strong></p>
+                  <p><span>viewport</span><strong>{{ joinTraceableTexts(selectedRequirementsSample.profileSpecResult.spec.viewport) }}</strong></p>
+                </div>
+                <div class="evidence-list compact">
+                  <p
+                    v-for="item in selectedRequirementsSample.profileSpecResult.spec.visualEvidence"
+                    :key="item.sourceRef"
+                  >
+                    <span>{{ item.evidenceType }} · {{ item.filename }} · {{ item.mimeType }}</span>
+                    <em>{{ item.sourceRef }}</em>
+                  </p>
+                </div>
+                <ul class="reasoning-list">
+                  <li
+                    v-for="assertion in selectedRequirementsSample.profileSpecResult.spec.acceptanceAssertions"
+                    :key="assertion.assertion"
+                  >
+                    {{ assertion.assertion }}（{{ assertion.sourceRef }}）
+                  </li>
+                </ul>
+              </template>
+              <template v-else-if="selectedRequirementsSample.profileSpecResult.spec.kind === 'IntegrationSpecV0'">
+                <div class="requirements-kv-grid">
+                  <p><span>upstreamSystem</span><strong>{{ joinTraceableTexts(selectedRequirementsSample.profileSpecResult.spec.upstreamSystem) }}</strong></p>
+                  <p><span>downstreamSystem</span><strong>{{ joinTraceableTexts(selectedRequirementsSample.profileSpecResult.spec.downstreamSystem) }}</strong></p>
+                  <p><span>apiContract</span><strong>{{ joinTraceableTexts(selectedRequirementsSample.profileSpecResult.spec.apiContract) }}</strong></p>
+                  <p><span>fieldMapping</span><strong>{{ joinTraceableTexts(selectedRequirementsSample.profileSpecResult.spec.fieldMapping) }}</strong></p>
+                  <p><span>authBoundary</span><strong>{{ joinTraceableTexts(selectedRequirementsSample.profileSpecResult.spec.authBoundary) }}</strong></p>
+                  <p><span>failureHandling</span><strong>{{ joinTraceableTexts(selectedRequirementsSample.profileSpecResult.spec.failureHandling) }}</strong></p>
+                  <p><span>testFixtures</span><strong>{{ joinTraceableTexts(selectedRequirementsSample.profileSpecResult.spec.testFixtures) }}</strong></p>
+                </div>
+                <ul class="reasoning-list">
+                  <li
+                    v-for="assertion in selectedRequirementsSample.profileSpecResult.spec.acceptanceAssertions"
+                    :key="assertion.assertion"
+                  >
+                    {{ assertion.assertion }}（{{ assertion.sourceRef }}）
+                  </li>
+                </ul>
+              </template>
+              <template v-else>
+                <div class="requirements-kv-grid">
+                  <p><span>roles</span><strong>{{ joinTraceableTexts(selectedRequirementsSample.profileSpecResult.spec.roles) }}</strong></p>
+                  <p><span>triggerConditions</span><strong>{{ joinTraceableTexts(selectedRequirementsSample.profileSpecResult.spec.triggerConditions) }}</strong></p>
+                  <p><span>processSteps</span><strong>{{ joinTraceableTexts(selectedRequirementsSample.profileSpecResult.spec.processSteps) }}</strong></p>
+                  <p><span>businessRules</span><strong>{{ joinTraceableTexts(selectedRequirementsSample.profileSpecResult.spec.businessRules) }}</strong></p>
+                  <p><span>exceptionPaths</span><strong>{{ joinTraceableTexts(selectedRequirementsSample.profileSpecResult.spec.exceptionPaths) }}</strong></p>
+                  <p><span>auditTrail</span><strong>{{ joinTraceableTexts(selectedRequirementsSample.profileSpecResult.spec.auditTrail) }}</strong></p>
+                </div>
+                <ul class="reasoning-list">
+                  <li
+                    v-for="assertion in selectedRequirementsSample.profileSpecResult.spec.acceptanceAssertions"
+                    :key="assertion.assertion"
+                  >
+                    {{ assertion.assertion }}（{{ assertion.sourceRef }}）
+                  </li>
+                </ul>
+              </template>
+              <p class="requirements-eval-note">
+                requirements eval：{{
+                  selectedRequirementsSample.requirementsEvalSummary ??
+                    "W5 未接入，当前使用 W1-W4 replay fixture。"
+                }}
+              </p>
+            </section>
+
+            <section class="requirements-section">
+              <h3>ReqGate</h3>
+              <div class="requirements-kv-grid">
+                <p><span>schemaVersion</span><strong>{{ selectedRequirementsSample.reqGateResult.schemaVersion }}</strong></p>
+                <p><span>profile</span><strong>{{ selectedRequirementsSample.reqGateResult.profile }}</strong></p>
+                <p><span>auditPayload.schemaVersion</span><strong>{{ selectedRequirementsSample.reqGateResult.auditPayload.schemaVersion }}</strong></p>
+                <p><span>profileSpecStatus</span><strong>{{ selectedRequirementsSample.reqGateResult.auditPayload.profileSpecStatus }}</strong></p>
+              </div>
+              <div class="requirements-reqgate-grid">
+                <article
+                  class="reqgate-result-card"
+                  :class="`tone-${reqGateVerdictTone(selectedRequirementsSample.reqGateResult.investigationReady.light)}`"
+                >
+                  <span>investigationReady</span>
+                  <strong>{{ formatReqGateLightLabel(selectedRequirementsSample.reqGateResult.investigationReady.light) }}</strong>
+                  <p>{{ selectedRequirementsSample.reqGateResult.investigationReady.reason }}</p>
+                </article>
+                <article
+                  class="reqgate-result-card"
+                  :class="`tone-${reqGateVerdictTone(selectedRequirementsSample.reqGateResult.implementationReady.light)}`"
+                >
+                  <span>implementationReady</span>
+                  <strong>{{ formatReqGateLightLabel(selectedRequirementsSample.reqGateResult.implementationReady.light) }}</strong>
+                  <p>{{ selectedRequirementsSample.reqGateResult.implementationReady.reason }}</p>
+                </article>
+              </div>
+              <div class="requirements-kv-grid">
+                <p><span>investigation axisResults</span><strong>{{ selectedRequirementsSample.reqGateResult.investigationReady.axisResults.length }} 项</strong></p>
+                <p><span>implementation axisResults</span><strong>{{ selectedRequirementsSample.reqGateResult.implementationReady.axisResults.length }} 项</strong></p>
+                <p><span>gaps</span><strong>{{ selectedRequirementsSample.reqGateResult.gaps.length }} 项</strong></p>
+                <p><span>clarificationQuestions(raw)</span><strong>{{ selectedRequirementsSample.reqGateResult.clarificationQuestions.length }} 项</strong></p>
+                <p><span>clarificationQuestions(view projection)</span><strong>{{ getClarificationQuestionsViewProjection(selectedRequirementsSample).length }} 项</strong></p>
+                <p><span>hardBlocks</span><strong>{{ selectedRequirementsSample.reqGateResult.hardBlocks.length }} 项</strong></p>
+                <p><span>auditPayload sourceRefs</span><strong>{{ selectedRequirementsSourceRefCount }} 项</strong></p>
+              </div>
+              <div class="evidence-list compact">
+                <p
+                  v-for="axis in selectedRequirementsSample.reqGateResult.investigationReady.axisResults"
+                  :key="`investigation-${axis.axis}-${axis.reason}`"
+                >
+                  <span>investigation · {{ axis.axis }} · {{ formatReqGateLightLabel(axis.light) }} · {{ axis.reason }}</span>
+                  <em>{{ axis.sourceRefs.join(" / ") }}</em>
+                </p>
+                <p
+                  v-for="axis in selectedRequirementsSample.reqGateResult.implementationReady.axisResults"
+                  :key="`implementation-${axis.axis}-${axis.reason}`"
+                >
+                  <span>implementation · {{ axis.axis }} · {{ formatReqGateLightLabel(axis.light) }} · {{ axis.reason }}</span>
+                  <em>{{ axis.sourceRefs.join(" / ") }}</em>
+                </p>
+                <p v-for="gap in selectedRequirementsSample.reqGateResult.gaps" :key="`gap-${gap.axis}-${gap.field}-${gap.reason}`">
+                  <span>Gap · {{ gap.axis }}/{{ gap.field }} · {{ gap.severity }} · {{ gap.reason }} · turnGreen: {{ gap.turnGreenCondition }}</span>
+                  <em>{{ gap.sourceRefs.join(" / ") }}</em>
+                </p>
+                <p
+                  v-for="question in getClarificationQuestionsViewProjection(selectedRequirementsSample)"
+                  :key="`projection-${question.fromGapAxis}-${question.fromGapField}-${question.question}`"
+                >
+                  <span>Question(view projection) · {{ question.fromGapAxis }}/{{ question.fromGapField }} · {{ question.question }}</span>
+                  <em>{{ question.sourceRefs.join(" / ") }}</em>
+                </p>
+                <p
+                  v-for="block in selectedRequirementsSample.reqGateResult.hardBlocks"
+                  :key="`hard-block-${block.ruleId}`"
+                >
+                  <span>HardBlock · {{ block.ruleId }} · {{ block.reason }}</span>
+                  <em>{{ block.sourceRefs.join(" / ") }}</em>
+                </p>
+                <p
+                  v-for="rule in selectedRequirementsSample.reqGateResult.auditPayload.ruleEvaluations"
+                  :key="`rule-eval-${rule.ruleId}`"
+                >
+                  <span>RuleEvaluation · {{ rule.ruleId }} · {{ rule.passed ? "passed" : "failed" }} · {{ rule.reason }}</span>
+                  <em>{{ rule.sourceRefs.join(" / ") }}</em>
+                </p>
+              </div>
+            </section>
+
+            <section class="requirements-section">
+              <h3>SourceRef 链路</h3>
+              <div class="evidence-list compact">
+                <p
+                  v-for="link in selectedRequirementsSample.sourceRefConclusions"
+                  :key="link.conclusion"
+                >
+                  <span>{{ link.conclusion }}</span>
+                  <em>{{ link.sourceRefs.join(" / ") }}</em>
+                </p>
+              </div>
+              <div class="chip-list compact">
+                <span
+                  v-for="sourceRef in selectedRequirementsSample.reqGateResult.auditPayload.sourceRefs"
+                  :key="sourceRef"
+                >
+                  {{ sourceRef }}
+                </span>
+              </div>
+            </section>
+          </section>
+          <!-- requirements-review-panel:end -->
+
+          <section v-else class="panel requirements-detail-panel">
+            <p>暂无需求评审样例。</p>
+          </section>
+        </section>
+      </section>
       <template v-else>
         <section
           v-if="moduleNotice !== null"
@@ -3956,7 +4600,7 @@ function askStrategyAssistant(question?: string) {
               >
                 <span>{{ formattedDate }}</span>
                 <strong>{{ formattedTime }}</strong>
-                <em>晴 24°C · 最近同步 22:40</em>
+                <em>最近同步 {{ lastJiraSyncLabel }}</em>
               </button>
               <section v-if="calendarOpen" class="calendar-popover">
                 <header>
@@ -3979,9 +4623,12 @@ function askStrategyAssistant(question?: string) {
                     type="button"
                     :class="{
                       muted: day.muted,
+                      offday: day.offday,
+                      holiday: day.statutoryHoliday,
                       today: day.today,
                       planned: day.hasPlan,
                     }"
+                    :title="day.dayTypeLabel"
                   >
                     {{ day.label }}
                   </button>
@@ -4024,14 +4671,11 @@ function askStrategyAssistant(question?: string) {
           </article>
         </section>
 
-        <main
-          class="dispatch-grid"
-          :class="{
-            'filters-collapsed': filterCollapsed,
-            'drawer-closed': !drawerVisible,
-          }"
-        >
-          <aside class="panel filter-panel">
+        <section class="workbench-control-row" aria-label="筛选条件">
+          <section
+            class="panel filter-panel workbench-filter-panel"
+            :class="{ collapsed: filterCollapsed }"
+          >
             <div class="panel-heading filter-heading">
               <div>
                 <span>Jira 筛选器</span>
@@ -4127,6 +4771,13 @@ function askStrategyAssistant(question?: string) {
                     >
                   </label>
                 </div>
+                <p
+                  v-if="assigneeScopeFilter === 'currentUser'"
+                  class="current-user-filter-hint"
+                  :class="`tone-${currentUserFilterTone}`"
+                >
+                  {{ currentUserFilterHint }}
+                </p>
               </section>
 
               <section
@@ -4137,19 +4788,45 @@ function askStrategyAssistant(question?: string) {
                 <span v-for="pill in activeFilterPills" :key="pill">{{ pill }}</span>
               </section>
             </template>
-          </aside>
 
+            <section
+              v-else-if="activeFilterPills.length > 0"
+              class="active-filter-pills collapsed-filter-pills"
+              aria-label="当前默认筛选条件"
+            >
+              <span v-for="pill in activeFilterPills" :key="pill">{{ pill }}</span>
+            </section>
+          </section>
+        </section>
+
+        <main
+          class="dispatch-grid"
+          :class="{
+            'drawer-closed': !drawerVisible,
+          }"
+        >
           <section class="center-stack">
-            <section class="panel issue-panel">
+            <section class="panel issue-panel execution-workbench">
               <div class="panel-heading issue-heading">
                 <div>
-                  <span>Jira Issue Queue</span>
+                  <span>默认视图</span>
                   <strong>
-                    共 {{ versionSummary.visible }} 条 ·
+                    Jira × Agent 执行看板 · 共 {{ versionSummary.visible }} 条 ·
                     {{ selectedIssueKeys.length }} 条已选
                   </strong>
                 </div>
-                <div class="view-switch" aria-label="队列操作">
+                <div class="execution-status-strip" aria-label="默认视图状态分布">
+                  <button
+                    v-for="item in orchestrationStatusSummary"
+                    :key="item.status"
+                    type="button"
+                    :class="{ active: item.active }"
+                  >
+                    <span>{{ item.status }}</span>
+                    <strong>{{ item.count }}</strong>
+                  </button>
+                </div>
+                <div class="view-switch" aria-label="默认视图操作">
                   <button type="button" @click="applyBatchSkillTemplate">
                     批量套用模板
                   </button>
@@ -4162,6 +4839,13 @@ function askStrategyAssistant(question?: string) {
                   </button>
                 </div>
               </div>
+              <p class="config-inline-status">
+                {{
+                  jiraIssuesLoading
+                    ? "Jira 队列加载中..."
+                    : `队列状态：${jiraIssuesStatus} · ${jiraQueueStatusHint}`
+                }}
+              </p>
 
               <section
                 v-if="selectedIssueKeys.length > 0"
@@ -4181,84 +4865,129 @@ function askStrategyAssistant(question?: string) {
                 </button>
               </section>
 
-              <div
-                class="issue-table dispatch-table"
+              <section
+                class="agent-execution-matrix"
                 role="table"
-                aria-label="Jira 调度队列"
+                aria-label="默认条件下 Jira Agent 执行情况"
               >
-                <div class="issue-row issue-row-head" role="row">
-                  <span>选</span>
-                  <span>Key</span>
-                  <span>Summary</span>
-                  <span>模块</span>
-                  <span>优先级</span>
-                  <span>负责人</span>
-                  <span>调度状态</span>
-                  <span>Skill</span>
-                  <span>操作</span>
+                <div class="agent-matrix-row agent-matrix-head" role="row">
+                  <span>Jira</span>
+                  <span
+                    v-for="stage in orchestrationStageBlueprint"
+                    :key="stage.id"
+                  >
+                    {{ stage.name }}
+                  </span>
+                  <span>单条补充</span>
                 </div>
+                <p v-if="issueExecutionRows.length === 0" class="agent-matrix-empty">
+                  暂无默认视图下的 Jira 执行数据
+                </p>
                 <article
-                  v-for="issue in filteredIssues"
-                  :key="issue.key"
-                  class="issue-row"
-                  :class="{ selected: selectedIssue.key === issue.key }"
+                  v-for="row in issueExecutionRows"
+                  :key="row.issue.key"
+                  class="agent-matrix-row"
+                  :class="{ selected: selectedIssue.key === row.issue.key }"
                   role="row"
                 >
-                  <span>
-                    <input
-                      type="checkbox"
-                      :checked="isIssueSelected(issue.key)"
-                      :aria-label="`选择 ${issue.key}`"
-                      @change="toggleIssueSelection(issue.key, $event)"
-                    >
-                  </span>
-                  <span>
+                  <section class="jira-execution-cell" role="cell">
+                    <div class="jira-execution-top">
+                      <input
+                        type="checkbox"
+                        :checked="isIssueSelected(row.issue.key)"
+                        :aria-label="`选择 ${row.issue.key}`"
+                        @change="toggleIssueSelection(row.issue.key, $event)"
+                      >
+                      <button
+                        type="button"
+                        class="issue-key-button"
+                        :title="`双击打开 Jira ${row.issue.key}`"
+                        @click="selectIssue(row.issue.key)"
+                        @dblclick="openJiraIssue(row.issue)"
+                      >
+                        {{ row.issue.key }}
+                      </button>
+                      <mark>{{ row.dispatchStatus }}</mark>
+                    </div>
                     <button
                       type="button"
-                      class="issue-key-button"
-                      :title="`双击打开 Jira ${issue.key}`"
-                      @click="selectIssue(issue.key)"
-                      @dblclick="openJiraIssue(issue)"
+                      class="jira-summary-button"
+                      @click="selectIssue(row.issue.key)"
                     >
-                      {{ issue.key }}
+                      {{ row.issue.summary }}
                     </button>
-                  </span>
-                  <span class="summary-cell">
-                    <button type="button" @click="selectIssue(issue.key)">
-                      {{ issue.summary }}
-                    </button>
-                    <em>
-                      <i v-for="label in issue.labels.slice(0, 2)" :key="label">{{
-                        label
-                      }}</i>
-                    </em>
-                  </span>
-                  <span>{{ issue.component }}</span>
-                  <span class="priority-cell">{{ issue.priority }}</span>
-                  <span class="assignee-cell">{{ issue.assignee }}</span>
-                  <span>
-                    <mark>{{ getDispatchStatus(issue) }}</mark>
-                  </span>
-                  <span>
-                    <b
-                      v-if="getAssignedSkillNames(issue).length > 0"
-                      class="skill-count"
-                    >
-                      {{ getAssignedSkillNames(issue).length }} 项
-                    </b>
-                    <em v-else>未分配</em>
-                  </span>
-                  <span>
-                    <button
-                      type="button"
-                      class="row-action"
-                      @click="openSkillDrawer(issue.key)"
-                    >
-                      分配 Skill
-                    </button>
-                  </span>
+                    <small class="jira-execution-meta">
+                      <i>{{ row.issue.component }}</i>
+                      <i>{{ row.issue.priority }}</i>
+                      <i>{{ row.issue.assignee }}</i>
+                    </small>
+                    <p class="assigned-skill-strip">
+                      <i
+                        v-for="skill in row.assignedSkills.slice(0, 3)"
+                        :key="`${row.issue.key}-${skill}`"
+                      >
+                        {{ skill }}
+                      </i>
+                      <i v-if="row.assignedSkills.length === 0">未分配</i>
+                    </p>
+                    <div class="jira-execution-progress">
+                      <span>
+                        <i :style="{ width: `${row.runtime.progress_percent}%` }" />
+                      </span>
+                      <strong>{{ row.runtime.progress_percent }}%</strong>
+                    </div>
+                  </section>
+
+                  <button
+                    v-for="lane in row.lanes"
+                    :key="`${row.issue.key}-${lane.id}`"
+                    type="button"
+                    class="agent-lane-cell"
+                    :class="`status-${lane.status}`"
+                    @click="openRuntimeStageForIssue(row.issue.key, lane.id)"
+                  >
+                    <span>{{ lane.agent }}</span>
+                    <strong>{{ lane.statusLabel }}</strong>
+                    <em>{{ lane.skill }}</em>
+                    <i v-if="lane.reason">{{ lane.reason }}</i>
+                  </button>
+
+                  <section class="issue-supplement-cell" role="cell">
+                    <strong>{{ row.supplementReason }}</strong>
+                    <div>
+                      <button
+                        type="button"
+                        @click="openSupplementDrawer(row.issue.key)"
+                      >
+                        补充信息
+                      </button>
+                      <button
+                        type="button"
+                        @click="openSkillDrawer(row.issue.key)"
+                      >
+                        编排 Skill
+                      </button>
+                      <button
+                        type="button"
+                        :disabled="dryRunPlanLoadingIssueKey === row.issue.key"
+                        @click="validateAndTriggerIssue(row.issue.key)"
+                      >
+                        {{
+                          dryRunPlanLoadingIssueKey === row.issue.key
+                            ? "生成中"
+                            : "校验触发"
+                        }}
+                      </button>
+                      <button
+                        type="button"
+                        @click="openRuntimeDetailsForIssue(row.issue.key)"
+                      >
+                        明细
+                      </button>
+                    </div>
+                  </section>
                 </article>
-              </div>
+              </section>
             </section>
 
             <section class="panel pipeline-panel">
@@ -4418,41 +5147,6 @@ function askStrategyAssistant(question?: string) {
                   <p>{{ event.detail }}</p>
                 </article>
               </section>
-
-              <div class="pipeline-board" aria-label="AI 交付流水线">
-                <section
-                  v-for="column in pipelineColumns"
-                  :key="column.id"
-                  class="pipeline-column"
-                >
-                  <header>
-                    <strong>{{ column.title }}</strong>
-                    <button
-                      type="button"
-                      :aria-label="`筛选 ${column.title}`"
-                      @click="filterPipelineColumn(column)"
-                    >
-                      {{ column.count }}
-                    </button>
-                  </header>
-                  <button
-                    v-for="card in column.cards"
-                    :key="`${column.id}-${card.key}`"
-                    type="button"
-                    class="pipeline-card"
-                    :class="[`tone-${card.tone}`, { preview: card.preview }]"
-                    @click="selectIssue(card.key)"
-                  >
-                    <strong>{{ card.key }}</strong>
-                    <span>{{ card.summary }}</span>
-                    <em>{{ card.agent }} · {{ card.duration }}</em>
-                    <p>
-                      <i v-for="skill in card.skills" :key="skill">{{ skill }}</i>
-                      <i v-if="card.skills.length === 0">未分配</i>
-                    </p>
-                  </button>
-                </section>
-              </div>
             </section>
           </section>
 
@@ -4698,6 +5392,22 @@ function askStrategyAssistant(question?: string) {
                 </p>
               </div>
 
+              <div
+                v-if="selectedDryRunPlan !== null || selectedDryRunPlanLoading || dryRunPlanError !== null"
+                class="dry-run-panel"
+                :class="`tone-${selectedDryRunPlanTone}`"
+              >
+                <strong>真实 dry-run 触发</strong>
+                <p v-if="selectedDryRunPlanLoading">正在调用 Jira MCP、Code Retrieval MCP 并生成方案...</p>
+                <p v-else-if="selectedDryRunPlan !== null">
+                  {{ selectedDryRunPlan.message }}
+                </p>
+                <p v-else-if="dryRunPlanError !== null">{{ dryRunPlanError }}</p>
+                <em v-if="selectedDryRunPlan?.artifacts !== null && selectedDryRunPlan?.artifacts !== undefined">
+                  {{ selectedDryRunPlan.artifacts.planMd }}
+                </em>
+              </div>
+
               <footer class="drawer-actions">
                 <button type="button" @click="resetSkillRecommendation">
                   重置推荐
@@ -4713,9 +5423,10 @@ function askStrategyAssistant(question?: string) {
                 <button
                   type="button"
                   class="primary-action"
+                  :disabled="selectedDryRunPlanLoading"
                   @click="validateAndTrigger"
                 >
-                  校验并触发
+                  {{ selectedDryRunPlanLoading ? "生成方案中..." : "校验并触发" }}
                 </button>
               </footer>
             </section>
@@ -4816,6 +5527,239 @@ function askStrategyAssistant(question?: string) {
               v-if="selectedDrawerTab === 'evidence'"
               class="drawer-section"
             >
+              <div
+                v-if="selectedDryRunPlan !== null || selectedDryRunPlanLoading || dryRunPlanError !== null"
+                class="dry-run-panel"
+                :class="`tone-${selectedDryRunPlanTone}`"
+              >
+                <strong>Dry-run 方案产物</strong>
+                <p v-if="selectedDryRunPlanLoading">方案生成中...</p>
+                <template v-else-if="selectedDryRunPlan !== null">
+                  <p>{{ selectedDryRunPlan.message }}</p>
+                  <div class="dry-run-meta">
+                    <span>状态：{{ selectedDryRunPlan.status }}</span>
+                    <span>代码证据：{{ selectedDryRunPlan.codeEvidenceCount }}</span>
+                    <span v-if="selectedDryRunPlan.target !== null">
+                      {{ selectedDryRunPlan.target.project }}@{{ selectedDryRunPlan.target.ref }}
+                    </span>
+                  </div>
+                  <div
+                    v-if="selectedDryRunPlan.artifacts !== null"
+                    class="dry-run-artifacts"
+                  >
+                    <span>plan.md：{{ selectedDryRunPlan.artifacts.planMd }}</span>
+                    <span>plan.json：{{ selectedDryRunPlan.artifacts.planJson }}</span>
+                  </div>
+                  <article class="dry-run-plan-preview">
+                    <h3>推荐开发方案</h3>
+                    <p>{{ selectedDryRunPlan.planPreview.summary }}</p>
+                    <div class="dry-run-plan-section">
+                      <strong>
+                        Bug 原因判断 · 置信度
+                        {{ Math.round(selectedDryRunPlan.planPreview.bugCause.confidence * 100) }}%
+                      </strong>
+                      <p>{{ selectedDryRunPlan.planPreview.bugCause.statement }}</p>
+                      <ul v-if="selectedDryRunPlan.planPreview.bugCause.evidence.length > 0">
+                        <li
+                          v-for="evidence in selectedDryRunPlan.planPreview.bugCause.evidence"
+                          :key="evidence"
+                        >
+                          {{ evidence }}
+                        </li>
+                      </ul>
+                    </div>
+                    <div class="dry-run-plan-section">
+                      <strong>具体修改方案</strong>
+                      <p>{{ selectedDryRunPlan.planPreview.modificationPlan.goal }}</p>
+                      <ul>
+                        <li
+                          v-for="change in selectedDryRunPlan.planPreview.modificationPlan.changes"
+                          :key="change"
+                        >
+                          {{ change }}
+                        </li>
+                      </ul>
+                    </div>
+                    <div class="dry-run-plan-section">
+                      <strong>许可后 AI 将执行</strong>
+                      <p>{{ selectedDryRunPlan.planPreview.approvalExecution.summary }}</p>
+                      <ol>
+                        <li
+                          v-for="action in selectedDryRunPlan.planPreview.approvalExecution.actions"
+                          :key="action"
+                        >
+                          {{ action }}
+                        </li>
+                      </ol>
+                      <ul>
+                        <li
+                          v-for="safeguard in selectedDryRunPlan.planPreview.approvalExecution.safeguards"
+                          :key="safeguard"
+                        >
+                          {{ safeguard }}
+                        </li>
+                      </ul>
+                    </div>
+                    <div
+                      v-if="selectedDryRunPlan.planPreview.steps.length > 0"
+                      class="dry-run-plan-section"
+                    >
+                      <strong>执行步骤</strong>
+                      <ol>
+                        <li
+                          v-for="step in selectedDryRunPlan.planPreview.steps"
+                          :key="step"
+                        >
+                          {{ step }}
+                        </li>
+                      </ol>
+                    </div>
+                    <div
+                      v-if="selectedDryRunPlan.planPreview.risks.length > 0"
+                      class="dry-run-plan-section"
+                    >
+                      <strong>风险与前置确认</strong>
+                      <ul>
+                        <li
+                          v-for="risk in selectedDryRunPlan.planPreview.risks"
+                          :key="risk"
+                        >
+                          {{ risk }}
+                        </li>
+                      </ul>
+                    </div>
+                    <div
+                      v-if="selectedDryRunPlan.planPreview.tests.length > 0"
+                      class="dry-run-plan-section"
+                    >
+                      <strong>验证建议</strong>
+                      <ul>
+                        <li
+                          v-for="test in selectedDryRunPlan.planPreview.tests"
+                          :key="test"
+                        >
+                          {{ test }}
+                        </li>
+                      </ul>
+                    </div>
+                    <div
+                      v-if="selectedDryRunPlan.planPreview.codeEvidenceFiles.length > 0"
+                      class="dry-run-code-list"
+                    >
+                      <strong>代码证据</strong>
+                      <p
+                        v-for="file in selectedDryRunPlan.planPreview.codeEvidenceFiles.slice(0, 8)"
+                        :key="file.sourceRef ?? `${file.repo}-${file.branch}-${file.file}`"
+                      >
+                        <span>{{ file.file }}</span>
+                        <em>{{ file.repo }}@{{ file.branch }}</em>
+                      </p>
+                      <small
+                        v-if="selectedDryRunPlan.planPreview.codeEvidenceFiles.length > 8"
+                      >
+                        仅展示前 8 条，完整证据见 plan.json。
+                      </small>
+                    </div>
+                  </article>
+                  <article class="dry-run-change-preview">
+                    <header>
+                      <div>
+                        <span>代码改动预览</span>
+                        <strong>{{ selectedDryRunPlan.changePreview.summary }}</strong>
+                      </div>
+                      <em>
+                        {{
+                          selectedDryRunPlan.changePreview.mode === "suggested_patch"
+                            ? `置信度 ${Math.round(selectedDryRunPlan.changePreview.confidence * 100)}%`
+                            : "需执行器生成"
+                        }}
+                      </em>
+                    </header>
+                    <template v-if="selectedDryRunPlan.changePreview.files.length > 0">
+                      <section
+                        v-for="file in selectedDryRunPlan.changePreview.files"
+                        :key="file.sourceRef"
+                        class="dry-run-diff-file"
+                      >
+                        <div class="dry-run-diff-file-head">
+                          <strong>{{ file.file }}</strong>
+                          <span>{{ file.repo }}@{{ file.branch }}</span>
+                          <p>{{ file.reason }}</p>
+                        </div>
+                        <div
+                          v-for="hunk in file.hunks"
+                          :key="`${file.sourceRef}-${hunk.header}`"
+                          class="dry-run-diff-hunk"
+                        >
+                          <p class="diff-hunk-rationale">{{ hunk.rationale }}</p>
+                          <code>{{ hunk.header }}</code>
+                          <div class="diff-lines" role="table" aria-label="代码改动预览">
+                            <div
+                              v-for="(line, lineIndex) in hunk.diffLines"
+                              :key="`${hunk.header}-${lineIndex}`"
+                              class="diff-line"
+                              :class="`line-${line.type}`"
+                              role="row"
+                            >
+                              <span class="line-number">
+                                {{ line.oldLineNumber ?? "" }}
+                              </span>
+                              <span class="line-number">
+                                {{ line.newLineNumber ?? "" }}
+                              </span>
+                              <span class="line-prefix">
+                                {{ line.type === "add" ? "+" : line.type === "remove" ? "-" : " " }}
+                              </span>
+                              <pre>{{ line.content }}</pre>
+                            </div>
+                          </div>
+                        </div>
+                      </section>
+                    </template>
+                    <ul v-if="selectedDryRunPlan.changePreview.limitations.length > 0">
+                      <li
+                        v-for="limitation in selectedDryRunPlan.changePreview.limitations"
+                        :key="limitation"
+                      >
+                        {{ limitation }}
+                      </li>
+                    </ul>
+                  </article>
+                  <div class="dry-run-approval">
+                    <template v-if="selectedDryRunApproval !== null">
+                      <strong>已许可执行</strong>
+                      <p>
+                        {{ selectedDryRunApproval.approver }} ·
+                        {{ formatJiraDate(selectedDryRunApproval.approvedAt) }}
+                      </p>
+                      <em>{{ selectedDryRunApproval.note }}</em>
+                    </template>
+                    <template v-else>
+                      <strong>执行许可</strong>
+                      <p>
+                        确认后只记录人工许可和审计日志；当前版本不会写入 Jira/GitLab，也不会创建 MR。
+                      </p>
+                      <button
+                        type="button"
+                        class="primary-action"
+                        :disabled="!selectedDryRunExecutable"
+                        @click="approveDryRunExecution"
+                      >
+                        许可执行
+                      </button>
+                    </template>
+                  </div>
+                  <ul v-if="selectedDryRunPlan.warnings.length > 0">
+                    <li
+                      v-for="warning in selectedDryRunPlan.warnings"
+                      :key="warning"
+                    >
+                      {{ warning }}
+                    </li>
+                  </ul>
+                </template>
+                <p v-else-if="dryRunPlanError !== null">{{ dryRunPlanError }}</p>
+              </div>
               <div class="drawer-actions inline-actions">
                 <button type="button" @click="downloadEvidencePack">
                   下载证据包

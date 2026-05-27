@@ -13,6 +13,8 @@
     "lint": "pnpm -r --if-present lint",
     "skills:validate": "node scripts/validate-skills.mjs",
     "showcase:evidence": "bash scripts/oc-evidence-closure.sh",
+    "showcase:dev:live": "bash scripts/start-showcase-live.sh",
+    "showcase:dev:live:check": "bash scripts/start-showcase-live.sh --check-only",
     "showcase:lint": "pnpm --filter @copilot-harness/showcase lint",
     "showcase:lint:readonly": "pnpm --filter @copilot-harness/showcase lint:readonly",
     "showcase:typecheck": "pnpm --filter @copilot-harness/showcase typecheck",

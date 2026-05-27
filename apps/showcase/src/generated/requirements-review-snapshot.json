@@ -1,0 +1,1058 @@
+{
+  "schemaVersion": "RequirementsReviewSnapshotV1",
+  "metadata": {
+    "generatedAt": "2026-05-19T08:45:00.000Z",
+    "source": "fixture-replay-shadow",
+    "notes": [
+      "W6 showcase data is fixture-based replay/shadow output from W1-W4 chain.",
+      "If W5 requirements eval is unavailable, keep requirementsEvalSummary as replay note only.",
+      "No write-back behavior is enabled in this snapshot."
+    ]
+  },
+  "samples": [
+    {
+      "id": "visual-apmis-3012",
+      "label": "Visual · APMIS-3012",
+      "mode": {
+        "replay": true,
+        "shadow": true,
+        "readOnly": true
+      },
+      "jiraEvidencePack": {
+        "issueKey": "APMIS-3012",
+        "summary": "审批弹窗在 1366x768 视口出现按钮遮挡",
+        "issueType": "Bug",
+        "status": "待确认",
+        "priority": "高",
+        "counts": {
+          "comments": 5,
+          "fields": 18,
+          "attachments": 3,
+          "mediaEvidence": 2
+        },
+        "sourceRefCoverage": {
+          "total": 14,
+          "covered": 14,
+          "uncovered": 0,
+          "highlights": [
+            "jira.issue:APMIS-3012",
+            "jira.comment:APMIS-3012:c4",
+            "jira.attachment:APMIS-3012:att-ui-01"
+          ]
+        }
+      },
+      "router": {
+        "profile": "Visual",
+        "confidence": 0.93,
+        "matchedSignals": [
+          {
+            "kind": "summary_keyword",
+            "profile": "Visual",
+            "value": "标题命中 视觉词: 按钮遮挡",
+            "weight": 1,
+            "sourceRef": "jira.issue:APMIS-3012"
+          },
+          {
+            "kind": "summary_keyword",
+            "profile": "Visual",
+            "value": "附件中存在 UI 截图",
+            "weight": 0.9,
+            "sourceRef": "jira.comment:APMIS-3012:c4"
+          },
+          {
+            "kind": "summary_keyword",
+            "profile": "Visual",
+            "value": "评论明确提及 viewport 差异",
+            "weight": 0.8,
+            "sourceRef": "jira.attachment:APMIS-3012:att-ui-01"
+          }
+        ],
+        "sourceRefs": [
+          "jira.issue:APMIS-3012",
+          "jira.comment:APMIS-3012:c4",
+          "jira.attachment:APMIS-3012:att-ui-01"
+        ],
+        "rationale": "问题核心是 UI 呈现偏差，优先进入 VisualDefectSpecV0。",
+        "fallbackReason": null
+      },
+      "profileSpecResult": {
+        "schemaVersion": "RequirementProfileSpecV0",
+        "profile": "Visual",
+        "status": "gap_blocked",
+        "spec": {
+          "kind": "VisualDefectSpecV0",
+          "pageOrComponent": [
+            {
+              "text": "贷款审批-复核弹窗 / 审批按钮区(ActionFooter)",
+              "sourceRef": "jira.issue:APMIS-3012"
+            }
+          ],
+          "actualBehavior": [
+            {
+              "text": "1366x768 下确认按钮换行并被底部阴影遮挡。",
+              "sourceRef": "jira.issue:APMIS-3012"
+            }
+          ],
+          "expectedBehavior": [
+            {
+              "text": "确认与取消按钮在同一行且完整可见。",
+              "sourceRef": "jira.issue:APMIS-3012"
+            }
+          ],
+          "visualEvidence": [
+            {
+              "evidenceType": "attachment",
+              "attachmentId": "att-ui-01",
+              "filename": "现网截图",
+              "mimeType": "image/png",
+              "byteLength": null,
+              "sourceRef": "jira.attachment:APMIS-3012:att-ui-01"
+            },
+            {
+              "evidenceType": "attachment",
+              "attachmentId": "att-baseline-02",
+              "filename": "基线截图",
+              "mimeType": "image/png",
+              "byteLength": null,
+              "sourceRef": "jira.attachment:APMIS-3012:att-baseline-02"
+            }
+          ],
+          "baselineEvidence": [
+            {
+              "text": "release/2026.05.1",
+              "sourceRef": "jira.attachment:APMIS-3012:att-baseline-02"
+            }
+          ],
+          "viewport": [
+            {
+              "text": "1366x768",
+              "sourceRef": "jira.issue:APMIS-3012"
+            }
+          ],
+          "acceptanceAssertions": [
+            {
+              "assertion": "按钮区在 1280x720~1440x900 视口均无裁切。",
+              "sourceRef": "jira.comment:APMIS-3012:c4"
+            },
+            {
+              "assertion": "弹窗高度变化不影响 ActionFooter 的可见性。",
+              "sourceRef": "jira.field-value:APMIS-3012:customfield.viewport"
+            }
+          ]
+        },
+        "gaps": [
+          {
+            "field": "baselineEvidence",
+            "reason": "未说明 Chrome/Safari 差异范围。",
+            "clarificationQuestion": "请补充 缺少浏览器矩阵 的可验证说明。",
+            "sourceRefs": [
+              "jira.comment:APMIS-3012:c5"
+            ]
+          }
+        ],
+        "sourceRefs": [
+          "jira.issue:APMIS-3012",
+          "jira.comment:APMIS-3012:c4",
+          "jira.attachment:APMIS-3012:att-ui-01",
+          "jira.comment:APMIS-3012:c5",
+          "jira.attachment:APMIS-3012:att-baseline-02",
+          "jira.field-value:APMIS-3012:customfield.viewport"
+        ]
+      },
+      "reqGateResult": {
+        "schemaVersion": "RequirementGateResultV0",
+        "profile": "Visual",
+        "investigationReady": {
+          "light": "yellow",
+          "reason": "Jira 字段、评论和视觉附件完整，证据闭环可追溯。",
+          "axisResults": [
+            {
+              "axis": "Goal",
+              "light": "green",
+              "reason": "Jira 字段、评论和视觉附件完整，证据闭环可追溯。（Goal 视角）",
+              "sourceRefs": [
+                "jira.issue:APMIS-3012",
+                "jira.attachment:APMIS-3012:att-ui-01",
+                "jira.comment:APMIS-3012:c4"
+              ]
+            },
+            {
+              "axis": "Evidence",
+              "light": "green",
+              "reason": "关键结论均有 sourceRef。",
+              "sourceRefs": [
+                "jira.issue:APMIS-3012",
+                "jira.comment:APMIS-3012:c4"
+              ]
+            },
+            {
+              "axis": "Scope",
+              "light": "green",
+              "reason": "Jira 字段、评论和视觉附件完整，证据闭环可追溯。（Scope 视角）",
+              "sourceRefs": [
+                "jira.issue:APMIS-3012",
+                "jira.attachment:APMIS-3012:att-ui-01",
+                "jira.comment:APMIS-3012:c4"
+              ]
+            },
+            {
+              "axis": "Testability",
+              "light": "green",
+              "reason": "Jira 字段、评论和视觉附件完整，证据闭环可追溯。（Testability 视角）",
+              "sourceRefs": [
+                "jira.issue:APMIS-3012",
+                "jira.attachment:APMIS-3012:att-ui-01",
+                "jira.comment:APMIS-3012:c4"
+              ]
+            },
+            {
+              "axis": "Profile",
+              "light": "yellow",
+              "reason": "视觉预期已定义，但未约束浏览器矩阵。",
+              "sourceRefs": [
+                "jira.attachment:APMIS-3012:att-baseline-02"
+              ]
+            },
+            {
+              "axis": "Policy",
+              "light": "green",
+              "reason": "Jira 字段、评论和视觉附件完整，证据闭环可追溯。（Policy 视角）",
+              "sourceRefs": [
+                "jira.issue:APMIS-3012",
+                "jira.attachment:APMIS-3012:att-ui-01",
+                "jira.comment:APMIS-3012:c4"
+              ]
+            }
+          ],
+          "sourceRefs": [
+            "jira.issue:APMIS-3012",
+            "jira.attachment:APMIS-3012:att-ui-01",
+            "jira.comment:APMIS-3012:c4"
+          ]
+        },
+        "implementationReady": {
+          "light": "yellow",
+          "reason": "已有视觉基线，但缺少跨浏览器差异说明。",
+          "axisResults": [
+            {
+              "axis": "Goal",
+              "light": "yellow",
+              "reason": "已有视觉基线，但缺少跨浏览器差异说明。（Goal 视角）",
+              "sourceRefs": [
+                "jira.attachment:APMIS-3012:att-baseline-02",
+                "jira.comment:APMIS-3012:c5"
+              ]
+            },
+            {
+              "axis": "Evidence",
+              "light": "green",
+              "reason": "关键结论均有 sourceRef。",
+              "sourceRefs": [
+                "jira.issue:APMIS-3012",
+                "jira.comment:APMIS-3012:c4"
+              ]
+            },
+            {
+              "axis": "Scope",
+              "light": "yellow",
+              "reason": "已有视觉基线，但缺少跨浏览器差异说明。（Scope 视角）",
+              "sourceRefs": [
+                "jira.attachment:APMIS-3012:att-baseline-02",
+                "jira.comment:APMIS-3012:c5"
+              ]
+            },
+            {
+              "axis": "Testability",
+              "light": "yellow",
+              "reason": "已有视觉基线，但缺少跨浏览器差异说明。（Testability 视角）",
+              "sourceRefs": [
+                "jira.attachment:APMIS-3012:att-baseline-02",
+                "jira.comment:APMIS-3012:c5"
+              ]
+            },
+            {
+              "axis": "Profile",
+              "light": "yellow",
+              "reason": "视觉预期已定义，但未约束浏览器矩阵。",
+              "sourceRefs": [
+                "jira.attachment:APMIS-3012:att-baseline-02"
+              ]
+            },
+            {
+              "axis": "Policy",
+              "light": "yellow",
+              "reason": "已有视觉基线，但缺少跨浏览器差异说明。（Policy 视角）",
+              "sourceRefs": [
+                "jira.attachment:APMIS-3012:att-baseline-02",
+                "jira.comment:APMIS-3012:c5"
+              ]
+            }
+          ],
+          "sourceRefs": [
+            "jira.attachment:APMIS-3012:att-baseline-02",
+            "jira.comment:APMIS-3012:c5"
+          ]
+        },
+        "gaps": [
+          {
+            "axis": "Evidence",
+            "field": "baselineEvidence",
+            "severity": "warning",
+            "reason": "未说明 Chrome/Safari 差异范围。",
+            "clarificationQuestion": "请补充 缺少浏览器矩阵 的可验证说明。",
+            "turnGreenCondition": "补充 缺少浏览器矩阵 的可追溯证据并通过 Evidence 轴评估。",
+            "sourceRefs": [
+              "jira.comment:APMIS-3012:c5"
+            ]
+          }
+        ],
+        "clarificationQuestions": [
+          "请补充 缺少浏览器矩阵 的可验证说明。"
+        ],
+        "clarificationQuestionsViewProjection": [
+          {
+            "question": "请补充 缺少浏览器矩阵 的可验证说明。",
+            "fromGapAxis": "Evidence",
+            "fromGapField": "baselineEvidence",
+            "sourceRefs": [
+              "jira.comment:APMIS-3012:c5"
+            ]
+          }
+        ],
+        "hardBlocks": [],
+        "sourceRefs": [
+          "jira.issue:APMIS-3012",
+          "jira.attachment:APMIS-3012:att-ui-01",
+          "jira.comment:APMIS-3012:c4",
+          "jira.attachment:APMIS-3012:att-baseline-02",
+          "jira.comment:APMIS-3012:c5",
+          "jira.field-value:APMIS-3012:status"
+        ],
+        "auditPayload": {
+          "schemaVersion": "RequirementGateAuditPayloadV0",
+          "profileSpecStatus": "gap_blocked",
+          "usedFallbackProfileSpec": false,
+          "runtimeFlags": {},
+          "ruleEvaluations": [
+            {
+              "ruleId": "REQ-HARD-001-NO-JIRA-WRITE",
+              "passed": true,
+              "reason": "replay/shadow/read-only: no jira write attempt",
+              "sourceRefs": []
+            }
+          ],
+          "sourceRefs": [
+            "jira.issue:APMIS-3012",
+            "jira.field-value:APMIS-3012:status",
+            "jira.attachment:APMIS-3012:att-ui-01"
+          ]
+        }
+      },
+      "sourceRefConclusions": [
+        {
+          "conclusion": "Router 选择 VisualDefectSpecV0",
+          "sourceRefs": [
+            "jira.issue:APMIS-3012",
+            "jira.attachment:APMIS-3012:att-ui-01"
+          ]
+        },
+        {
+          "conclusion": "ReqGate implementationReady=YELLOW",
+          "sourceRefs": [
+            "jira.comment:APMIS-3012:c5",
+            "jira.attachment:APMIS-3012:att-baseline-02"
+          ]
+        }
+      ],
+      "requirementsEvalSummary": "W5 requirements eval 未接入，当前为 W1-W4 replay/shadow fixture。"
+    },
+    {
+      "id": "integration-apmis-3320",
+      "label": "Integration · APMIS-3320",
+      "mode": {
+        "replay": true,
+        "shadow": true,
+        "readOnly": true
+      },
+      "jiraEvidencePack": {
+        "issueKey": "APMIS-3320",
+        "summary": "审批结果回写核心账务接口偶发 401",
+        "issueType": "Story",
+        "status": "处理中",
+        "priority": "中",
+        "counts": {
+          "comments": 7,
+          "fields": 21,
+          "attachments": 1,
+          "mediaEvidence": 0
+        },
+        "sourceRefCoverage": {
+          "total": 16,
+          "covered": 15,
+          "uncovered": 1,
+          "highlights": [
+            "jira.issue:APMIS-3320",
+            "jira.field-value:APMIS-3320:customfield.apiContract",
+            "jira.comment:APMIS-3320:c6"
+          ]
+        }
+      },
+      "router": {
+        "profile": "Integration",
+        "confidence": 0.89,
+        "matchedSignals": [
+          {
+            "kind": "summary_keyword",
+            "profile": "Integration",
+            "value": "标题命中接口鉴权失败",
+            "weight": 1,
+            "sourceRef": "jira.issue:APMIS-3320"
+          },
+          {
+            "kind": "summary_keyword",
+            "profile": "Integration",
+            "value": "字段包含上游/下游系统映射",
+            "weight": 0.9,
+            "sourceRef": "jira.field-value:APMIS-3320:customfield.apiContract"
+          },
+          {
+            "kind": "summary_keyword",
+            "profile": "Integration",
+            "value": "评论存在失败重试策略讨论",
+            "weight": 0.8,
+            "sourceRef": "jira.comment:APMIS-3320:c6"
+          }
+        ],
+        "sourceRefs": [
+          "jira.issue:APMIS-3320",
+          "jira.field-value:APMIS-3320:customfield.apiContract",
+          "jira.comment:APMIS-3320:c6"
+        ],
+        "rationale": "核心争议位于接口契约与鉴权边界，归类为 IntegrationSpecV0。",
+        "fallbackReason": null
+      },
+      "profileSpecResult": {
+        "schemaVersion": "RequirementProfileSpecV0",
+        "profile": "Integration",
+        "status": "spec_ready",
+        "spec": {
+          "kind": "IntegrationSpecV0",
+          "upstreamSystem": [
+            {
+              "text": "审批中心审批引擎",
+              "sourceRef": "jira.issue:APMIS-3320"
+            },
+            {
+              "text": "用户会话服务",
+              "sourceRef": "jira.issue:APMIS-3320"
+            }
+          ],
+          "downstreamSystem": [
+            {
+              "text": "核心账务网关",
+              "sourceRef": "jira.issue:APMIS-3320"
+            },
+            {
+              "text": "审计日志服务",
+              "sourceRef": "jira.issue:APMIS-3320"
+            }
+          ],
+          "apiContract": [
+            {
+              "text": "POST /api/v2/ledger/approval-result，Header 需携带 x-app-token 与 trace-id。",
+              "sourceRef": "jira.issue:APMIS-3320"
+            }
+          ],
+          "fieldMapping": [
+            {
+              "text": "approvalId -> ledgerApprovalId",
+              "sourceRef": "jira.issue:APMIS-3320"
+            },
+            {
+              "text": "approvalResult -> statusCode",
+              "sourceRef": "jira.issue:APMIS-3320"
+            },
+            {
+              "text": "operator -> operatorId",
+              "sourceRef": "jira.issue:APMIS-3320"
+            }
+          ],
+          "authBoundary": [
+            {
+              "text": "审批中心负责 token 签发，核心账务仅做 token 校验与权限判定。",
+              "sourceRef": "jira.issue:APMIS-3320"
+            }
+          ],
+          "failureHandling": [
+            {
+              "text": "401 首次失败后触发一次 token refresh",
+              "sourceRef": "jira.issue:APMIS-3320"
+            },
+            {
+              "text": "连续失败转人工补偿队列并记录审计事件",
+              "sourceRef": "jira.issue:APMIS-3320"
+            }
+          ],
+          "testFixtures": [
+            {
+              "text": "fixture/int-approval-401-refresh.json",
+              "sourceRef": "jira.issue:APMIS-3320"
+            },
+            {
+              "text": "fixture/int-approval-success.json",
+              "sourceRef": "jira.issue:APMIS-3320"
+            }
+          ],
+          "acceptanceAssertions": [
+            {
+              "assertion": "401 后 refresh token 重放成功率 >= 99%。",
+              "sourceRef": "jira.comment:APMIS-3320:c6"
+            },
+            {
+              "assertion": "所有失败路径都有审计记录。",
+              "sourceRef": "jira.field-value:APMIS-3320:customfield.audit"
+            }
+          ]
+        },
+        "gaps": [],
+        "sourceRefs": [
+          "jira.issue:APMIS-3320",
+          "jira.field-value:APMIS-3320:customfield.apiContract",
+          "jira.comment:APMIS-3320:c6",
+          "jira.field-value:APMIS-3320:customfield.audit"
+        ]
+      },
+      "reqGateResult": {
+        "schemaVersion": "RequirementGateResultV0",
+        "profile": "Integration",
+        "investigationReady": {
+          "light": "green",
+          "reason": "接口契约、映射、失败路径均已归档到 sourceRef。",
+          "axisResults": [
+            {
+              "axis": "Goal",
+              "light": "green",
+              "reason": "接口契约、映射、失败路径均已归档到 sourceRef。（Goal 视角）",
+              "sourceRefs": [
+                "jira.field-value:APMIS-3320:customfield.apiContract",
+                "jira.comment:APMIS-3320:c6"
+              ]
+            },
+            {
+              "axis": "Evidence",
+              "light": "green",
+              "reason": "接口契约、映射、失败路径均已归档到 sourceRef。（Evidence 视角）",
+              "sourceRefs": [
+                "jira.field-value:APMIS-3320:customfield.apiContract",
+                "jira.comment:APMIS-3320:c6"
+              ]
+            },
+            {
+              "axis": "Scope",
+              "light": "green",
+              "reason": "API contract 与字段映射一一对应。",
+              "sourceRefs": [
+                "jira.field-value:APMIS-3320:customfield.apiContract"
+              ]
+            },
+            {
+              "axis": "Testability",
+              "light": "green",
+              "reason": "401 重试和补偿路径可验证。",
+              "sourceRefs": [
+                "jira.comment:APMIS-3320:c7"
+              ]
+            },
+            {
+              "axis": "Profile",
+              "light": "green",
+              "reason": "接口契约、映射、失败路径均已归档到 sourceRef。（Profile 视角）",
+              "sourceRefs": [
+                "jira.field-value:APMIS-3320:customfield.apiContract",
+                "jira.comment:APMIS-3320:c6"
+              ]
+            },
+            {
+              "axis": "Policy",
+              "light": "green",
+              "reason": "接口契约、映射、失败路径均已归档到 sourceRef。（Policy 视角）",
+              "sourceRefs": [
+                "jira.field-value:APMIS-3320:customfield.apiContract",
+                "jira.comment:APMIS-3320:c6"
+              ]
+            }
+          ],
+          "sourceRefs": [
+            "jira.field-value:APMIS-3320:customfield.apiContract",
+            "jira.comment:APMIS-3320:c6"
+          ]
+        },
+        "implementationReady": {
+          "light": "green",
+          "reason": "鉴权边界与失败补偿策略明确，可进入实现评审。",
+          "axisResults": [
+            {
+              "axis": "Goal",
+              "light": "green",
+              "reason": "鉴权边界与失败补偿策略明确，可进入实现评审。（Goal 视角）",
+              "sourceRefs": [
+                "jira.field-value:APMIS-3320:customfield.authBoundary",
+                "jira.field-value:APMIS-3320:customfield.retryPolicy"
+              ]
+            },
+            {
+              "axis": "Evidence",
+              "light": "green",
+              "reason": "鉴权边界与失败补偿策略明确，可进入实现评审。（Evidence 视角）",
+              "sourceRefs": [
+                "jira.field-value:APMIS-3320:customfield.authBoundary",
+                "jira.field-value:APMIS-3320:customfield.retryPolicy"
+              ]
+            },
+            {
+              "axis": "Scope",
+              "light": "green",
+              "reason": "API contract 与字段映射一一对应。",
+              "sourceRefs": [
+                "jira.field-value:APMIS-3320:customfield.apiContract"
+              ]
+            },
+            {
+              "axis": "Testability",
+              "light": "green",
+              "reason": "401 重试和补偿路径可验证。",
+              "sourceRefs": [
+                "jira.comment:APMIS-3320:c7"
+              ]
+            },
+            {
+              "axis": "Profile",
+              "light": "green",
+              "reason": "鉴权边界与失败补偿策略明确，可进入实现评审。（Profile 视角）",
+              "sourceRefs": [
+                "jira.field-value:APMIS-3320:customfield.authBoundary",
+                "jira.field-value:APMIS-3320:customfield.retryPolicy"
+              ]
+            },
+            {
+              "axis": "Policy",
+              "light": "green",
+              "reason": "鉴权边界与失败补偿策略明确，可进入实现评审。（Policy 视角）",
+              "sourceRefs": [
+                "jira.field-value:APMIS-3320:customfield.authBoundary",
+                "jira.field-value:APMIS-3320:customfield.retryPolicy"
+              ]
+            }
+          ],
+          "sourceRefs": [
+            "jira.field-value:APMIS-3320:customfield.authBoundary",
+            "jira.field-value:APMIS-3320:customfield.retryPolicy"
+          ]
+        },
+        "gaps": [],
+        "clarificationQuestions": [],
+        "clarificationQuestionsViewProjection": [],
+        "hardBlocks": [],
+        "sourceRefs": [
+          "jira.field-value:APMIS-3320:customfield.apiContract",
+          "jira.comment:APMIS-3320:c6",
+          "jira.field-value:APMIS-3320:customfield.authBoundary",
+          "jira.field-value:APMIS-3320:customfield.retryPolicy",
+          "jira.comment:APMIS-3320:c7",
+          "jira.issue:APMIS-3320"
+        ],
+        "auditPayload": {
+          "schemaVersion": "RequirementGateAuditPayloadV0",
+          "profileSpecStatus": "spec_ready",
+          "usedFallbackProfileSpec": false,
+          "runtimeFlags": {},
+          "ruleEvaluations": [
+            {
+              "ruleId": "REQ-HARD-001-NO-JIRA-WRITE",
+              "passed": true,
+              "reason": "replay/shadow/read-only: no jira write attempt",
+              "sourceRefs": []
+            }
+          ],
+          "sourceRefs": [
+            "jira.issue:APMIS-3320",
+            "jira.field-value:APMIS-3320:customfield.apiContract"
+          ]
+        }
+      },
+      "sourceRefConclusions": [
+        {
+          "conclusion": "ReqGate implementationReady=GREEN",
+          "sourceRefs": [
+            "jira.field-value:APMIS-3320:customfield.authBoundary",
+            "jira.comment:APMIS-3320:c7"
+          ]
+        }
+      ],
+      "requirementsEvalSummary": "W5 requirements eval 摘要：契约完整度 0.91，建议补充 token TTL 说明。"
+    },
+    {
+      "id": "workflow-apmis-3488",
+      "label": "Workflow · APMIS-3488",
+      "mode": {
+        "replay": true,
+        "shadow": true,
+        "readOnly": true
+      },
+      "jiraEvidencePack": {
+        "issueKey": "APMIS-3488",
+        "summary": "贷后复议流程新增主管二次确认节点",
+        "issueType": "Epic",
+        "status": "待处理",
+        "priority": "中",
+        "counts": {
+          "comments": 9,
+          "fields": 24,
+          "attachments": 0,
+          "mediaEvidence": 0
+        },
+        "sourceRefCoverage": {
+          "total": 20,
+          "covered": 18,
+          "uncovered": 2,
+          "highlights": [
+            "jira.issue:APMIS-3488",
+            "jira.field-value:APMIS-3488:customfield.workflow",
+            "jira.comment:APMIS-3488:c8"
+          ]
+        }
+      },
+      "router": {
+        "profile": "Workflow",
+        "confidence": 0.9,
+        "matchedSignals": [
+          {
+            "kind": "summary_keyword",
+            "profile": "Workflow",
+            "value": "标题包含流程节点调整",
+            "weight": 1,
+            "sourceRef": "jira.issue:APMIS-3488"
+          },
+          {
+            "kind": "summary_keyword",
+            "profile": "Workflow",
+            "value": "评论讨论角色权限与审计",
+            "weight": 0.9,
+            "sourceRef": "jira.field-value:APMIS-3488:customfield.workflow"
+          },
+          {
+            "kind": "summary_keyword",
+            "profile": "Workflow",
+            "value": "字段包含异常分支定义",
+            "weight": 0.8,
+            "sourceRef": "jira.comment:APMIS-3488:c8"
+          }
+        ],
+        "sourceRefs": [
+          "jira.issue:APMIS-3488",
+          "jira.field-value:APMIS-3488:customfield.workflow",
+          "jira.comment:APMIS-3488:c8"
+        ],
+        "rationale": "需求核心是跨角色流程与规则变更，归类 WorkflowRequirementSpecV0。",
+        "fallbackReason": null
+      },
+      "profileSpecResult": {
+        "schemaVersion": "RequirementProfileSpecV0",
+        "profile": "Workflow",
+        "status": "gap_blocked",
+        "spec": {
+          "kind": "WorkflowRequirementSpecV0",
+          "roles": [
+            {
+              "text": "客户经理",
+              "sourceRef": "jira.issue:APMIS-3488"
+            },
+            {
+              "text": "风险专员",
+              "sourceRef": "jira.issue:APMIS-3488"
+            },
+            {
+              "text": "主管",
+              "sourceRef": "jira.issue:APMIS-3488"
+            }
+          ],
+          "triggerConditions": [
+            {
+              "text": "复议单状态=待复核",
+              "sourceRef": "jira.issue:APMIS-3488"
+            },
+            {
+              "text": "风险评分>=B",
+              "sourceRef": "jira.issue:APMIS-3488"
+            }
+          ],
+          "processSteps": [
+            {
+              "text": "客户经理提交复议",
+              "sourceRef": "jira.issue:APMIS-3488"
+            },
+            {
+              "text": "风险专员初审",
+              "sourceRef": "jira.issue:APMIS-3488"
+            },
+            {
+              "text": "主管二次确认",
+              "sourceRef": "jira.issue:APMIS-3488"
+            },
+            {
+              "text": "系统写入审计轨迹",
+              "sourceRef": "jira.issue:APMIS-3488"
+            }
+          ],
+          "businessRules": [
+            {
+              "text": "主管节点必须在 4 小时内完成",
+              "sourceRef": "jira.issue:APMIS-3488"
+            },
+            {
+              "text": "超时自动升级到值班主管",
+              "sourceRef": "jira.issue:APMIS-3488"
+            }
+          ],
+          "exceptionPaths": [
+            {
+              "text": "主管拒绝 -> 回退风险专员并附理由",
+              "sourceRef": "jira.issue:APMIS-3488"
+            },
+            {
+              "text": "审计服务不可用 -> 进入待补录队列",
+              "sourceRef": "jira.issue:APMIS-3488"
+            }
+          ],
+          "auditTrail": [
+            {
+              "text": "记录操作人、节点、时间戳",
+              "sourceRef": "jira.issue:APMIS-3488"
+            },
+            {
+              "text": "记录审批意见和变更前后状态",
+              "sourceRef": "jira.issue:APMIS-3488"
+            }
+          ],
+          "acceptanceAssertions": [
+            {
+              "assertion": "每个节点都可追溯到审批意见。",
+              "sourceRef": "jira.field-value:APMIS-3488:customfield.audit"
+            },
+            {
+              "assertion": "主管超时后自动升级路径可回放。",
+              "sourceRef": "jira.field-value:APMIS-3488:customfield.exception"
+            }
+          ]
+        },
+        "gaps": [
+          {
+            "field": "exceptionPaths",
+            "reason": "缺少主管拒绝后回退与重提的时间约束。",
+            "clarificationQuestion": "请补充 拒绝回退 SLA 未定义 的可验证说明。",
+            "sourceRefs": [
+              "jira.comment:APMIS-3488:c9"
+            ]
+          }
+        ],
+        "sourceRefs": [
+          "jira.issue:APMIS-3488",
+          "jira.field-value:APMIS-3488:customfield.workflow",
+          "jira.comment:APMIS-3488:c8",
+          "jira.comment:APMIS-3488:c9",
+          "jira.field-value:APMIS-3488:customfield.audit",
+          "jira.field-value:APMIS-3488:customfield.exception"
+        ]
+      },
+      "reqGateResult": {
+        "schemaVersion": "RequirementGateResultV0",
+        "profile": "Workflow",
+        "investigationReady": {
+          "light": "yellow",
+          "reason": "流程主干清晰，但异常补偿链路仍需补充样例与时序约束。",
+          "axisResults": [
+            {
+              "axis": "Goal",
+              "light": "yellow",
+              "reason": "流程主干清晰，但两条异常路径尚缺样例数据。（Goal 视角）",
+              "sourceRefs": [
+                "jira.field-value:APMIS-3488:customfield.exception",
+                "jira.comment:APMIS-3488:c9"
+              ]
+            },
+            {
+              "axis": "Evidence",
+              "light": "green",
+              "reason": "审计字段定义齐全。",
+              "sourceRefs": [
+                "jira.field-value:APMIS-3488:customfield.audit"
+              ]
+            },
+            {
+              "axis": "Scope",
+              "light": "yellow",
+              "reason": "主流程明确，异常分支存在未定义补偿。",
+              "sourceRefs": [
+                "jira.field-value:APMIS-3488:customfield.workflow"
+              ]
+            },
+            {
+              "axis": "Testability",
+              "light": "yellow",
+              "reason": "流程主干清晰，但两条异常路径尚缺样例数据。（Testability 视角）",
+              "sourceRefs": [
+                "jira.field-value:APMIS-3488:customfield.exception",
+                "jira.comment:APMIS-3488:c9"
+              ]
+            },
+            {
+              "axis": "Profile",
+              "light": "yellow",
+              "reason": "流程主干清晰，但两条异常路径尚缺样例数据。（Profile 视角）",
+              "sourceRefs": [
+                "jira.field-value:APMIS-3488:customfield.exception",
+                "jira.comment:APMIS-3488:c9"
+              ]
+            },
+            {
+              "axis": "Policy",
+              "light": "yellow",
+              "reason": "补偿时序缺少可验证样例，需在实现前补充策略证据。",
+              "sourceRefs": [
+                "jira.comment:APMIS-3488:c9"
+              ]
+            }
+          ],
+          "sourceRefs": [
+            "jira.field-value:APMIS-3488:customfield.exception",
+            "jira.comment:APMIS-3488:c9"
+          ]
+        },
+        "implementationReady": {
+          "light": "red",
+          "reason": "主管拒绝后的补偿时序未定义，仍需补充后方可稳定落地。",
+          "axisResults": [
+            {
+              "axis": "Goal",
+              "light": "red",
+              "reason": "主管拒绝后的补偿时序未定义，存在硬阻塞。（Goal 视角）",
+              "sourceRefs": [
+                "jira.comment:APMIS-3488:c9",
+                "jira.field-value:APMIS-3488:customfield.workflow"
+              ]
+            },
+            {
+              "axis": "Evidence",
+              "light": "green",
+              "reason": "审计字段定义齐全。",
+              "sourceRefs": [
+                "jira.field-value:APMIS-3488:customfield.audit"
+              ]
+            },
+            {
+              "axis": "Scope",
+              "light": "yellow",
+              "reason": "主流程明确，异常分支存在未定义补偿。",
+              "sourceRefs": [
+                "jira.field-value:APMIS-3488:customfield.workflow"
+              ]
+            },
+            {
+              "axis": "Testability",
+              "light": "red",
+              "reason": "主管拒绝后的补偿时序未定义，存在硬阻塞。（Testability 视角）",
+              "sourceRefs": [
+                "jira.comment:APMIS-3488:c9",
+                "jira.field-value:APMIS-3488:customfield.workflow"
+              ]
+            },
+            {
+              "axis": "Profile",
+              "light": "red",
+              "reason": "主管拒绝后的补偿时序未定义，存在硬阻塞。（Profile 视角）",
+              "sourceRefs": [
+                "jira.comment:APMIS-3488:c9",
+                "jira.field-value:APMIS-3488:customfield.workflow"
+              ]
+            },
+            {
+              "axis": "Policy",
+              "light": "yellow",
+              "reason": "补偿时序缺少可验证样例，需在实现前补充策略证据。",
+              "sourceRefs": [
+                "jira.comment:APMIS-3488:c9"
+              ]
+            }
+          ],
+          "sourceRefs": [
+            "jira.comment:APMIS-3488:c9",
+            "jira.field-value:APMIS-3488:customfield.workflow"
+          ]
+        },
+        "gaps": [
+          {
+            "axis": "Scope",
+            "field": "exceptionPaths",
+            "severity": "blocking",
+            "reason": "缺少主管拒绝后回退与重提的时间约束。",
+            "clarificationQuestion": "请补充 拒绝回退 SLA 未定义 的可验证说明。",
+            "turnGreenCondition": "补充主管拒绝回退/补偿时序与样例，并通过 Scope/Testability 轴评估。",
+            "sourceRefs": [
+              "jira.comment:APMIS-3488:c9"
+            ]
+          }
+        ],
+        "clarificationQuestions": [
+          "请补充 拒绝回退 SLA 未定义 的可验证说明。"
+        ],
+        "clarificationQuestionsViewProjection": [
+          {
+            "question": "请补充 拒绝回退 SLA 未定义 的可验证说明。",
+            "fromGapAxis": "Scope",
+            "fromGapField": "exceptionPaths",
+            "sourceRefs": [
+              "jira.comment:APMIS-3488:c9"
+            ]
+          }
+        ],
+        "hardBlocks": [],
+        "sourceRefs": [
+          "jira.field-value:APMIS-3488:customfield.exception",
+          "jira.comment:APMIS-3488:c9",
+          "jira.field-value:APMIS-3488:customfield.workflow",
+          "jira.field-value:APMIS-3488:customfield.audit",
+          "jira.issue:APMIS-3488"
+        ],
+        "auditPayload": {
+          "schemaVersion": "RequirementGateAuditPayloadV0",
+          "profileSpecStatus": "gap_blocked",
+          "usedFallbackProfileSpec": false,
+          "runtimeFlags": {},
+          "ruleEvaluations": [
+            {
+              "ruleId": "REQ-HARD-001-NO-JIRA-WRITE",
+              "passed": true,
+              "reason": "replay/shadow/read-only: no jira write attempt",
+              "sourceRefs": []
+            }
+          ],
+          "sourceRefs": [
+            "jira.issue:APMIS-3488",
+            "jira.field-value:APMIS-3488:customfield.workflow",
+            "jira.field-value:APMIS-3488:customfield.audit"
+          ]
+        }
+      },
+      "sourceRefConclusions": [
+        {
+          "conclusion": "ReqGate implementationReady=RED",
+          "sourceRefs": [
+            "jira.comment:APMIS-3488:c9",
+            "jira.field-value:APMIS-3488:customfield.exception"
+          ]
+        }
+      ],
+      "requirementsEvalSummary": "W5 requirements eval 未接入，沿用 W1-W4 replay/shadow 审查结果。"
+    }
+  ]
+}
