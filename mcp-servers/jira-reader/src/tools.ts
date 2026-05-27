@@ -14,6 +14,7 @@ export const TOOL_NAMES = [
   "searchIssues",
   "getComments",
   "getServerInfo",
+  "getCurrentUser",
   "getAttachmentMeta",
   "getFields",
   "getIssueDetails",
@@ -89,6 +90,7 @@ export interface JiraReaderToolHandlers {
     readonly issueKey: string;
   }) => Promise<CallToolResult>;
   readonly getServerInfo: () => Promise<CallToolResult>;
+  readonly getCurrentUser: () => Promise<CallToolResult>;
   readonly getAttachmentMeta: () => Promise<CallToolResult>;
   readonly getFields: (input: {
     readonly customOnly?: boolean | undefined;
@@ -140,6 +142,10 @@ export function createJiraReaderToolHandlers(
     getServerInfo: async () =>
       toToolResult("serverInfo", async () => ({
         serverInfo: await client.getServerInfo(),
+      })),
+    getCurrentUser: async () =>
+      toToolResult("currentUser", async () => ({
+        currentUser: await client.getCurrentUser(),
       })),
     getAttachmentMeta: async () =>
       toToolResult("attachmentMeta", async () => ({
@@ -254,6 +260,18 @@ export function createJiraReaderServer(client: JiraClient): McpServer {
       annotations: readOnlyAnnotations(),
     },
     async () => handlers.getServerInfo(),
+  );
+
+  server.registerTool(
+    "getCurrentUser",
+    {
+      title: "Get Jira current user",
+      description:
+        "Read current Jira authenticated principal from /rest/api/2/myself.",
+      inputSchema: emptyInputSchema,
+      annotations: readOnlyAnnotations(),
+    },
+    async () => handlers.getCurrentUser(),
   );
 
   server.registerTool(

@@ -58,6 +58,18 @@ function handleRequest(
     return;
   }
 
+  if (url.pathname === "/rest/api/2/myself") {
+    writeJson(response, 200, {
+      name: "wangbo",
+      key: "JIRAUSER:10001",
+      displayName: "王博-麻醉",
+      accountId: "712020:6c8e9d73-2f80-4e3a-a2b5-4f4c8f2e9999",
+      emailAddress: "wangbo@example.com",
+      self: `${origin}/rest/api/2/user?username=wangbo`,
+    });
+    return;
+  }
+
   if (url.pathname === "/rest/api/2/field") {
     writeJson(response, 200, [
       {
@@ -342,7 +354,9 @@ function issueFields(key: string, origin: string): Record<string, unknown> {
     },
     assignee: {
       name: "bob",
+      key: "JIRAUSER:10002",
       displayName: "Bob Assignee",
+      accountId: "712020:d6b42ca4-0000-4000-b92c-9f0f068fef01",
       emailAddress: "bob@example.com",
     },
     reporter: {

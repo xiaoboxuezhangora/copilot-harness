@@ -255,6 +255,27 @@ describe("jira-reader MCP tools", () => {
     });
   });
 
+  it("reads current Jira user through getCurrentUser", async () => {
+    const result = await client.callTool(
+      {
+        name: "getCurrentUser",
+        arguments: {},
+      },
+      CallToolResultSchema,
+    );
+    const payload = parseTextPayload(result.content);
+
+    expect(JSON.stringify(payload)).not.toContain("@example.com");
+    expect(payload).toMatchObject({
+      currentUser: {
+        name: "wangbo",
+        key: "JIRAUSER:10001",
+        displayName: "王博-麻醉",
+        accountId: "712020:6c8e9d73-2f80-4e3a-a2b5-4f4c8f2e9999",
+      },
+    });
+  });
+
   it("reads issue details with expanded names and changelog", async () => {
     const result = await client.callTool(
       {

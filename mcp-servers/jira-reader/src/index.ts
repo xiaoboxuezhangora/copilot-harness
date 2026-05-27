@@ -39,6 +39,7 @@ export type {
   JiraSearchResult,
   JiraServerInfo,
   JiraTransition,
+  JiraUser,
 } from "./types.js";
 
 export async function startStdioServer(): Promise<void> {

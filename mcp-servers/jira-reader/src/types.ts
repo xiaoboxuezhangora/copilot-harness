@@ -1,6 +1,8 @@
 export interface JiraUser {
   readonly name?: string;
+  readonly key?: string;
   readonly displayName?: string;
+  readonly accountId?: string;
 }
 
 export interface JiraStatus {

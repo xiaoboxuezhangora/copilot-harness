@@ -112,6 +112,11 @@ export class JiraClient {
     return mapServerInfo(rawServerInfo);
   }
 
+  async getCurrentUser(): Promise<JiraUser> {
+    const rawCurrentUser = await this.requestJson("/rest/api/2/myself", {});
+    return mapCurrentUser(rawCurrentUser);
+  }
+
   async getAttachmentMeta(): Promise<JiraAttachmentMeta> {
     const rawMeta = await this.requestJson("/rest/api/2/attachment/meta", {});
     return mapAttachmentMeta(rawMeta);
@@ -469,6 +474,19 @@ function mapServerInfo(rawServerInfo: unknown): JiraServerInfo {
     ...copyString(rawServerInfo, "buildDate"),
     ...copyString(rawServerInfo, "serverTitle"),
   };
+}
+
+function mapCurrentUser(rawCurrentUser: unknown): JiraUser {
+  if (!isRecord(rawCurrentUser)) {
+    throw new JiraRequestError("Jira myself response is invalid");
+  }
+
+  const user = readUserFromRecord(rawCurrentUser);
+  if (user === undefined) {
+    throw new JiraRequestError("Jira myself response is missing user identity");
+  }
+
+  return user;
 }
 
 function mapAttachmentMeta(rawMeta: unknown): JiraAttachmentMeta {
@@ -1036,20 +1054,29 @@ function readUser(
   key: string,
 ): JiraUser | undefined {
   const value = record[key];
-  if (!isRecord(value)) {
-    return undefined;
-  }
+  return isRecord(value) ? readUserFromRecord(value) : undefined;
+}
 
-  const name = readSanitizedString(value, "name");
-  const displayName = readSanitizedString(value, "displayName");
+function readUserFromRecord(record: Record<string, unknown>): JiraUser | undefined {
+  const name = readSanitizedString(record, "name");
+  const key = readSanitizedString(record, "key");
+  const displayName = readSanitizedString(record, "displayName");
+  const accountId = readSanitizedString(record, "accountId");
 
-  if (name === undefined && displayName === undefined) {
+  if (
+    name === undefined &&
+    key === undefined &&
+    displayName === undefined &&
+    accountId === undefined
+  ) {
     return undefined;
   }
 
   return {
     ...(name !== undefined ? { name } : {}),
+    ...(key !== undefined ? { key } : {}),
     ...(displayName !== undefined ? { displayName } : {}),
+    ...(accountId !== undefined ? { accountId } : {}),
   };
 }
 
