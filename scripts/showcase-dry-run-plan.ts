@@ -26,6 +26,7 @@ import { routeIssueProfile } from '../orchestrator/src/requirements/router.js';
 export interface ShowcaseDryRunPlanRequest {
   readonly issueKey: string;
   readonly skillIds: readonly string[];
+  readonly codeTargets?: readonly CodeTarget[] | undefined;
   readonly mode?: 'dry-run' | undefined;
 }
 
@@ -130,7 +131,7 @@ interface McpCallTrace {
   readonly latencyMs: number;
 }
 
-interface CodeTarget {
+export interface CodeTarget {
   readonly project: string;
   readonly ref: string;
   readonly reason: string;
@@ -201,7 +202,8 @@ export async function runShowcaseDryRunPlan(
 
   try {
     const codeConfig = loadCodeRetrievalConfigFromEnv(env);
-    target = resolveCodeTarget(issue, codeConfig.localRepoName, env);
+    const searchTargets = resolveCodeTargets(request, issue, codeConfig.localRepoName, env);
+    target = searchTargets[0] ?? null;
 
     const gitlabClient = codeConfig.gitlab
       ? new GitLabClient({
@@ -217,37 +219,43 @@ export async function runShowcaseDryRunPlan(
         })
       : undefined;
 
-    const searchTarget = target;
     const codeHandlers = createCodeRetrievalToolHandlers({ gitlabClient, localRepository });
     const packs: GitLabContextPackV1[] = [];
     for (const query of buildSearchQueries(issue)) {
-      const payload = await callTool<CodeSearchPayload>(traces, {
-        server: 'code-retrieval',
-        tool: 'searchCode',
-        invoke: () =>
-          codeHandlers.searchCode({
-            query,
-            scope: searchTarget.project,
-            ref: searchTarget.ref,
-            limit: 5,
-            mode: gitlabClient !== undefined ? 'gitlab' : 'local'
-          })
-      });
-      if (payload.context_pack !== undefined) {
-        packs.push(payload.context_pack);
+      for (const searchTarget of searchTargets) {
+        const payload = await callTool<CodeSearchPayload>(traces, {
+          server: 'code-retrieval',
+          tool: 'searchCode',
+          invoke: () =>
+            codeHandlers.searchCode({
+              query,
+              scope: searchTarget.project,
+              ref: searchTarget.ref,
+              limit: 5,
+              mode: gitlabClient !== undefined ? 'gitlab' : 'local'
+            })
+        });
+        if (payload.context_pack !== undefined) {
+          packs.push(payload.context_pack);
+        }
+        if (collectSearchResults(packs).length >= MAX_CODE_TARGETS) {
+          break;
+        }
       }
       if (collectSearchResults(packs).length >= MAX_CODE_TARGETS) {
         break;
       }
     }
     contextPack = mergeGitLabContextPacks(packs, generatedAt);
-    contextPack = await augmentContextPackForChangePreview({
-      issue,
-      contextPack,
-      target: searchTarget,
-      codeHandlers,
-      traces
-    });
+    if (target !== null) {
+      contextPack = await augmentContextPackForChangePreview({
+        issue,
+        contextPack,
+        target,
+        codeHandlers,
+        traces
+      });
+    }
     codeEvidenceCount = contextPack.evidence_refs.length;
   } catch (error) {
     warnings.push(`Code Retrieval 未完成：${sanitizeRuntimeMessage(error)}`);
@@ -367,6 +375,22 @@ function parseTextPayload<T>(result: unknown): T {
   return JSON.parse(first.text) as T;
 }
 
+function resolveCodeTargets(
+  request: ShowcaseDryRunPlanRequest,
+  issue: JiraIssue,
+  localRepoName: string | undefined,
+  env: EnvMap
+): readonly CodeTarget[] {
+  const assignedTargets = uniqueCodeTargets(
+    (request.codeTargets ?? []).filter(
+      (target) => target.project.trim().length > 0 && target.ref.trim().length > 0
+    )
+  );
+  return assignedTargets.length > 0
+    ? assignedTargets
+    : [resolveCodeTarget(issue, localRepoName, env)];
+}
+
 function resolveCodeTarget(
   issue: JiraIssue,
   localRepoName: string | undefined,
@@ -405,6 +429,23 @@ function resolveCodeTarget(
     ref: envRef ?? 'develop',
     reason: '未命中专项规则，使用默认代码检索目标。'
   };
+}
+
+function uniqueCodeTargets(targets: readonly CodeTarget[]): readonly CodeTarget[] {
+  const seen = new Set<string>();
+  const deduped: CodeTarget[] = [];
+  for (const target of targets) {
+    const normalized: CodeTarget = {
+      project: target.project.trim(),
+      ref: target.ref.trim(),
+      reason: target.reason.trim().length > 0 ? target.reason.trim() : 'Jira 单条分配'
+    };
+    const key = `${normalized.project}@${normalized.ref}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    deduped.push(normalized);
+  }
+  return deduped;
 }
 
 function buildSearchQueries(issue: JiraIssue): readonly string[] {

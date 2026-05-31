@@ -8,6 +8,7 @@ SHOWCASE_ENV_FILE="${SHOWCASE_ENV_FILE:-${ROOT_DIR}/secrets/showcase-live.env}"
 SHOWCASE_HOST="${SHOWCASE_HOST:-127.0.0.1}"
 SHOWCASE_PORT="${SHOWCASE_PORT:-5173}"
 MODE="${1:-start}"
+DEFAULT_SHOWCASE_JIRA_JQL="project = APMIS AND status = 处理中 AND assignee in (currentUser()) ORDER BY updated DESC"
 
 load_env_file() {
   local file_path="$1"
@@ -38,6 +39,7 @@ Showcase live dev runtime
 - jira base configured: $([[ -n "${JIRA_BASE_URL:-}" ]] && echo yes || echo no)
 - gitlab base configured: $([[ -n "${GITLAB_BASE_URL:-}" ]] && echo yes || echo no)
 - jira project allowlist: ${JIRA_PROJECT_ALLOWLIST:-APMIS}
+- showcase jira jql: ${SHOWCASE_JIRA_JQL:-${DEFAULT_SHOWCASE_JIRA_JQL}}
 - code project: ${CODE_RETRIEVAL_DEFAULT_PROJECT:-APMIS/odcbs/odcbs-frontend}
 - code ref: ${CODE_RETRIEVAL_DEFAULT_REF:-develop_to_angular17}
 SUMMARY
@@ -48,7 +50,8 @@ load_env_file "${GITLAB_ENV_FILE}"
 load_env_file "${SHOWCASE_ENV_FILE}"
 
 export JIRA_PROJECT_ALLOWLIST="${JIRA_PROJECT_ALLOWLIST:-APMIS}"
-export JIRA_SMOKE_JQL="${JIRA_SMOKE_JQL:-project = APMIS AND status = 处理中 AND assignee in (currentUser()) ORDER BY updated DESC}"
+export SHOWCASE_JIRA_JQL="${SHOWCASE_JIRA_JQL:-${DEFAULT_SHOWCASE_JIRA_JQL}}"
+export JIRA_SMOKE_JQL="${SHOWCASE_JIRA_JQL}"
 export CODE_RETRIEVAL_DEFAULT_PROJECT="${CODE_RETRIEVAL_DEFAULT_PROJECT:-APMIS/odcbs/odcbs-frontend}"
 export CODE_RETRIEVAL_DEFAULT_REF="${CODE_RETRIEVAL_DEFAULT_REF:-develop_to_angular17}"
 export CODE_RETRIEVAL_REQUEST_TIMEOUT_MS="${CODE_RETRIEVAL_REQUEST_TIMEOUT_MS:-30000}"

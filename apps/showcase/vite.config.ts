@@ -8,6 +8,9 @@ import { JiraClient, loadConfigFromEnv } from '../../mcp-servers/jira-reader/src
 import type { JiraIssue } from '../../mcp-servers/jira-reader/src/types';
 import type { ShowcaseJiraIssue } from './src/types';
 
+const DEFAULT_SHOWCASE_JIRA_JQL =
+  'project = APMIS AND status = 处理中 AND assignee in (currentUser()) ORDER BY updated DESC';
+
 export default defineConfig({
   base: './',
   plugins: [
@@ -37,6 +40,8 @@ export default defineConfig({
                   status: 'ready',
                   issues: searchResult.issues.map((issue) => mapJiraIssue(issue)),
                   message: `已读取 Jira 队列，共 ${searchResult.issues.length}/${searchResult.total} 条。`,
+                  jql,
+                  total: searchResult.total,
                   source: 'jira-api'
                 },
                 null,
@@ -50,6 +55,8 @@ export default defineConfig({
                   status: 'degraded',
                   issues: [],
                   message: `Jira 队列未加载：${sanitizeRuntimeMessage(error)}`,
+                  jql: resolveDefaultJql(process.env, []),
+                  total: 0,
                   source: 'runtime-fallback'
                 },
                 null,
@@ -125,6 +132,7 @@ export default defineConfig({
               {
                 issueKey: readRequiredString(body, 'issueKey'),
                 skillIds: readStringArray(body, 'skillIds'),
+                codeTargets: readCodeTargets(body, 'codeTargets'),
                 mode: 'dry-run'
               },
               process.env
@@ -222,17 +230,43 @@ function readStringArray(body: Record<string, unknown>, key: string): string[] {
   return value.filter((item): item is string => typeof item === 'string');
 }
 
+function readCodeTargets(
+  body: Record<string, unknown>,
+  key: string
+): Array<{ project: string; ref: string; reason: string }> {
+  const value = body[key];
+  if (!Array.isArray(value)) return [];
+  return value.flatMap((item) => {
+    if (typeof item !== 'object' || item === null || Array.isArray(item)) return [];
+    const record = item as Record<string, unknown>;
+    const project = typeof record.project === 'string' ? record.project.trim() : '';
+    const ref = typeof record.ref === 'string' ? record.ref.trim() : '';
+    const reason = typeof record.reason === 'string' ? record.reason.trim() : 'Jira 单条分配';
+    if (project.length === 0 || ref.length === 0) return [];
+    return [{ project, ref, reason }];
+  });
+}
+
 function resolveDefaultJql(
   env: Readonly<Record<string, string | undefined>>,
   projectAllowlist: readonly string[]
 ): string {
+  const fromShowcaseEnv = env.SHOWCASE_JIRA_JQL?.trim();
+  if (fromShowcaseEnv !== undefined && fromShowcaseEnv.length > 0) {
+    return fromShowcaseEnv;
+  }
+
   const fromEnv = env.JIRA_SMOKE_JQL?.trim();
   if (fromEnv !== undefined && fromEnv.length > 0) {
     return fromEnv;
   }
 
-  const fallbackProject = projectAllowlist[0] ?? 'APMIS';
-  return `project = ${fallbackProject} ORDER BY updated DESC`;
+  if (projectAllowlist.length > 0) {
+    const fallbackProject = projectAllowlist[0] ?? 'APMIS';
+    return `project = ${fallbackProject} AND status = 处理中 AND assignee in (currentUser()) ORDER BY updated DESC`;
+  }
+
+  return DEFAULT_SHOWCASE_JIRA_JQL;
 }
 
 function mapJiraIssue(issue: JiraIssue): ShowcaseJiraIssue {

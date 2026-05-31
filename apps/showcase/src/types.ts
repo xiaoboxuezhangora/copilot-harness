@@ -164,6 +164,8 @@ export interface ShowcaseJiraIssuesResponse {
   status: "ready" | "degraded";
   issues: ShowcaseJiraIssue[];
   message: string;
+  jql?: string;
+  total?: number;
   source: "jira-api" | "runtime-fallback";
   mcpCallsByTaskId?: Record<string, string[]>;
 }
