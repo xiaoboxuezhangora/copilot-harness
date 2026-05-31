@@ -20,6 +20,8 @@ without moving the original phase closure files.
    Check what has actually landed in the repository and which evidence proves it.
 6. `06-operating-boundaries-and-next-steps.md`
    Use this for release/cutover planning, blockers, and next actions.
+7. `07-requirements-analysis-jira-routing-system.md`
+   Read the current Jira requirements analysis, routing, gate, and code-impact review chain.
 
 ## Current Position
 
@@ -29,6 +31,8 @@ Copilot-Harness has a working control-plane and shadow/readiness evidence base:
 - Phase 2 has local/mock/contract closure, but live Runner CI and real Memory cutover are still
   blocked.
 - Phase 3 has W14-W18 shadow/readiness artifacts, but production write-back remains NO-GO.
+- Requirements Analysis has W1-W7 local evidence for Jira evidence packs, issue routing, profile
+  specs, readiness gates, eval replay, Showcase evidence, and beta code-impact review.
 
 The short rule for future planning:
 
