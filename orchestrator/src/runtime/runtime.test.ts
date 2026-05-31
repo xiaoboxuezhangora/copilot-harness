@@ -8,6 +8,7 @@ import { AuditLogger } from '../audit/index.js';
 import { parseConfigSnapshot } from '../configCenter/index.js';
 import { ConfigSnapshotModelRoutingGate, ModelRouter } from '../modelRouter/index.js';
 import {
+  ANGULAR17_SKILL_NAME,
   BLOOD_TRANSFUSION_SKILL_NAME,
   createSkillAgentSessionConfig,
   INVESTIGATOR_ALLOWED_TOOLS,
@@ -356,11 +357,14 @@ describe('runtime adapters', () => {
     });
   });
 
-  it('adds blood-transfusion only when task description hits transfusion domain', async () => {
+  it('adds business skills only when task description hits the matching domain', async () => {
     const repoRoot = resolveRepoRoot();
     const defaultConfig = await createSkillAgentSessionConfig(repoRoot);
     const transfusionConfig = await createSkillAgentSessionConfig(repoRoot, {
       taskDescription: '分析 BIZ857 备改输平台推送失败，检查 bloodTransfusionCode 链路'
+    });
+    const angular17Config = await createSkillAgentSessionConfig(repoRoot, {
+      taskDescription: '【Angular17-登录页】升级后用户名密码和登录按钮样式不一致'
     });
 
     expect(resolveInvestigatorSkills('普通 Jira 需求分析')).toEqual([INVESTIGATOR_SKILL_NAME]);
@@ -372,6 +376,9 @@ describe('runtime adapters', () => {
     expect(
       transfusionConfig.customAgents.find((agent) => agent.name === 'investigator')?.skills
     ).toEqual([INVESTIGATOR_SKILL_NAME, BLOOD_TRANSFUSION_SKILL_NAME]);
+    expect(
+      angular17Config.customAgents.find((agent) => agent.name === 'investigator')?.skills
+    ).toEqual([INVESTIGATOR_SKILL_NAME, ANGULAR17_SKILL_NAME]);
   });
 });
 

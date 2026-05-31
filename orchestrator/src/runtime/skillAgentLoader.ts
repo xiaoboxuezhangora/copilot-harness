@@ -2,6 +2,11 @@ import { readFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import {
+  ANGULAR17_BUSINESS_SKILL_ID,
+  shouldLoadAngular17Skill
+} from '../skills/index.js';
+
 export interface SkillAgentSessionConfig {
   readonly workingDirectory: string;
   readonly skillDirectories: readonly string[];
@@ -26,6 +31,7 @@ export interface SystemMessageAppendConfig {
 export const INVESTIGATOR_AGENT_NAME = 'investigator';
 export const INVESTIGATOR_SKILL_NAME = 'jira-requirement-analysis';
 export const BLOOD_TRANSFUSION_SKILL_NAME = 'blood-transfusion';
+export const ANGULAR17_SKILL_NAME = ANGULAR17_BUSINESS_SKILL_ID;
 export const INVESTIGATOR_ALLOWED_TOOLS = ['getIssue', 'searchIssues', 'getComments'] as const;
 
 export interface SkillAgentSessionOptions {
@@ -69,6 +75,10 @@ export function resolveInvestigatorSkills(taskDescription = ''): string[] {
 
   if (shouldLoadBloodTransfusionSkill(taskDescription)) {
     skills.push(BLOOD_TRANSFUSION_SKILL_NAME);
+  }
+
+  if (shouldLoadAngular17Skill(taskDescription)) {
+    skills.push(ANGULAR17_SKILL_NAME);
   }
 
   return skills;

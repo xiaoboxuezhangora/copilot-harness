@@ -14,7 +14,11 @@ export {
   createCopilotSdkSessionConfig,
   mapSdkReasoningEffort
 } from './adapters/copilotSdkAdapter.js';
-export { createSkillAgentSessionConfig, loadInvestigatorPrompt } from './skillAgentLoader.js';
+export {
+  ANGULAR17_SKILL_NAME,
+  createSkillAgentSessionConfig,
+  loadInvestigatorPrompt
+} from './skillAgentLoader.js';
 export type {
   RuntimeAdapter,
   RuntimeAdapterProbe,
