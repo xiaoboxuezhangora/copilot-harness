@@ -104,8 +104,7 @@ interface BusinessSkillMatch {
   label: string;
   skillId: string;
   confidence: string;
-  repo: string;
-  branch: string;
+  gitTargets: JiraGitTarget[];
   reason: string;
   signals: string[];
   analysisFocus: string[];
@@ -122,7 +121,7 @@ interface ModuleNotice {
   detail: string;
 }
 
-type DrawerTab = "overview" | "skills" | "steps" | "evidence" | "mr";
+type DrawerTab = "overview" | "repos" | "skills" | "steps" | "evidence" | "mr";
 type ThemeMode = "day" | "night";
 type DispatchStatus =
   | "待编排"
@@ -182,6 +181,31 @@ interface IssueExecutionRow {
   assignedSkills: string[];
   supplementReason: string;
   lanes: IssueAgentExecution[];
+}
+
+type AgentOptimizationLevel = "keep" | "watch" | "optimize";
+
+interface AgentStageHealthRow {
+  stageId: string;
+  stageName: string;
+  agent: string;
+  skill: string;
+  total: number;
+  done: number;
+  running: number;
+  waiting: number;
+  failed: number;
+  pending: number;
+  activeIssueKeys: string[];
+  avgElapsedMinutes: number;
+  estimateMinutes: number;
+  statusLabel: string;
+  tone: Tone;
+  optimizationLevel: AgentOptimizationLevel;
+  optimizationTone: Tone;
+  optimizationLabel: string;
+  recommendation: string;
+  evidence: string[];
 }
 
 interface AuditRecord {
@@ -275,7 +299,6 @@ type ConfigSectionKey =
   | "jira"
   | "gitlab"
   | "mcp"
-  | "codeRetrieval"
   | "agent"
   | "skillRules"
   | "securityAudit";
@@ -302,33 +325,6 @@ interface McpConfig {
   defaultTimeoutMs: number;
   gateway: string;
   notes: string;
-}
-
-interface RepoMappingRule {
-  id: string;
-  source: string;
-  repository: string;
-  module: string;
-}
-
-interface BranchMappingRule {
-  id: string;
-  source: string;
-  branch: string;
-}
-
-interface JiraKeywordMatchRule {
-  id: string;
-  keyword: string;
-  repository: string;
-  module: string;
-  branch: string;
-}
-
-interface CodeRetrievalConfig {
-  repoMappings: RepoMappingRule[];
-  branchMappings: BranchMappingRule[];
-  jiraKeywordRules: JiraKeywordMatchRule[];
 }
 
 interface AgentConfig {
@@ -359,11 +355,72 @@ interface ConfigCenterState {
   jira: JiraConfig;
   gitlab: GitlabConfig;
   mcp: McpConfig;
-  codeRetrieval: CodeRetrievalConfig;
   agent: AgentConfig;
   skillRules: SkillMatchRule[];
   securityAudit: SecurityAuditConfig;
   updatedAt: string;
+}
+
+interface JiraGitTarget {
+  id: string;
+  repository: string;
+  branch: string;
+  module: string;
+  reason: string;
+}
+
+type ManagedBusinessSkillStatus = "草稿" | "已发布" | "观察中" | "下线";
+type VendorProtocolId =
+  | "agent-skills"
+  | "openai"
+  | "microsoft365"
+  | "gemini"
+  | "mcp";
+
+interface ManagedSkillQuality {
+  hitRate: number;
+  correctionRate: number;
+  reuseCount: number;
+}
+
+interface ManagedSemanticAsset {
+  id: string;
+  source: string;
+  status: "候选" | "已采纳" | "已拒绝";
+  summary: string;
+  evidence: string;
+  impact: string;
+}
+
+interface ManagedBusinessSkill {
+  id: string;
+  name: string;
+  version: string;
+  status: ManagedBusinessSkillStatus;
+  owner: string;
+  description: string;
+  positiveTrigger: string;
+  negativeTrigger: string;
+  triggerKeywords: string[];
+  defaultWorkflow: string[];
+  repositoryTargets: JiraGitTarget[];
+  mcpAllowList: string[];
+  exportTargets: VendorProtocolId[];
+  quality: ManagedSkillQuality;
+  semanticAssets: ManagedSemanticAsset[];
+  improvementCandidates: string[];
+  referenceFiles: string[];
+  savedAt: string;
+}
+
+interface VendorProtocolCard {
+  id: VendorProtocolId;
+  name: string;
+  maturity: "已收敛" | "收敛中" | "厂商特定";
+  shared: boolean;
+  vendors: string[];
+  packageShape: string;
+  adapterStrategy: string;
 }
 
 interface ConfigFeedback {
@@ -388,19 +445,49 @@ const defaultProjectFilter = "APMIS";
 const themeStorageKey = "showcase-theme-mode";
 const configStorageKey = "showcase-config-center-v2";
 const configChangeRequestStorageKey = "showcase-config-change-requests-v1";
+const jiraGitTargetAssignmentsStorageKey = "showcase-jira-git-targets-v1";
+const businessSkillStorageKey = "showcase-business-skills-v1";
 const integrationStatusApiPath = "/api/showcase/integration-status";
 const jiraCurrentUserApiPath = "/api/showcase/jira-current-user";
 const jiraIssuesApiPath = "/api/showcase/jira-issues";
 const angular17Repo = "apmis/odcbs/odcbs-frontend";
 const angular17Branch = "develop_to_angular17";
 const angular17SkillId = "angular17-regression";
+const managedAngular17SkillId = "angular17-upgrade-regression-handler";
+const angular17DefaultGitTarget: JiraGitTarget = {
+  id: "target-angular17-frontend",
+  repository: angular17Repo,
+  branch: angular17Branch,
+  module: "odcbs-frontend",
+  reason: "Angular17 升级回归默认检索目标",
+};
+const frontendDefaultGitTarget: JiraGitTarget = {
+  id: "target-frontend",
+  repository: "apmis/odcbs/odcbs-frontend",
+  branch: "develop",
+  module: "odcbs-frontend",
+  reason: "前端/界面类 Jira 默认检索目标",
+};
+const backendDefaultGitTarget: JiraGitTarget = {
+  id: "target-backend",
+  repository: "apmis/odcbs/odcbs-backend",
+  branch: "develop",
+  module: "odcbs-backend",
+  reason: "后端/接口类 Jira 默认检索目标",
+};
 const angular17AnalysisFocus = [
   "确认升级回归范围：路由空白、图标色差、布局变形、动态表单或弹窗异常。",
   "限定代码扫描范围：优先检索 Angular17 分支与前端共享组件。",
   "结合 Jira 描述、历史 MR 和模块标签定位 affected component。",
   "输出可验证修复建议：组件路径、样式/模板/状态变更点和回归测试命令。",
 ];
-const enabledNavItems = ["需求评审链路", "Jira 调度", "配置"] as const;
+const enabledNavItems = [
+  "需求评审链路",
+  "Jira 调度",
+  "Skill 管理",
+  "Agent 状态",
+  "配置",
+] as const;
 const profileTypeLabels: Record<RequirementsReviewSpecType, string> = {
   VisualDefectSpecV0: "Visual",
   IntegrationSpecV0: "Integration",
@@ -415,7 +502,6 @@ const configSectionTitles: Record<ConfigSectionKey, string> = {
   jira: "Jira 配置",
   gitlab: "GitLab 配置",
   mcp: "MCP 配置",
-  codeRetrieval: "代码检索配置",
   agent: "Agent 配置",
   skillRules: "Skill 匹配规则",
   securityAudit: "安全与审计配置",
@@ -444,35 +530,9 @@ const defaultConfigState: ConfigCenterState = {
     gateway: "stdio / dev runtime",
     notes: "Showcase 只读取运行配置状态；真实生效由 MCP 启动环境决定。",
   },
-  codeRetrieval: {
-    repoMappings: [
-      {
-        id: "repo-main",
-        source: "APMIS 主版本",
-        repository: angular17Repo,
-        module: "odcbs-frontend",
-      },
-    ],
-    branchMappings: [
-      {
-        id: "branch-main",
-        source: "Angular17 升级线",
-        branch: angular17Branch,
-      },
-    ],
-    jiraKeywordRules: [
-      {
-        id: "jira-angular17",
-        keyword: "Angular17",
-        repository: angular17Repo,
-        module: "odcbs-frontend",
-        branch: angular17Branch,
-      },
-    ],
-  },
   agent: {
-    plannerAgent: "Orchestrator",
-    reviewerAgent: "Reviewer Agent",
+    plannerAgent: "编排调度器",
+    reviewerAgent: "代码评审员",
     maxParallelism: 3,
     autoDispatch: false,
     fallbackPolicy: "高风险场景转人工确认",
@@ -496,8 +556,206 @@ const defaultConfigState: ConfigCenterState = {
   updatedAt: "未保存",
 };
 
+const vendorProtocolCards: VendorProtocolCard[] = [
+  {
+    id: "agent-skills",
+    name: "Agent Skills / SKILL.md",
+    maturity: "收敛中",
+    shared: true,
+    vendors: ["Claude Skills", "GitHub Copilot", "Google ADK"],
+    packageShape: "SKILL.md + references/scripts/assets",
+    adapterStrategy: "作为内部标准的优先导出目标；保持 progressive disclosure。",
+  },
+  {
+    id: "mcp",
+    name: "MCP",
+    maturity: "已收敛",
+    shared: true,
+    vendors: ["Anthropic", "OpenAI Apps SDK", "GitHub Copilot", "Google ADK"],
+    packageShape: "tools/resources/prompts/server",
+    adapterStrategy: "作为能力边界引用，不承载业务 Skill 定义本身。",
+  },
+  {
+    id: "openai",
+    name: "OpenAI GPT / Agents",
+    maturity: "厂商特定",
+    shared: false,
+    vendors: ["GPTs", "Agents SDK", "Apps SDK"],
+    packageShape: "instructions + knowledge + tools/actions",
+    adapterStrategy: "从内部模型导出 instructions、knowledge 清单、工具和 guardrails。",
+  },
+  {
+    id: "microsoft365",
+    name: "Microsoft 365 Copilot",
+    maturity: "厂商特定",
+    shared: false,
+    vendors: ["Declarative agent", "Copilot Studio"],
+    packageShape: "manifest + instructions + knowledge + actions",
+    adapterStrategy: "生成 manifest 片段，知识包和 action 由发布链路绑定。",
+  },
+  {
+    id: "gemini",
+    name: "Gemini Gems / ADK",
+    maturity: "厂商特定",
+    shared: false,
+    vendors: ["Gemini Gems", "Google ADK"],
+    packageShape: "Gems 指令/知识；ADK 可接 SKILL.md",
+    adapterStrategy: "ADK 走 Agent Skills；Gems 走精简指令和知识摘要。",
+  },
+];
+
+const defaultManagedBusinessSkills: ManagedBusinessSkill[] = [
+  {
+    id: managedAngular17SkillId,
+    name: "Angular17 升级回归分析",
+    version: "1.1.0",
+    status: "已发布",
+    owner: "copilot-harness",
+    description:
+      "处理 Angular 17 升级后的 UI、交互、DOM、ng-zorro、图标颜色和动态表单回归，输出可验证修复方案。",
+    positiveTrigger:
+      "Jira 标题或描述包含 Angular17、升级后、升级17；症状属于空白页、布局变形、弹窗/抽屉异常、表格固定头、dynamic-form 或图标色差。",
+    negativeTrigger:
+      "依赖安装、编译启动失败、后端数据/权限/接口契约、医院环境配置、新功能开发或通用 Angular 组件交付。",
+    triggerKeywords: [
+      "Angular17",
+      "升级后",
+      "空白页",
+      "图标色差",
+      "布局变形",
+      "dynamic-form",
+      "ng-zorro",
+      "nz-icon",
+    ],
+    defaultWorkflow: ["需求澄清", "影响面分析", "Angular17 分析", "代码检索", "方案生成"],
+    repositoryTargets: [angular17DefaultGitTarget],
+    mcpAllowList: ["JiraReader", "GitLabReader", "CodeRetrieval", "PolicyMCP"],
+    exportTargets: ["agent-skills", "openai", "microsoft365", "gemini"],
+    quality: {
+      hitRate: 86,
+      correctionRate: 18,
+      reuseCount: 14,
+    },
+    semanticAssets: [
+      {
+        id: "angular17-svg-color-candidate",
+        source: "MR Review",
+        status: "候选",
+        summary:
+          "图标色差类问题需要额外采集 svg/path fill、stroke 和 computed color，避免只看 .anticon。",
+        evidence: "gitlab:apmis/odcbs/odcbs-frontend#mr-review:angular17-icon-color",
+        impact: "+12%",
+      },
+      {
+        id: "angular17-overlay-timing-accepted",
+        source: "Agent Trace",
+        status: "已采纳",
+        summary:
+          "nz-modal、nz-drawer、nz-popover 内表格 scroll.y 应在内容挂载后校验 .ant-table-body 高度。",
+        evidence: "audit:agent-trace/angular17-overlay-table-scroll",
+        impact: "+16%",
+      },
+    ],
+    improvementCandidates: [
+      "把图标色差 DOM evidence checkpoint 提升到 Angular17 Skill 的必采集项。",
+      "将 overlay/table 时序案例沉淀到 reference/case-index.md。",
+    ],
+    referenceFiles: [
+      "skills/.github/skills/angular17-upgrade-regression-handler/SKILL.md",
+      "skills/.github/skills/angular17-upgrade-regression-handler/reference/case-index.md",
+    ],
+    savedAt: "2026-05-28",
+  },
+  {
+    id: "blood-transfusion",
+    name: "输血闭环业务分析",
+    version: "1.0.0",
+    status: "已发布",
+    owner: "copilot-harness",
+    description:
+      "处理 APMIS 输血链路、备改输、BIZ857、平台推送、场景码和 ODCBS/ODBIP 边界分析。",
+    positiveTrigger: "Jira 涉及输血、血袋、取血、备改输、双人核对、配血或输血反应。",
+    negativeTrigger: "非输血闭环业务、通用 SSO、纯前端样式或基础设施问题。",
+    triggerKeywords: ["输血", "血袋", "取血", "备改输", "双人核对", "配血", "BIZ857"],
+    defaultWorkflow: ["需求澄清", "业务链路定位", "代码检索", "方案生成"],
+    repositoryTargets: [backendDefaultGitTarget],
+    mcpAllowList: ["JiraReader", "GitLabReader", "CodeRetrieval"],
+    exportTargets: ["agent-skills", "openai", "microsoft365"],
+    quality: {
+      hitRate: 79,
+      correctionRate: 21,
+      reuseCount: 9,
+    },
+    semanticAssets: [
+      {
+        id: "blood-transfusion-biz857-accepted",
+        source: "Manual",
+        status: "已采纳",
+        summary: "BIZ857 和平台推送问题优先按异步消息链路定位。",
+        evidence: "skills/.github/skills/blood-transfusion/references/transfusion-biz857.md",
+        impact: "+10%",
+      },
+    ],
+    improvementCandidates: ["补充输血链路消息失败的反触发边界，避免误判 SSO 或网络问题。"],
+    referenceFiles: ["skills/.github/skills/blood-transfusion/SKILL.md"],
+    savedAt: "2026-05-28",
+  },
+  {
+    id: "angular-delivery",
+    name: "Angular17 通用交付",
+    version: "1.0.0",
+    status: "观察中",
+    owner: "copilot-harness",
+    description:
+      "处理 Angular 17 组件、路由、状态、表单、ng-zorro 表格和共享 UI 行为交付质量。",
+    positiveTrigger: "Angular 17 新功能实现、组件评审、ng-zorro table/overlay/shared UI 交付。",
+    negativeTrigger: "升级后已知回归排查应优先使用 Angular17 升级回归分析。",
+    triggerKeywords: ["Angular", "ng-zorro", "组件", "路由", "表单", "表格", "overlay"],
+    defaultWorkflow: ["实现约束检查", "代码检索", "方案生成", "MR Review"],
+    repositoryTargets: [frontendDefaultGitTarget],
+    mcpAllowList: ["GitLabReader", "CodeRetrieval", "PolicyMCP"],
+    exportTargets: ["agent-skills", "openai", "gemini"],
+    quality: {
+      hitRate: 73,
+      correctionRate: 24,
+      reuseCount: 7,
+    },
+    semanticAssets: [
+      {
+        id: "angular-delivery-table-width-candidate",
+        source: "Eval",
+        status: "候选",
+        summary: "editable table 应把 header/body/control width 统一到同一列配置源。",
+        evidence: "eval:angular-delivery-table-width",
+        impact: "+8%",
+      },
+    ],
+    improvementCandidates: ["将 table width source-of-truth 规则提升到核心交付检查。"],
+    referenceFiles: ["skills/.github/skills/angular-delivery/SKILL.md"],
+    savedAt: "2026-05-28",
+  },
+];
+
 function cloneConfigState<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
+}
+
+function loadManagedBusinessSkillsFromStorage() {
+  if (typeof window === "undefined") {
+    return cloneConfigState(defaultManagedBusinessSkills);
+  }
+  try {
+    const raw = window.localStorage.getItem(businessSkillStorageKey);
+    if (raw === null || raw.length === 0) {
+      return cloneConfigState(defaultManagedBusinessSkills);
+    }
+    const parsed: unknown = JSON.parse(raw);
+    return Array.isArray(parsed)
+      ? (parsed as ManagedBusinessSkill[])
+      : cloneConfigState(defaultManagedBusinessSkills);
+  } catch {
+    return cloneConfigState(defaultManagedBusinessSkills);
+  }
 }
 
 function loadConfigStateFromStorage() {
@@ -512,10 +770,6 @@ function loadConfigStateFromStorage() {
       jira: { ...defaultConfigState.jira, ...(parsed.jira ?? {}) },
       gitlab: { ...defaultConfigState.gitlab, ...(parsed.gitlab ?? {}) },
       mcp: { ...defaultConfigState.mcp, ...(parsed.mcp ?? {}) },
-      codeRetrieval: {
-        ...defaultConfigState.codeRetrieval,
-        ...(parsed.codeRetrieval ?? {}),
-      },
       agent: { ...defaultConfigState.agent, ...(parsed.agent ?? {}) },
       securityAudit: {
         ...defaultConfigState.securityAudit,
@@ -565,10 +819,43 @@ function isConfigSectionKey(value: unknown): value is ConfigSectionKey {
     value === "jira" ||
     value === "gitlab" ||
     value === "mcp" ||
-    value === "codeRetrieval" ||
     value === "agent" ||
     value === "skillRules" ||
     value === "securityAudit"
+  );
+}
+
+function loadJiraGitTargetAssignmentsFromStorage(): Record<string, JiraGitTarget[]> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = window.localStorage.getItem(jiraGitTargetAssignmentsStorageKey);
+    if (raw === null || raw.length === 0) return {};
+    const parsed = JSON.parse(raw);
+    if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+      return {};
+    }
+    return Object.fromEntries(
+      Object.entries(parsed)
+        .map(([issueKey, value]) => [
+          issueKey,
+          Array.isArray(value) ? value.filter(isJiraGitTarget) : [],
+        ])
+        .filter(([, targets]) => targets.length > 0),
+    );
+  } catch {
+    return {};
+  }
+}
+
+function isJiraGitTarget(value: unknown): value is JiraGitTarget {
+  if (typeof value !== "object" || value === null) return false;
+  const candidate = value as Partial<JiraGitTarget>;
+  return (
+    typeof candidate.id === "string" &&
+    typeof candidate.repository === "string" &&
+    typeof candidate.branch === "string" &&
+    typeof candidate.module === "string" &&
+    typeof candidate.reason === "string"
   );
 }
 
@@ -639,7 +926,7 @@ const orchestrationStageBlueprint = [
     id: "jira-understand",
     name: "Jira 理解",
     description: "读取 Jira 描述、评论、字段并完成需求要点归一。",
-    agent: "JiraReader MCP",
+    agent: "Jira 读取器",
     skill: "需求澄清",
     estimateMinutes: 6,
   },
@@ -647,7 +934,7 @@ const orchestrationStageBlueprint = [
     id: "skill-match",
     name: "Skill 匹配",
     description: "按 Jira 特征匹配通用与业务 Skill，确定执行链路。",
-    agent: "Orchestrator",
+    agent: "编排调度器",
     skill: "Skill Router",
     estimateMinutes: 4,
   },
@@ -655,7 +942,7 @@ const orchestrationStageBlueprint = [
     id: "code-search",
     name: "代码检索",
     description: "限定仓库/分支范围，定位受影响模块、路由与样式。",
-    agent: "Code Searcher",
+    agent: "代码检索器",
     skill: "代码检索",
     estimateMinutes: 10,
   },
@@ -663,7 +950,7 @@ const orchestrationStageBlueprint = [
     id: "solution-plan",
     name: "方案生成",
     description: "基于检索证据生成修复方案、风险和验证命令。",
-    agent: "Solution Architect",
+    agent: "方案架构师",
     skill: "方案生成",
     estimateMinutes: 8,
   },
@@ -671,7 +958,7 @@ const orchestrationStageBlueprint = [
     id: "human-review",
     name: "人工 Review",
     description: "涉及高风险写入、预算超限或策略冲突时等待人工确认。",
-    agent: "Reviewer Agent",
+    agent: "代码评审员",
     skill: "人工 Review",
     estimateMinutes: 6,
   },
@@ -679,7 +966,7 @@ const orchestrationStageBlueprint = [
     id: "evidence-pack",
     name: "Evidence Pack",
     description: "汇总 Trace、MCP 调用和关键证据，生成审计可追踪包。",
-    agent: "Evidence Curator",
+    agent: "证据整理员",
     skill: "Evidence Pack",
     estimateMinutes: 5,
   },
@@ -687,7 +974,7 @@ const orchestrationStageBlueprint = [
     id: "mr-delivery",
     name: "MR/产物生成",
     description: "输出 MR 草稿、变更摘要与产物清单。",
-    agent: "Delivery Agent",
+    agent: "交付专员",
     skill: "MR 产物生成",
     estimateMinutes: 9,
   },
@@ -695,7 +982,7 @@ const orchestrationStageBlueprint = [
     id: "eval-regression",
     name: "Eval 回归",
     description: "执行回归评估并汇总通过率与遗留风险。",
-    agent: "QA Agent",
+    agent: "质量验收员",
     skill: "Eval 回归",
     estimateMinutes: 7,
   },
@@ -722,8 +1009,8 @@ const activeNavItem = ref("需求评审链路");
 const moduleNotice = ref<ModuleNotice | null>(null);
 const selectedDrawerTab = ref<DrawerTab>("skills");
 const selectedRuntimeStageId = ref<string | null>(null);
+const selectedAgentStageId = ref("all");
 const selectedIssueKeys = ref<string[]>([]);
-const autoExecuteEnabled = ref(false);
 const auditExpanded = ref(false);
 const calendarOpen = ref(false);
 const descriptionExpanded = ref(false);
@@ -731,6 +1018,15 @@ const mcpDetailExpanded = ref(false);
 const skillAssignments = ref<Record<string, string[]>>({});
 const dispatchOverrides = ref<Record<string, DispatchStatus>>({});
 const businessSkillAppliedIssueKeys = ref<string[]>([]);
+const jiraGitTargetAssignments = ref<Record<string, JiraGitTarget[]>>(
+  loadJiraGitTargetAssignmentsFromStorage(),
+);
+const managedBusinessSkills = ref<ManagedBusinessSkill[]>(
+  loadManagedBusinessSkillsFromStorage(),
+);
+const selectedManagedSkillId = ref(managedAngular17SkillId);
+const selectedExportTarget = ref<VendorProtocolId>("agent-skills");
+const skillManagementFeedback = ref<ConfigFeedback | null>(null);
 const assistantQuestion = ref("");
 const assistantAnswer = ref(
   "可以基于当前真实 Jira 描述、状态、优先级、目标版本和模块字段，推荐需要分配的 Skill 与执行顺序。",
@@ -778,7 +1074,6 @@ const editingConfigSections = ref<Record<ConfigSectionKey, boolean>>({
   jira: false,
   gitlab: false,
   mcp: false,
-  codeRetrieval: false,
   agent: false,
   skillRules: false,
   securityAudit: false,
@@ -786,6 +1081,7 @@ const editingConfigSections = ref<Record<ConfigSectionKey, boolean>>({
 const configFeedback = ref<ConfigFeedback | null>(null);
 let clockTimer: number | undefined;
 let configFeedbackTimer: number | undefined;
+let skillManagementFeedbackTimer: number | undefined;
 let assistantAvatarCleanup: (() => void) | undefined;
 
 const themeModeLabel = computed(() =>
@@ -811,6 +1107,8 @@ const assistantQuickQuestions = [
 ];
 
 const isConfigCenter = computed(() => activeNavItem.value === "配置");
+const isSkillManagementPanel = computed(() => activeNavItem.value === "Skill 管理");
+const isAgentStatusPanel = computed(() => activeNavItem.value === "Agent 状态");
 const isRequirementsReviewPanel = computed(
   () => activeNavItem.value === "需求评审链路",
 );
@@ -823,6 +1121,43 @@ const selectedRequirementsSample = computed(() => {
   );
   return selected ?? requirementsSamples.value[0] ?? null;
 });
+
+const selectedManagedSkill = computed(() => {
+  return (
+    managedBusinessSkills.value.find(
+      (skill) => skill.id === selectedManagedSkillId.value,
+    ) ??
+    managedBusinessSkills.value[0] ??
+    defaultManagedBusinessSkills[0]!
+  );
+});
+
+const skillManagementSummary = computed(() => {
+  const skills = managedBusinessSkills.value;
+  const semanticAssetCount = skills.reduce(
+    (sum, skill) => sum + skill.semanticAssets.length,
+    0,
+  );
+  const exportTargetCount = new Set(
+    skills.flatMap((skill) => skill.exportTargets),
+  ).size;
+  return {
+    total: skills.length,
+    active: skills.filter((skill) => skill.status === "已发布").length,
+    semanticAssetCount,
+    exportTargetCount,
+  };
+});
+
+const selectedVendorProtocol = computed(
+  () =>
+    vendorProtocolCards.find((protocol) => protocol.id === selectedExportTarget.value) ??
+    vendorProtocolCards[0]!,
+);
+
+const selectedSkillExportPreview = computed(() =>
+  buildSkillExportPreview(selectedManagedSkill.value, selectedExportTarget.value),
+);
 const selectedRequirementsSpecTypeLabel = computed(() => {
   const sample = selectedRequirementsSample.value;
   if (sample === null) return "Unknown";
@@ -846,14 +1181,6 @@ const pendingConfigRequestCount = computed(
       (request) => request.status === "awaiting_policy_gate",
     ).length,
 );
-const angular17KeywordRule = computed(() => {
-  const rules = savedConfigState.value.codeRetrieval.jiraKeywordRules;
-  return (
-    rules.find((rule) => /angular\s*17|angular17/i.test(rule.keyword)) ??
-    rules[0] ??
-    null
-  );
-});
 const angular17SkillRule = computed(() => {
   const rules = savedConfigState.value.skillRules;
   return (
@@ -863,10 +1190,10 @@ const angular17SkillRule = computed(() => {
   );
 });
 const angular17MappingPreview = computed(() => ({
-  keyword: angular17KeywordRule.value?.keyword ?? "Angular17",
-  repository: angular17KeywordRule.value?.repository ?? angular17Repo,
-  module: angular17KeywordRule.value?.module ?? "odcbs-frontend",
-  branch: angular17KeywordRule.value?.branch ?? angular17Branch,
+  keyword: "Angular17",
+  repository: angular17DefaultGitTarget.repository,
+  module: angular17DefaultGitTarget.module,
+  branch: angular17DefaultGitTarget.branch,
   recommendedSkill:
     angular17SkillRule.value?.recommendedSkill ?? "Angular17 升级回归",
   confidenceRule:
@@ -909,13 +1236,14 @@ const navItems = [
 const moduleNoticeMessages: Record<string, string> = {
   仪表盘: "总览看板、跨项目指标和趋势分析还未接入；当前请使用 Jira 调度驾驶舱查看队列与流水线。",
   工作流: "流程模板、审批流和自动化策略配置还未接入；当前可在单个 Jira 的 Skill 编排中完成触发前校验。",
-  "Skill 管理": "独立 Skill 库、版本管理和发布流程还未接入；当前支持在 Jira 详情抽屉内为单个 Jira 编排 Skill。",
-  "Agent 状态": "独立 Agent 监控页还未接入；当前可在右侧抽屉的执行步骤页签查看 Agent 状态。",
+  "Skill 管理": "业务 Skill 库、版本、触发规则、语义资产和协议导出预览已接入当前 Showcase。",
+  "Agent 状态": "当前 Agent 状态页基于 Jira 队列与阶段运行态展示各 Agent 健康度和优化建议。",
   知识库: "知识资产检索、经验沉淀和复用入口还未接入；当前证据链页签可查看单个 Jira 的 evidence 与 reasoning。",
 };
 
 const drawerTabs: Array<{ id: DrawerTab; label: string }> = [
   { id: "overview", label: "概览" },
+  { id: "repos", label: "仓库分支" },
   { id: "skills", label: "Skill 编排" },
   { id: "steps", label: "执行步骤" },
   { id: "evidence", label: "证据链" },
@@ -943,7 +1271,7 @@ const skillCandidates: SkillCandidate[] = [
   {
     id: "clarify",
     name: "需求澄清",
-    agent: "PM Agent",
+    agent: "产品经理",
     mcp: "JiraReader",
     input: "Jira 描述/评论",
     estimate: 8,
@@ -953,7 +1281,7 @@ const skillCandidates: SkillCandidate[] = [
   {
     id: "impact",
     name: "影响面分析",
-    agent: "Impact Analyst",
+    agent: "影响面分析师",
     mcp: "CodeRetrieval",
     input: "Jira + 模块标签",
     estimate: 12,
@@ -963,7 +1291,7 @@ const skillCandidates: SkillCandidate[] = [
   {
     id: angular17SkillId,
     name: "Angular17 升级回归分析",
-    agent: "Angular Expert",
+    agent: "Angular 专家",
     mcp: "CodeRetrieval + GitLabReader",
     input: "Angular17 Jira + odcbs-frontend",
     estimate: 16,
@@ -973,7 +1301,7 @@ const skillCandidates: SkillCandidate[] = [
   {
     id: "code",
     name: "代码检索",
-    agent: "Code Searcher",
+    agent: "代码检索器",
     mcp: "GitLabReader",
     input: "GitLab 仓库",
     estimate: 10,
@@ -983,7 +1311,7 @@ const skillCandidates: SkillCandidate[] = [
   {
     id: "plan",
     name: "方案生成",
-    agent: "Solution Architect",
+    agent: "方案架构师",
     mcp: "Planner",
     input: "需求 + 影响面",
     estimate: 15,
@@ -993,7 +1321,7 @@ const skillCandidates: SkillCandidate[] = [
   {
     id: "test",
     name: "测试用例生成",
-    agent: "QA Agent",
+    agent: "测试工程师",
     mcp: "TestCaseMCP",
     input: "方案文档",
     estimate: 18,
@@ -1003,7 +1331,7 @@ const skillCandidates: SkillCandidate[] = [
   {
     id: "review",
     name: "MR Review",
-    agent: "Reviewer Agent",
+    agent: "代码评审员",
     mcp: "GitLabMR",
     input: "MR Diff",
     estimate: 20,
@@ -1013,7 +1341,7 @@ const skillCandidates: SkillCandidate[] = [
   {
     id: "security",
     name: "安全扫描",
-    agent: "Security Scanner",
+    agent: "安全扫描员",
     mcp: "PolicyMCP",
     input: "代码变更",
     estimate: 15,
@@ -1260,6 +1588,18 @@ const selectedBusinessSkillApplied = computed(() =>
   businessSkillAppliedIssueKeys.value.includes(selectedIssue.value.key),
 );
 
+const selectedGitTargets = computed(() =>
+  getGitTargetsForIssue(selectedIssue.value),
+);
+
+const selectedGitTargetSummary = computed(() =>
+  selectedGitTargets.value.length === 0
+    ? "未配置仓库/分支"
+    : selectedGitTargets.value
+        .map((target) => `${target.repository}@${target.branch}`)
+        .join("、"),
+);
+
 const totalSkillEstimate = computed(() =>
   selectedSkillRows.value.reduce((sum, skill) => sum + skill.estimate, 0),
 );
@@ -1358,6 +1698,14 @@ const preflightChecks = computed(() => [
     tone: codeRetrievalRuntimeStatus.value?.configured === true ? "ok" : "warn",
   },
   {
+    label: "仓库/分支分配",
+    value:
+      selectedGitTargets.value.length > 0
+        ? `${selectedGitTargets.value.length} 个目标`
+        : "未配置",
+    tone: selectedGitTargets.value.length > 0 ? ("ok" as Tone) : ("warn" as Tone),
+  },
+  {
     label: "MCP 白名单",
     value: "通过",
     tone: "ok" as Tone,
@@ -1387,7 +1735,7 @@ const agentStatuses = computed(() => {
 
   return [
     {
-      role: "PM",
+      role: "产品经理",
       status: runtime.status === "等待人工处理" ? "待处理" : "就绪",
       tone:
         runtime.status === "等待人工处理"
@@ -1395,12 +1743,12 @@ const agentStatuses = computed(() => {
           : ("ok" as Tone),
     },
     {
-      role: "Developer",
+      role: "开发工程师",
       status: developerActive ? "运行中" : "就绪",
       tone: developerActive ? ("warn" as Tone) : ("ok" as Tone),
     },
     {
-      role: "Code Review",
+      role: "代码评审",
       status: reviewActive
         ? runtime.status === "等待人工处理"
           ? "待确认"
@@ -1412,7 +1760,7 @@ const agentStatuses = computed(() => {
           : ("ok" as Tone),
     },
     {
-      role: "Security",
+      role: "安全审查",
       status:
         selectedIssue.value.riskTone === "danger"
           ? runtime.status === "已完成"
@@ -1426,7 +1774,7 @@ const agentStatuses = computed(() => {
           : ("ok" as Tone),
     },
     {
-      role: "Tester",
+      role: "测试工程师",
       status: testerActive ? "运行中" : runtime.status === "已完成" ? "已完成" : "等待",
       tone:
         testerActive
@@ -1483,6 +1831,261 @@ const issueExecutionRows = computed<IssueExecutionRow[]>(() =>
     };
   }),
 );
+
+const agentStageOptions = computed(() =>
+  orchestrationStageBlueprint.map((stage) => ({
+    value: stage.id,
+    label: `${stage.name} · ${stage.agent}`,
+  })),
+);
+
+const agentStageHealthRows = computed<AgentStageHealthRow[]>(() =>
+  buildAgentStageHealthRows(
+    issueExecutionRows.value,
+    selectedAgentStageId.value,
+    currentTime.value,
+  ),
+);
+
+const agentStatusSummary = computed(() => {
+  const rows = agentStageHealthRows.value;
+  return {
+    agents: rows.length,
+    running: rows.filter((row) => row.running > 0).length,
+    blocked: rows.filter((row) => row.waiting > 0 || row.failed > 0).length,
+    optimize: rows.filter((row) => row.optimizationLevel === "optimize").length,
+  };
+});
+
+const agentStatusSourceLabel = computed(
+  () =>
+    `数据来源：当前 Jira 队列 ${issues.value.length} 条，筛选后 ${filteredIssues.value.length} 条；阶段状态由 Jira 状态、风险级别、已分配 Skill 与 dry-run 结果派生。`,
+);
+
+function buildAgentStageHealthRows(
+  rows: IssueExecutionRow[],
+  stageFilter: string,
+  now: Date,
+): AgentStageHealthRow[] {
+  const selectedStages = orchestrationStageBlueprint.filter(
+    (stage) => stageFilter === "all" || stage.id === stageFilter,
+  );
+
+  return selectedStages.map((stage) => {
+    const stageRecords = rows
+      .map((row) => ({
+        issueKey: row.issue.key,
+        stage: row.runtime.stages.find((item) => item.id === stage.id) ?? null,
+      }))
+      .filter(
+        (record): record is { issueKey: string; stage: OrchestrationStageRuntime } =>
+          record.stage !== null,
+      );
+    const total = stageRecords.length;
+    const done = countStageStatus(stageRecords, "done");
+    const running = countStageStatus(stageRecords, "running");
+    const waiting = countStageStatus(stageRecords, "waiting");
+    const failed = countStageStatus(stageRecords, "failed");
+    const pending = countStageStatus(stageRecords, "pending");
+    const activeIssueKeys = stageRecords
+      .filter((record) => ["running", "waiting", "failed"].includes(record.stage.status))
+      .map((record) => record.issueKey)
+      .slice(0, 5);
+    const elapsedSamples = stageRecords
+      .map((record) => getStageElapsedMinutes(record.stage, now))
+      .filter((minutes) => minutes > 0);
+    const avgElapsedMinutes =
+      elapsedSamples.length === 0
+        ? 0
+        : Math.round(
+            elapsedSamples.reduce((sum, minutes) => sum + minutes, 0) /
+              elapsedSamples.length,
+          );
+    const statusLabel = resolveAgentStageStatusLabel({
+      total,
+      done,
+      running,
+      waiting,
+      failed,
+      pending,
+    });
+    const tone = resolveAgentStageTone({
+      total,
+      done,
+      running,
+      waiting,
+      failed,
+      pending,
+    });
+    const optimization = resolveAgentOptimization({
+      stageName: stage.name,
+      agent: stage.agent,
+      total,
+      done,
+      running,
+      waiting,
+      failed,
+      pending,
+      avgElapsedMinutes,
+      estimateMinutes: stage.estimateMinutes,
+      activeIssueKeys,
+    });
+
+    return {
+      stageId: stage.id,
+      stageName: stage.name,
+      agent: stage.agent,
+      skill: stage.skill,
+      total,
+      done,
+      running,
+      waiting,
+      failed,
+      pending,
+      activeIssueKeys,
+      avgElapsedMinutes,
+      estimateMinutes: stage.estimateMinutes,
+      statusLabel,
+      tone,
+      ...optimization,
+    };
+  });
+}
+
+function countStageStatus(
+  records: Array<{ stage: OrchestrationStageRuntime }>,
+  status: StageRuntimeStatus,
+) {
+  return records.filter((record) => record.stage.status === status).length;
+}
+
+function getStageElapsedMinutes(stage: OrchestrationStageRuntime, now: Date) {
+  if (stage.started_at === null) return 0;
+  const startedAt = new Date(stage.started_at).getTime();
+  const endedAt = stage.ended_at === null ? now.getTime() : new Date(stage.ended_at).getTime();
+  if (!Number.isFinite(startedAt) || !Number.isFinite(endedAt)) return 0;
+  return Math.max(1, Math.round((endedAt - startedAt) / 60_000));
+}
+
+function resolveAgentStageStatusLabel(input: {
+  total: number;
+  done: number;
+  running: number;
+  waiting: number;
+  failed: number;
+  pending: number;
+}) {
+  if (input.total === 0) return "无样本";
+  if (input.failed > 0) return "异常";
+  if (input.waiting > 0) return "等待处理";
+  if (input.running > 0) return "运行中";
+  if (input.done === input.total) return "全部完成";
+  if (input.pending === input.total) return "未开始";
+  return "排队中";
+}
+
+function resolveAgentStageTone(input: {
+  total: number;
+  done: number;
+  running: number;
+  waiting: number;
+  failed: number;
+  pending: number;
+}): Tone {
+  if (input.failed > 0) return "danger";
+  if (input.waiting > 0 || input.running > 0) return "warn";
+  if (input.total > 0 && input.done === input.total) return "ok";
+  return "neutral";
+}
+
+function resolveAgentOptimization(input: {
+  stageName: string;
+  agent: string;
+  total: number;
+  done: number;
+  running: number;
+  waiting: number;
+  failed: number;
+  pending: number;
+  avgElapsedMinutes: number;
+  estimateMinutes: number;
+  activeIssueKeys: string[];
+}): Pick<
+  AgentStageHealthRow,
+  "optimizationLevel" | "optimizationTone" | "optimizationLabel" | "recommendation" | "evidence"
+> {
+  const waitingRate = input.total === 0 ? 0 : input.waiting / input.total;
+  const failedRate = input.total === 0 ? 0 : input.failed / input.total;
+  const runningRate = input.total === 0 ? 0 : input.running / input.total;
+  const avgOverrun =
+    input.estimateMinutes === 0 ? 0 : input.avgElapsedMinutes / input.estimateMinutes;
+  const evidence = [
+    `${input.stageName} 样本 ${input.total} 条`,
+    `完成 ${input.done} / 运行 ${input.running} / 等待 ${input.waiting} / 失败 ${input.failed} / 未开始 ${input.pending}`,
+    `平均耗时 ${input.avgElapsedMinutes || "-"} 分钟，阶段估算 ${input.estimateMinutes} 分钟`,
+  ];
+  if (input.activeIssueKeys.length > 0) {
+    evidence.push(`当前关注：${input.activeIssueKeys.join("、")}`);
+  }
+
+  if (input.total === 0) {
+    return {
+      optimizationLevel: "keep",
+      optimizationTone: "neutral",
+      optimizationLabel: "暂无判断",
+      recommendation: "当前筛选条件下没有可用于判断的阶段样本。",
+      evidence,
+    };
+  }
+
+  if (input.failed > 0 || failedRate >= 0.15) {
+    return {
+      optimizationLevel: "optimize",
+      optimizationTone: "danger",
+      optimizationLabel: "建议优化",
+      recommendation: `${input.agent} 在该阶段存在失败样本，优先补齐输入校验、失败重试和错误归因规则。`,
+      evidence,
+    };
+  }
+
+  if (waitingRate >= 0.3) {
+    return {
+      optimizationLevel: "optimize",
+      optimizationTone: "warn",
+      optimizationLabel: "建议优化",
+      recommendation: `${input.agent} 等待占比偏高，建议优化自动补证、人工确认前置提示和高风险分流策略。`,
+      evidence,
+    };
+  }
+
+  if (avgOverrun >= 1.35 && input.avgElapsedMinutes > 0) {
+    return {
+      optimizationLevel: "optimize",
+      optimizationTone: "warn",
+      optimizationLabel: "建议优化",
+      recommendation: `${input.agent} 平均耗时超过阶段估算，建议拆分任务输入、缓存证据或降低单次分析范围。`,
+      evidence,
+    };
+  }
+
+  if (runningRate >= 0.35) {
+    return {
+      optimizationLevel: "watch",
+      optimizationTone: "warn",
+      optimizationLabel: "观察容量",
+      recommendation: `${input.agent} 当前运行样本较多，建议观察并发、队列积压和 MCP 超时。`,
+      evidence,
+    };
+  }
+
+  return {
+    optimizationLevel: "keep",
+    optimizationTone: "ok",
+    optimizationLabel: "暂不优化",
+    recommendation: `${input.agent} 当前阶段表现稳定，先保持现有编排策略。`,
+    evidence,
+  };
+}
 
 function buildJiraKpiCards(sourceIssues: EngineeringIssue[]): KpiCard[] {
   const total = sourceIssues.length;
@@ -1784,6 +2387,9 @@ onBeforeUnmount(() => {
   if (configFeedbackTimer !== undefined) {
     window.clearTimeout(configFeedbackTimer);
   }
+  if (skillManagementFeedbackTimer !== undefined) {
+    window.clearTimeout(skillManagementFeedbackTimer);
+  }
 });
 
 function buildOptions(values: string[]): string[] {
@@ -1817,7 +2423,7 @@ function buildFallbackIssue(): EngineeringIssue {
     riskTone: "warn",
     observedTime: "未同步",
     description: "",
-    expectation: "请检查 Jira 运行时配置并点击“刷新”。",
+    expectation: "请检查 Jira 运行时配置。",
     impactedRepos: [],
     impactedModules: [],
     aiUnderstanding: ["Jira 队列未加载。"],
@@ -1937,7 +2543,7 @@ function buildLiveJiraIssues(
         plan: [
           {
             step: "读取 Jira 描述与评论",
-            owner: "JiraReader MCP",
+            owner: "Jira 读取器",
             due: "已完成",
             done: true,
           },
@@ -2063,10 +2669,87 @@ function collectAngular17Signals(input: {
   return uniqueValues(signals);
 }
 
+function cloneGitTarget(target: JiraGitTarget): JiraGitTarget {
+  return { ...target };
+}
+
+function issueTextForTarget(issue: EngineeringIssue) {
+  return [
+    issue.summary,
+    issue.description,
+    issue.expectation,
+    issue.productModule ?? "",
+    issue.component,
+    ...issue.labels,
+  ]
+    .join(" ")
+    .toLowerCase();
+}
+
+function getDefaultGitTargetsForIssue(issue: EngineeringIssue): JiraGitTarget[] {
+  const text = issueTextForTarget(issue);
+  const angular17Signals = collectAngular17Signals(issue);
+  if (angular17Signals.some((signal) => signal.includes("Angular17"))) {
+    return [cloneGitTarget(angular17DefaultGitTarget)];
+  }
+
+  if (/(后端|服务端|接口|数据库|定时任务|java|backend)/i.test(text)) {
+    return [cloneGitTarget(backendDefaultGitTarget)];
+  }
+
+  if (/(前端|页面|界面|按钮|弹窗|菜单|样式|路由|组件|vue|ui|列表|表头|操作列)/i.test(text)) {
+    return [cloneGitTarget(frontendDefaultGitTarget)];
+  }
+
+  return [
+    {
+      ...cloneGitTarget(frontendDefaultGitTarget),
+      reason: "未命中专项规则，使用前端默认检索目标",
+    },
+  ];
+}
+
+function getGitTargetsForIssue(issue: EngineeringIssue): JiraGitTarget[] {
+  const assigned = jiraGitTargetAssignments.value[issue.key];
+  return assigned !== undefined && assigned.length > 0
+    ? assigned
+    : getDefaultGitTargetsForIssue(issue);
+}
+
+function ensureGitTargetsForIssue(issue = selectedIssue.value): JiraGitTarget[] {
+  const assigned = jiraGitTargetAssignments.value[issue.key];
+  if (assigned !== undefined && assigned.length > 0) return assigned;
+
+  const defaults = getDefaultGitTargetsForIssue(issue);
+  jiraGitTargetAssignments.value = {
+    ...jiraGitTargetAssignments.value,
+    [issue.key]: defaults,
+  };
+  persistJiraGitTargetAssignments();
+  return defaults;
+}
+
+function persistJiraGitTargetAssignments() {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(
+    jiraGitTargetAssignmentsStorageKey,
+    JSON.stringify(jiraGitTargetAssignments.value),
+  );
+}
+
+function formatGitTarget(target: JiraGitTarget) {
+  return `${target.repository}@${target.branch}`;
+}
+
 function getBusinessSkillMatch(issue: EngineeringIssue): BusinessSkillMatch | null {
   const signals = collectAngular17Signals(issue);
   const isAngular17 = signals.some((signal) => signal.includes("Angular17"));
   if (!isAngular17) return null;
+  const gitTargets = getGitTargetsForIssue(issue);
+  const targetSummary =
+    gitTargets.length === 0
+      ? `${angular17Repo}@${angular17Branch}`
+      : gitTargets.map(formatGitTarget).join("、");
 
   return {
     id: "angular17-frontend-regression",
@@ -2076,9 +2759,8 @@ function getBusinessSkillMatch(issue: EngineeringIssue): BusinessSkillMatch | nu
       signals.length >= 2
         ? "高置信"
         : angular17MappingPreview.value.confidenceRule,
-    repo: angular17MappingPreview.value.repository,
-    branch: angular17MappingPreview.value.branch,
-    reason: `命中规则：${angular17MappingPreview.value.keyword} -> ${angular17MappingPreview.value.repository}@${angular17MappingPreview.value.branch}`,
+    gitTargets,
+    reason: `命中规则：${angular17MappingPreview.value.keyword} -> ${targetSummary}`,
     signals,
     analysisFocus: angular17AnalysisFocus,
   };
@@ -2328,8 +3010,8 @@ function buildMockOrchestrationRuntime(
         : (currentStage?.name ?? "待开始"),
     current_agent:
       orchestrationStatus === "已完成"
-        ? "Orchestrator"
-        : (currentStage?.agent ?? "Orchestrator"),
+        ? "编排调度器"
+        : (currentStage?.agent ?? "编排调度器"),
     current_skill:
       orchestrationStatus === "已完成"
         ? "收尾归档"
@@ -2559,7 +3241,13 @@ function isNavItemEnabled(item: string) {
 
 function handleNavItemClick(item: string) {
   activeNavItem.value = item;
-  if (item === "需求评审链路" || item === "Jira 调度" || item === "配置") {
+  if (
+    item === "需求评审链路" ||
+    item === "Jira 调度" ||
+    item === "Skill 管理" ||
+    item === "Agent 状态" ||
+    item === "配置"
+  ) {
     moduleNotice.value = null;
     return;
   }
@@ -2571,6 +3259,212 @@ function handleNavItemClick(item: string) {
       moduleNoticeMessages[item] ??
       "该模块还未接入当前 Showcase，当前仅开放 Jira 调度与 Skill 编排主流程。",
   };
+}
+
+type ManagedSkillTextField =
+  | "name"
+  | "version"
+  | "owner"
+  | "description"
+  | "positiveTrigger"
+  | "negativeTrigger";
+type ManagedSkillListField =
+  | "triggerKeywords"
+  | "defaultWorkflow"
+  | "mcpAllowList"
+  | "improvementCandidates"
+  | "referenceFiles";
+
+function readFormValue(event: Event) {
+  const target = event.target;
+  if (
+    target instanceof HTMLInputElement ||
+    target instanceof HTMLTextAreaElement ||
+    target instanceof HTMLSelectElement
+  ) {
+    return target.value;
+  }
+  return "";
+}
+
+function selectManagedSkill(skillId: string) {
+  selectedManagedSkillId.value = skillId;
+}
+
+function updateSelectedManagedSkillField(
+  field: ManagedSkillTextField,
+  value: string,
+) {
+  const skill = selectedManagedSkill.value;
+  replaceManagedSkill(skill.id, {
+    ...skill,
+    [field]: value,
+  });
+}
+
+function updateSelectedManagedSkillStatus(value: string) {
+  if (!isManagedBusinessSkillStatus(value)) return;
+  const skill = selectedManagedSkill.value;
+  replaceManagedSkill(skill.id, {
+    ...skill,
+    status: value,
+  });
+}
+
+function updateSelectedManagedSkillList(
+  field: ManagedSkillListField,
+  value: string,
+) {
+  const skill = selectedManagedSkill.value;
+  replaceManagedSkill(skill.id, {
+    ...skill,
+    [field]: parseSkillList(value),
+  });
+}
+
+function replaceManagedSkill(
+  skillId: string,
+  nextSkill: ManagedBusinessSkill,
+) {
+  managedBusinessSkills.value = managedBusinessSkills.value.map((skill) =>
+    skill.id === skillId ? nextSkill : skill,
+  );
+}
+
+function isManagedBusinessSkillStatus(
+  value: string,
+): value is ManagedBusinessSkillStatus {
+  return value === "草稿" || value === "已发布" || value === "观察中" || value === "下线";
+}
+
+function parseSkillList(value: string) {
+  return value
+    .split(/[\n,，]/)
+    .map((item) => item.trim())
+    .filter((item) => item.length > 0);
+}
+
+function formatSkillList(items: string[]) {
+  return items.join("\n");
+}
+
+function persistManagedBusinessSkills() {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(
+    businessSkillStorageKey,
+    JSON.stringify(managedBusinessSkills.value, null, 2),
+  );
+}
+
+function setSkillManagementFeedback(feedback: ConfigFeedback) {
+  skillManagementFeedback.value = feedback;
+  if (skillManagementFeedbackTimer !== undefined) {
+    window.clearTimeout(skillManagementFeedbackTimer);
+  }
+  skillManagementFeedbackTimer = window.setTimeout(() => {
+    skillManagementFeedback.value = null;
+  }, 4500);
+}
+
+function saveManagedBusinessSkill() {
+  const savedAt = formatMessageTime();
+  const skill = selectedManagedSkill.value;
+  replaceManagedSkill(skill.id, {
+    ...skill,
+    savedAt,
+  });
+  persistManagedBusinessSkills();
+  setSkillManagementFeedback({
+    tone: "ok",
+    title: "业务 Skill 已保存",
+    detail:
+      "当前变更已保存到本地 Skill 管理草稿；发布到实际厂商协议仍需走导出适配和 PolicyGate。",
+  });
+}
+
+function resetManagedBusinessSkills() {
+  managedBusinessSkills.value = cloneConfigState(defaultManagedBusinessSkills);
+  selectedManagedSkillId.value = managedAngular17SkillId;
+  persistManagedBusinessSkills();
+  setSkillManagementFeedback({
+    tone: "warn",
+    title: "业务 Skill 已恢复默认",
+    detail: "已恢复当前项目内置业务 Skill，包括 Angular17、输血闭环和 Angular 通用交付。",
+  });
+}
+
+function generateSkillImprovementCandidate() {
+  const skill = selectedManagedSkill.value;
+  const nextAsset: ManagedSemanticAsset = {
+    id: `${skill.id}-usage-candidate-${Date.now()}`,
+    source: "Agent Trace",
+    status: "候选",
+    summary: "根据最近实际使用反馈生成新的触发/反触发或验证清单候选项。",
+    evidence: `audit:usage/${skill.id}/${Date.now()}`,
+    impact: "+待评估",
+  };
+  replaceManagedSkill(skill.id, {
+    ...skill,
+    semanticAssets: [nextAsset, ...skill.semanticAssets],
+    improvementCandidates: [
+      "评估最新使用候选是否应提升到 SKILL.md 核心规则或 reference。",
+      ...skill.improvementCandidates,
+    ],
+  });
+  setSkillManagementFeedback({
+    tone: "neutral",
+    title: "已生成语义资产候选",
+    detail: "候选项来自使用轨迹入口示例，真实发布前需要人工 Review、Eval 命中率和误触发率校验。",
+  });
+}
+
+function buildSkillExportPreview(skill: ManagedBusinessSkill, target: VendorProtocolId) {
+  if (target === "agent-skills") {
+    return [
+      "---",
+      `name: ${skill.id}`,
+      `description: "正触发：${skill.positiveTrigger} 反触发：${skill.negativeTrigger}"`,
+      `owner: ${skill.owner}`,
+      "---",
+      `# ${skill.name}`,
+      "",
+      "## Use This Skill When",
+      skill.positiveTrigger,
+      "",
+      "## Do Not Use This Skill When",
+      skill.negativeTrigger,
+      "",
+      "## Default Workflow",
+      formatSkillList(skill.defaultWorkflow),
+    ].join("\n");
+  }
+  if (target === "mcp") {
+    return JSON.stringify(
+      {
+        skillId: skill.id,
+        mcpAllowList: skill.mcpAllowList,
+        note: "MCP 只承载工具/资源/提示协议，业务 Skill 定义仍由内部标准维护。",
+      },
+      null,
+      2,
+    );
+  }
+  return JSON.stringify(
+    {
+      canonicalSkillId: skill.id,
+      name: skill.name,
+      instructions: skill.description,
+      triggers: {
+        positive: skill.positiveTrigger,
+        negative: skill.negativeTrigger,
+      },
+      knowledge: skill.referenceFiles,
+      tools: skill.mcpAllowList,
+      repositoryTargets: skill.repositoryTargets,
+    },
+    null,
+    2,
+  );
 }
 
 function getIntegrationEndpoint(
@@ -2800,7 +3694,6 @@ function resolveSectionEndpoint(
   if (section === "jira") return jiraRuntimeStatus.value;
   if (section === "gitlab") return gitlabRuntimeStatus.value;
   if (section === "mcp") return mcpRuntimeStatus.value;
-  if (section === "codeRetrieval") return getIntegrationEndpoint("codeRetrieval");
   return null;
 }
 
@@ -2809,16 +3702,13 @@ function summarizeConfigChange(section: ConfigSectionKey) {
     return `Jira Base URL=${draftConfigState.value.jira.baseUrl || "未填写"}，Project=${draftConfigState.value.jira.projectKey}`;
   }
   if (section === "gitlab") {
-    return `GitLab=${draftConfigState.value.gitlab.baseUrl || "未填写"}，Project=${draftConfigState.value.gitlab.groupOrProject}，Branch=${draftConfigState.value.gitlab.defaultBranch}`;
+    return `GitLab=${draftConfigState.value.gitlab.baseUrl || "未填写"}，仓库/分支按单条 Jira 分配`;
   }
   if (section === "mcp") {
     return `MCP Allow List=${draftConfigState.value.mcp.allowList}，Timeout=${draftConfigState.value.mcp.defaultTimeoutMs}ms`;
   }
-  if (section === "codeRetrieval") {
-    return `仓库规则 ${draftConfigState.value.codeRetrieval.repoMappings.length} 条，Jira 关键词规则 ${draftConfigState.value.codeRetrieval.jiraKeywordRules.length} 条`;
-  }
   if (section === "agent") {
-    return `Planner=${draftConfigState.value.agent.plannerAgent}，Reviewer=${draftConfigState.value.agent.reviewerAgent}，并发=${draftConfigState.value.agent.maxParallelism}`;
+    return `规划=${draftConfigState.value.agent.plannerAgent}，评审=${draftConfigState.value.agent.reviewerAgent}，并发=${draftConfigState.value.agent.maxParallelism}`;
   }
   if (section === "skillRules") {
     return `Skill 匹配规则 ${draftConfigState.value.skillRules.length} 条`;
@@ -2927,23 +3817,6 @@ function testIntegrationConnection(target: "jira" | "gitlab" | "mcp") {
   });
 }
 
-function addCodeRetrievalKeywordRule() {
-  draftConfigState.value.codeRetrieval.jiraKeywordRules.push({
-    id: `jira-rule-${Date.now()}`,
-    keyword: "",
-    repository: "",
-    module: "",
-    branch: "",
-  });
-}
-
-function removeCodeRetrievalKeywordRule(ruleId: string) {
-  draftConfigState.value.codeRetrieval.jiraKeywordRules =
-    draftConfigState.value.codeRetrieval.jiraKeywordRules.filter(
-      (rule) => rule.id !== ruleId,
-    );
-}
-
 function addSkillMatchRule() {
   draftConfigState.value.skillRules.push({
     id: `skill-rule-${Date.now()}`,
@@ -2959,6 +3832,72 @@ function removeSkillMatchRule(ruleId: string) {
   draftConfigState.value.skillRules = draftConfigState.value.skillRules.filter(
     (rule) => rule.id !== ruleId,
   );
+}
+
+function openGitTargetsDrawer(issueKey: string) {
+  selectedIssueKey.value = issueKey;
+  selectedRuntimeStageId.value = null;
+  selectedDrawerTab.value = "repos";
+  drawerVisible.value = true;
+  ensureGitTargetsForIssue(selectedIssue.value);
+}
+
+function addJiraGitTarget() {
+  const current = ensureGitTargetsForIssue();
+  jiraGitTargetAssignments.value = {
+    ...jiraGitTargetAssignments.value,
+    [selectedIssue.value.key]: [
+      ...current,
+      {
+        id: `target-${Date.now()}`,
+        repository: "",
+        branch: "",
+        module: selectedIssue.value.productModule ?? selectedIssue.value.component,
+        reason: "人工补充分配",
+      },
+    ],
+  };
+}
+
+function removeJiraGitTarget(targetId: string) {
+  const current = ensureGitTargetsForIssue();
+  jiraGitTargetAssignments.value = {
+    ...jiraGitTargetAssignments.value,
+    [selectedIssue.value.key]: current.filter((target) => target.id !== targetId),
+  };
+}
+
+function resetJiraGitTargets() {
+  jiraGitTargetAssignments.value = {
+    ...jiraGitTargetAssignments.value,
+    [selectedIssue.value.key]: getDefaultGitTargetsForIssue(selectedIssue.value),
+  };
+  persistJiraGitTargetAssignments();
+  addAuditRecord("草稿", "重置仓库分支");
+}
+
+function saveJiraGitTargets() {
+  const normalized = ensureGitTargetsForIssue()
+    .map((target) => ({
+      ...target,
+      repository: target.repository.trim(),
+      branch: target.branch.trim(),
+      module: target.module.trim(),
+      reason: target.reason.trim(),
+    }))
+    .filter(
+      (target) => target.repository.length > 0 && target.branch.length > 0,
+    );
+  jiraGitTargetAssignments.value = {
+    ...jiraGitTargetAssignments.value,
+    [selectedIssue.value.key]:
+      normalized.length > 0
+        ? normalized
+        : getDefaultGitTargetsForIssue(selectedIssue.value),
+  };
+  persistJiraGitTargetAssignments();
+  setDispatchStatus("草稿");
+  addAuditRecord("草稿", "仓库分支配置");
 }
 
 function openSkillDrawer(issueKey: string) {
@@ -3006,6 +3945,9 @@ function openSupplementDrawer(issueKey: string) {
 
 function setDrawerTab(tab: DrawerTab) {
   selectedDrawerTab.value = tab;
+  if (tab === "repos") {
+    ensureGitTargetsForIssue();
+  }
 }
 
 function closeDrawer() {
@@ -3072,7 +4014,7 @@ function addAuditRecord(
       id: `audit-${Date.now()}`,
       issueKey: issue.key,
       skill,
-      agent: selectedSkillRows.value[0]?.agent ?? "Orchestrator",
+      agent: selectedSkillRows.value[0]?.agent ?? "编排调度器",
       workflow: "change_request",
       duration: `${totalSkillEstimate.value}m`,
       status,
@@ -3092,14 +4034,20 @@ function getBulkKeys() {
 function applySkillTemplate(issueKeys = getBulkKeys()) {
   const nextAssignments = { ...skillAssignments.value };
   const nextOverrides = { ...dispatchOverrides.value };
+  const nextGitTargets = { ...jiraGitTargetAssignments.value };
   issueKeys.forEach((issueKey) => {
     const issue = issues.value.find((item) => item.key === issueKey);
     if (!issue) return;
     nextAssignments[issueKey] = getRecommendedSkillIds(issue);
     nextOverrides[issueKey] = "草稿";
+    if (nextGitTargets[issueKey] === undefined || nextGitTargets[issueKey].length === 0) {
+      nextGitTargets[issueKey] = getDefaultGitTargetsForIssue(issue);
+    }
   });
   skillAssignments.value = nextAssignments;
   dispatchOverrides.value = nextOverrides;
+  jiraGitTargetAssignments.value = nextGitTargets;
+  persistJiraGitTargetAssignments();
   addAuditRecord("草稿", `应用模板 ${issueKeys.length} 条`);
 }
 
@@ -3168,6 +4116,11 @@ async function validateAndTrigger() {
       body: JSON.stringify({
         issueKey,
         skillIds,
+        codeTargets: getGitTargetsForIssue(issue).map((target) => ({
+          project: target.repository,
+          ref: target.branch,
+          reason: target.reason,
+        })),
         mode: "dry-run",
       }),
     });
@@ -3264,6 +4217,7 @@ function applyBusinessSkillMatch() {
     ...skillAssignments.value,
     [selectedIssue.value.key]: next,
   };
+  ensureGitTargetsForIssue();
   if (!businessSkillAppliedIssueKeys.value.includes(selectedIssue.value.key)) {
     businessSkillAppliedIssueKeys.value = [
       ...businessSkillAppliedIssueKeys.value,
@@ -3296,17 +4250,6 @@ function openJiraIssue(issue: EngineeringIssue) {
     "_blank",
     "noreferrer",
   );
-}
-
-async function refreshReadonly() {
-  currentTime.value = new Date();
-  await refreshRuntimeData();
-  addAuditRecord("已完成", "只读刷新");
-}
-
-async function syncAndTrigger() {
-  currentTime.value = new Date();
-  await validateAndTrigger();
 }
 
 function downloadEvidencePack() {
@@ -3368,7 +4311,7 @@ function composeAssistantReply(input: string) {
   const businessText =
     businessMatch === null
       ? ""
-      : `已命中「${businessMatch.label}」，建议代码分析锁定 ${businessMatch.repo}/${businessMatch.branch}。`;
+      : `已命中「${businessMatch.label}」，建议代码分析锁定 ${selectedGitTargetSummary.value}。`;
 
   return `${questionHint}建议为 ${focus.key} 分配 ${skills}。${businessText}当前调度状态为「${selectedDispatchStatus.value}」，预计预算 ${totalSkillEstimate.value} 分钟。${decisionText}后续可在右侧抽屉查看 MCP 权限、执行步骤、证据链与 MR。`;
 }
@@ -3474,8 +4417,7 @@ function askStrategyAssistant(question?: string) {
             <span>只读配置中心</span>
             <strong>当前显示运行环境配置，修改会提交为待审批变更申请</strong>
             <p>
-              Jira/GitLab Token 不进入前端；真实生效仍由环境变量、后端配置服务、PolicyGate
-              和 MCP 重启或热加载控制。
+              Jira/GitLab Token 不进入前端；代码检索的仓库与分支在 Jira 调度驾驶舱按单条 Jira 分配。
             </p>
           </div>
           <button type="button" @click="refreshIntegrationStatus">
@@ -3557,7 +4499,7 @@ function askStrategyAssistant(question?: string) {
           <header class="panel-heading">
             <div>
               <span>配置摘要</span>
-              <strong>Jira → 代码检索 → Skill 规则预览</strong>
+              <strong>Jira → 仓库分支 → Skill 规则预览</strong>
             </div>
           </header>
           <div class="config-summary-grid">
@@ -3667,7 +4609,7 @@ function askStrategyAssistant(question?: string) {
           <header class="config-card-head">
             <div>
               <span>GitLab 配置</span>
-              <strong>仓库与分支入口</strong>
+              <strong>连接与凭据状态</strong>
             </div>
             <div class="config-actions">
               <button
@@ -3704,22 +4646,6 @@ function askStrategyAssistant(question?: string) {
               GitLab Base URL
               <input
                 v-model="draftConfigState.gitlab.baseUrl"
-                :disabled="!editingConfigSections.gitlab"
-                type="text"
-              >
-            </label>
-            <label>
-              Group / Project
-              <input
-                v-model="draftConfigState.gitlab.groupOrProject"
-                :disabled="!editingConfigSections.gitlab"
-                type="text"
-              >
-            </label>
-            <label>
-              默认分支
-              <input
-                v-model="draftConfigState.gitlab.defaultBranch"
                 :disabled="!editingConfigSections.gitlab"
                 type="text"
               >
@@ -3813,184 +4739,6 @@ function askStrategyAssistant(question?: string) {
         <section class="panel config-card">
           <header class="config-card-head">
             <div>
-              <span>代码检索配置</span>
-              <strong>仓库映射、分支映射与 Jira 关键词规则</strong>
-            </div>
-            <div class="config-actions">
-              <button
-                v-if="!editingConfigSections.codeRetrieval"
-                type="button"
-                @click="beginEditConfigSection('codeRetrieval')"
-              >
-                编辑
-              </button>
-              <button
-                v-if="editingConfigSections.codeRetrieval"
-                type="button"
-                @click="saveConfigSection('codeRetrieval')"
-              >
-                提交申请
-              </button>
-              <button
-                v-if="editingConfigSections.codeRetrieval"
-                type="button"
-                @click="cancelConfigSection('codeRetrieval')"
-              >
-                取消
-              </button>
-              <button type="button" @click="resetConfigSection('codeRetrieval')">
-                重置
-              </button>
-            </div>
-          </header>
-          <div class="config-table-wrapper">
-            <h4>仓库映射</h4>
-            <table class="config-table">
-              <thead>
-                <tr>
-                  <th>业务来源</th>
-                  <th>仓库</th>
-                  <th>模块</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="item in draftConfigState.codeRetrieval.repoMappings"
-                  :key="item.id"
-                >
-                  <td>
-                    <input
-                      v-model="item.source"
-                      :disabled="!editingConfigSections.codeRetrieval"
-                      type="text"
-                    >
-                  </td>
-                  <td>
-                    <input
-                      v-model="item.repository"
-                      :disabled="!editingConfigSections.codeRetrieval"
-                      type="text"
-                    >
-                  </td>
-                  <td>
-                    <input
-                      v-model="item.module"
-                      :disabled="!editingConfigSections.codeRetrieval"
-                      type="text"
-                    >
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="config-table-wrapper">
-            <h4>分支映射</h4>
-            <table class="config-table">
-              <thead>
-                <tr>
-                  <th>业务来源</th>
-                  <th>分支</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="item in draftConfigState.codeRetrieval.branchMappings"
-                  :key="item.id"
-                >
-                  <td>
-                    <input
-                      v-model="item.source"
-                      :disabled="!editingConfigSections.codeRetrieval"
-                      type="text"
-                    >
-                  </td>
-                  <td>
-                    <input
-                      v-model="item.branch"
-                      :disabled="!editingConfigSections.codeRetrieval"
-                      type="text"
-                    >
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="config-table-wrapper">
-            <h4>Jira 关键词匹配规则</h4>
-            <table class="config-table">
-              <thead>
-                <tr>
-                  <th>关键词</th>
-                  <th>仓库</th>
-                  <th>模块</th>
-                  <th>分支</th>
-                  <th>操作</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="rule in draftConfigState.codeRetrieval.jiraKeywordRules"
-                  :key="rule.id"
-                >
-                  <td>
-                    <input
-                      v-model="rule.keyword"
-                      :disabled="!editingConfigSections.codeRetrieval"
-                      type="text"
-                    >
-                  </td>
-                  <td>
-                    <input
-                      v-model="rule.repository"
-                      :disabled="!editingConfigSections.codeRetrieval"
-                      type="text"
-                    >
-                  </td>
-                  <td>
-                    <input
-                      v-model="rule.module"
-                      :disabled="!editingConfigSections.codeRetrieval"
-                      type="text"
-                    >
-                  </td>
-                  <td>
-                    <input
-                      v-model="rule.branch"
-                      :disabled="!editingConfigSections.codeRetrieval"
-                      type="text"
-                    >
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      :disabled="!editingConfigSections.codeRetrieval"
-                      @click="removeCodeRetrievalKeywordRule(rule.id)"
-                    >
-                      删除
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <button
-              type="button"
-              :disabled="!editingConfigSections.codeRetrieval"
-              @click="addCodeRetrievalKeywordRule"
-            >
-              新增规则
-            </button>
-            <p class="config-inline-status">
-              示例：Angular17 Jira 匹配
-              <code>{{
-                angular17MappingPreview.repository
-              }}@{{ angular17MappingPreview.branch }}</code>
-            </p>
-          </div>
-        </section>
-
-        <section class="panel config-card">
-          <header class="config-card-head">
-            <div>
               <span>Agent 配置</span>
               <strong>执行编排策略</strong>
             </div>
@@ -4021,7 +4769,7 @@ function askStrategyAssistant(question?: string) {
           </header>
           <div class="config-form-grid two-columns">
             <label>
-              Planner Agent
+              规划 Agent
               <input
                 v-model="draftConfigState.agent.plannerAgent"
                 :disabled="!editingConfigSections.agent"
@@ -4029,7 +4777,7 @@ function askStrategyAssistant(question?: string) {
               >
             </label>
             <label>
-              Reviewer Agent
+              评审 Agent
               <input
                 v-model="draftConfigState.agent.reviewerAgent"
                 :disabled="!editingConfigSections.agent"
@@ -4241,6 +4989,431 @@ function askStrategyAssistant(question?: string) {
               >
             </label>
           </div>
+        </section>
+      </section>
+      <section
+        v-else-if="isSkillManagementPanel"
+        class="skill-management-page"
+      >
+        <header class="topbar command-topbar skill-management-topbar">
+          <div class="brand-block">
+            <div class="brand-mark">SK</div>
+            <div>
+              <span>Skill Management</span>
+              <strong>业务 Skill 库与协议适配</strong>
+            </div>
+            <em>Canonical Model</em>
+          </div>
+          <div class="command-actions">
+            <button
+              type="button"
+              class="theme-toggle"
+              :aria-label="themeToggleLabel"
+              :aria-pressed="themeMode === 'day'"
+              @click="toggleThemeMode"
+            >
+              <span aria-hidden="true">{{ themeMode === "day" ? "日" : "夜" }}</span>
+              {{ themeModeLabel }}
+            </button>
+            <button type="button" class="time-chip" @click="currentTime = new Date()">
+              <span>{{ formattedDate }}</span>
+              <strong>{{ formattedTime }}</strong>
+              <em>{{ skillManagementSummary.total }} 个 Skill</em>
+            </button>
+          </div>
+        </header>
+
+        <section class="module-notice skill-standard-banner" role="status">
+          <div>
+            <span>协议判断</span>
+            <strong>厂商协议尚未完全闭合，内部先维护 Canonical Skill</strong>
+            <p>
+              Agent Skills / SKILL.md 已在代码 Agent 场景收敛；OpenAI、Microsoft 365 Copilot、Gemini Gems 仍需目标平台适配。
+            </p>
+          </div>
+        </section>
+
+        <section class="skill-management-kpis" aria-label="Skill 管理摘要">
+          <article class="skill-metric">
+            <span>业务 Skill</span>
+            <strong>{{ skillManagementSummary.total }}</strong>
+            <p>{{ skillManagementSummary.active }} 个已发布</p>
+          </article>
+          <article class="skill-metric">
+            <span>语义资产</span>
+            <strong>{{ skillManagementSummary.semanticAssetCount }}</strong>
+            <p>候选与已采纳经验</p>
+          </article>
+          <article class="skill-metric">
+            <span>导出目标</span>
+            <strong>{{ skillManagementSummary.exportTargetCount }}</strong>
+            <p>按厂商协议适配</p>
+          </article>
+          <article class="skill-metric tone-warn">
+            <span>协议闭合</span>
+            <strong>未完成</strong>
+            <p>SKILL.md 收敛中，MCP 只管工具边界</p>
+          </article>
+        </section>
+
+        <section
+          v-if="skillManagementFeedback !== null"
+          class="config-feedback"
+          :class="`tone-${skillManagementFeedback.tone}`"
+          role="status"
+          aria-live="polite"
+        >
+          <strong>{{ skillManagementFeedback.title }}</strong>
+          <p>{{ skillManagementFeedback.detail }}</p>
+        </section>
+
+        <section class="skill-management-layout">
+          <aside class="panel skill-library-panel">
+            <header class="panel-heading">
+              <div>
+                <span>业务 Skill 库</span>
+                <strong>可维护资产</strong>
+              </div>
+            </header>
+            <div class="managed-skill-list">
+              <button
+                v-for="skill in managedBusinessSkills"
+                :key="skill.id"
+                type="button"
+                :class="{ active: selectedManagedSkill.id === skill.id }"
+                @click="selectManagedSkill(skill.id)"
+              >
+                <span>{{ skill.status }} · v{{ skill.version }}</span>
+                <strong>{{ skill.name }}</strong>
+                <em>{{ skill.triggerKeywords.slice(0, 4).join(" / ") }}</em>
+              </button>
+            </div>
+            <div class="skill-library-actions">
+              <button type="button" @click="saveManagedBusinessSkill">
+                保存当前 Skill
+              </button>
+              <button type="button" @click="resetManagedBusinessSkills">
+                恢复默认
+              </button>
+            </div>
+          </aside>
+
+          <section class="panel skill-editor-panel">
+            <header class="panel-heading">
+              <div>
+                <span>Skill 定义</span>
+                <strong>{{ selectedManagedSkill.name }}</strong>
+              </div>
+              <em>最近保存 {{ selectedManagedSkill.savedAt }}</em>
+            </header>
+
+            <div class="skill-editor-grid">
+              <label>
+                Skill 名称
+                <input
+                  :value="selectedManagedSkill.name"
+                  name="managed-skill-name"
+                  type="text"
+                  @input="updateSelectedManagedSkillField('name', readFormValue($event))"
+                >
+              </label>
+              <label>
+                版本
+                <input
+                  :value="selectedManagedSkill.version"
+                  name="managed-skill-version"
+                  type="text"
+                  @input="updateSelectedManagedSkillField('version', readFormValue($event))"
+                >
+              </label>
+              <label>
+                Owner
+                <input
+                  :value="selectedManagedSkill.owner"
+                  name="managed-skill-owner"
+                  type="text"
+                  @input="updateSelectedManagedSkillField('owner', readFormValue($event))"
+                >
+              </label>
+              <label>
+                状态
+                <select
+                  :value="selectedManagedSkill.status"
+                  name="managed-skill-status"
+                  @change="updateSelectedManagedSkillStatus(readFormValue($event))"
+                >
+                  <option value="草稿">草稿</option>
+                  <option value="已发布">已发布</option>
+                  <option value="观察中">观察中</option>
+                  <option value="下线">下线</option>
+                </select>
+              </label>
+              <label class="full-row">
+                描述
+                <textarea
+                  :value="selectedManagedSkill.description"
+                  name="managed-skill-description"
+                  rows="2"
+                  @input="updateSelectedManagedSkillField('description', readFormValue($event))"
+                />
+              </label>
+              <label class="full-row">
+                正触发
+                <textarea
+                  :value="selectedManagedSkill.positiveTrigger"
+                  name="managed-skill-positive-trigger"
+                  rows="3"
+                  @input="updateSelectedManagedSkillField('positiveTrigger', readFormValue($event))"
+                />
+              </label>
+              <label class="full-row">
+                反触发
+                <textarea
+                  :value="selectedManagedSkill.negativeTrigger"
+                  name="managed-skill-negative-trigger"
+                  rows="3"
+                  @input="updateSelectedManagedSkillField('negativeTrigger', readFormValue($event))"
+                />
+              </label>
+              <label>
+                触发关键词
+                <textarea
+                  :value="formatSkillList(selectedManagedSkill.triggerKeywords)"
+                  name="managed-skill-trigger-keywords"
+                  rows="4"
+                  @input="updateSelectedManagedSkillList('triggerKeywords', readFormValue($event))"
+                />
+              </label>
+              <label>
+                默认链路
+                <textarea
+                  :value="formatSkillList(selectedManagedSkill.defaultWorkflow)"
+                  name="managed-skill-default-workflow"
+                  rows="4"
+                  @input="updateSelectedManagedSkillList('defaultWorkflow', readFormValue($event))"
+                />
+              </label>
+              <label>
+                MCP 白名单
+                <textarea
+                  :value="formatSkillList(selectedManagedSkill.mcpAllowList)"
+                  name="managed-skill-mcp-allow-list"
+                  rows="4"
+                  @input="updateSelectedManagedSkillList('mcpAllowList', readFormValue($event))"
+                />
+              </label>
+              <label>
+                Reference 文件
+                <textarea
+                  :value="formatSkillList(selectedManagedSkill.referenceFiles)"
+                  name="managed-skill-reference-files"
+                  rows="4"
+                  @input="updateSelectedManagedSkillList('referenceFiles', readFormValue($event))"
+                />
+              </label>
+            </div>
+
+            <section class="skill-editor-section">
+              <header>
+                <span>仓库与分支</span>
+                <strong>{{ selectedManagedSkill.repositoryTargets.length }} 个目标</strong>
+              </header>
+              <div class="skill-target-grid">
+                <article
+                  v-for="target in selectedManagedSkill.repositoryTargets"
+                  :key="`${selectedManagedSkill.id}-${target.id}`"
+                >
+                  <span>{{ target.module }}</span>
+                  <strong>{{ target.repository }}@{{ target.branch }}</strong>
+                  <p>{{ target.reason }}</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="skill-editor-section">
+              <header>
+                <span>语义资产沉淀</span>
+                <strong>使用反馈驱动 Skill 进化</strong>
+              </header>
+              <div class="semantic-asset-list">
+                <article
+                  v-for="asset in selectedManagedSkill.semanticAssets"
+                  :key="asset.id"
+                  :class="`status-${asset.status}`"
+                >
+                  <span>{{ asset.source }} · {{ asset.status }} · {{ asset.impact }}</span>
+                  <strong>{{ asset.summary }}</strong>
+                  <p>{{ asset.evidence }}</p>
+                </article>
+              </div>
+              <button type="button" @click="generateSkillImprovementCandidate">
+                生成改进候选
+              </button>
+            </section>
+          </section>
+
+          <aside class="panel skill-protocol-panel">
+            <header class="panel-heading">
+              <div>
+                <span>协议矩阵</span>
+                <strong>市场协议状态</strong>
+              </div>
+            </header>
+            <div class="protocol-card-list">
+              <button
+                v-for="protocol in vendorProtocolCards"
+                :key="protocol.id"
+                type="button"
+                :class="{ active: selectedExportTarget === protocol.id }"
+                @click="selectedExportTarget = protocol.id"
+              >
+                <span>{{ protocol.maturity }} · {{ protocol.shared ? "共享协议" : "需适配" }}</span>
+                <strong>{{ protocol.name }}</strong>
+                <em>{{ protocol.vendors.join(" / ") }}</em>
+              </button>
+            </div>
+            <section class="protocol-detail">
+              <span>{{ selectedVendorProtocol.name }}</span>
+              <strong>{{ selectedVendorProtocol.packageShape }}</strong>
+              <p>{{ selectedVendorProtocol.adapterStrategy }}</p>
+            </section>
+          </aside>
+        </section>
+
+        <section class="panel skill-export-panel">
+          <header class="panel-heading">
+            <div>
+              <span>导出预览</span>
+              <strong>{{ selectedManagedSkill.name }} → {{ selectedVendorProtocol.name }}</strong>
+            </div>
+          </header>
+          <pre>{{ selectedSkillExportPreview }}</pre>
+        </section>
+      </section>
+      <section
+        v-else-if="isAgentStatusPanel"
+        class="agent-status-page"
+      >
+        <header class="topbar command-topbar agent-status-topbar">
+          <div class="brand-block">
+            <div class="brand-mark">AG</div>
+            <div>
+              <span>Agent Runtime</span>
+              <strong>Agent 状态与优化分析</strong>
+            </div>
+            <em>当前 Jira 队列</em>
+          </div>
+          <div class="command-actions">
+            <button
+              type="button"
+              class="theme-toggle"
+              :aria-label="themeToggleLabel"
+              :aria-pressed="themeMode === 'day'"
+              @click="toggleThemeMode"
+            >
+              <span aria-hidden="true">{{ themeMode === "day" ? "日" : "夜" }}</span>
+              {{ themeModeLabel }}
+            </button>
+            <button type="button" class="time-chip" @click="currentTime = new Date()">
+              <span>{{ formattedDate }}</span>
+              <strong>{{ formattedTime }}</strong>
+              <em>{{ filteredIssues.length }} / {{ issues.length }} 条 Jira</em>
+            </button>
+          </div>
+        </header>
+
+        <section class="module-notice agent-status-source" role="status">
+          <div>
+            <span>真实队列派生</span>
+            <strong>按当前 Jira 筛选结果评估各阶段 Agent 状态</strong>
+            <p>{{ agentStatusSourceLabel }}</p>
+          </div>
+        </section>
+
+        <section class="agent-health-grid" aria-label="Agent 状态总览">
+          <article class="agent-health-card">
+            <span>可见 Agent</span>
+            <strong>{{ agentStatusSummary.agents }}</strong>
+            <p>按阶段绑定的执行角色统计</p>
+          </article>
+          <article class="agent-health-card">
+            <span>运行中</span>
+            <strong>{{ agentStatusSummary.running }}</strong>
+            <p>存在 running 阶段样本</p>
+          </article>
+          <article class="agent-health-card">
+            <span>阻塞/等待</span>
+            <strong>{{ agentStatusSummary.blocked }}</strong>
+            <p>存在 waiting 或 failed 样本</p>
+          </article>
+          <article class="agent-health-card tone-warn">
+            <span>建议优化</span>
+            <strong>{{ agentStatusSummary.optimize }}</strong>
+            <p>由阶段样本自动判断</p>
+          </article>
+        </section>
+
+        <section class="panel agent-stage-control">
+          <header class="panel-heading">
+            <div>
+              <span>阶段数据</span>
+              <strong>选择一个阶段查看对应 Agent 是否需要优化</strong>
+            </div>
+          </header>
+          <label>
+            阶段
+            <select v-model="selectedAgentStageId">
+              <option value="all">全部阶段</option>
+              <option
+                v-for="stage in agentStageOptions"
+                :key="stage.value"
+                :value="stage.value"
+              >
+                {{ stage.label }}
+              </option>
+            </select>
+          </label>
+        </section>
+
+        <section class="agent-status-grid" aria-label="Agent 状态与优化建议">
+          <article
+            v-for="row in agentStageHealthRows"
+            :key="row.stageId"
+            class="agent-health-row"
+            :class="`tone-${row.tone}`"
+          >
+            <header>
+              <div>
+                <span>{{ row.stageName }} · {{ row.skill }}</span>
+                <strong>{{ row.agent }}</strong>
+              </div>
+              <mark :class="`tone-${row.optimizationTone}`">
+                {{ row.optimizationLabel }}
+              </mark>
+            </header>
+            <div class="agent-row-metrics">
+              <span>状态 <strong>{{ row.statusLabel }}</strong></span>
+              <span>样本 <strong>{{ row.total }}</strong></span>
+              <span>运行 <strong>{{ row.running }}</strong></span>
+              <span>等待 <strong>{{ row.waiting }}</strong></span>
+              <span>失败 <strong>{{ row.failed }}</strong></span>
+              <span>均耗 <strong>{{ row.avgElapsedMinutes || "-" }}m</strong></span>
+            </div>
+            <p>{{ row.recommendation }}</p>
+            <ul>
+              <li v-for="item in row.evidence" :key="item">{{ item }}</li>
+            </ul>
+            <div v-if="row.activeIssueKeys.length > 0" class="agent-issue-links">
+              <button
+                v-for="issueKey in row.activeIssueKeys"
+                :key="issueKey"
+                type="button"
+                @click="openRuntimeDetailsForIssue(issueKey)"
+              >
+                {{ issueKey }}
+              </button>
+            </div>
+          </article>
         </section>
       </section>
       <section
@@ -4577,10 +5750,6 @@ function askStrategyAssistant(question?: string) {
           </div>
 
           <div class="command-actions">
-            <label class="auto-toggle">
-              <input v-model="autoExecuteEnabled" type="checkbox">
-              <span>自动执行：{{ autoExecuteEnabled ? "ON" : "OFF" }}</span>
-            </label>
             <button
               type="button"
               class="theme-toggle"
@@ -4639,12 +5808,6 @@ function askStrategyAssistant(question?: string) {
                 </footer>
               </section>
             </div>
-            <button type="button" class="ghost-action" @click="refreshReadonly">
-              刷新
-            </button>
-            <button type="button" class="primary-action" @click="syncAndTrigger">
-              同步并触发
-            </button>
           </div>
         </header>
 
@@ -4963,6 +6126,12 @@ function askStrategyAssistant(question?: string) {
                       </button>
                       <button
                         type="button"
+                        @click="openGitTargetsDrawer(row.issue.key)"
+                      >
+                        仓库分支
+                      </button>
+                      <button
+                        type="button"
                         @click="openSkillDrawer(row.issue.key)"
                       >
                         编排 Skill
@@ -5203,6 +6372,9 @@ function askStrategyAssistant(question?: string) {
                 >
                   {{ descriptionExpanded ? "收起原文" : "查看原文" }}
                 </button>
+                <button type="button" @click="setDrawerTab('repos')">
+                  配置仓库
+                </button>
                 <button type="button" @click="openSkillDrawer(selectedIssue.key)">
                   分配 Skill
                 </button>
@@ -5248,6 +6420,75 @@ function askStrategyAssistant(question?: string) {
             </section>
 
             <section
+              v-if="selectedDrawerTab === 'repos'"
+              class="drawer-section git-target-compose"
+            >
+              <div class="recommendation-card">
+                <span>当前 Jira 使用的 Git 项目与分支</span>
+                <p>
+                  每条 Jira 可以单独维护一个或多个检索目标；Dry-run 会把这些目标作为 Code Retrieval 的检索边界。
+                </p>
+                <strong>{{ selectedGitTargetSummary }}</strong>
+              </div>
+
+              <div class="git-target-list">
+                <article
+                  v-for="target in selectedGitTargets"
+                  :key="target.id"
+                  class="git-target-row"
+                >
+                  <label>
+                    Git 项目
+                    <input
+                      v-model="target.repository"
+                      type="text"
+                      placeholder="group/project"
+                    >
+                  </label>
+                  <label>
+                    分支
+                    <input
+                      v-model="target.branch"
+                      type="text"
+                      placeholder="develop"
+                    >
+                  </label>
+                  <label>
+                    模块
+                    <input
+                      v-model="target.module"
+                      type="text"
+                      placeholder="module/path"
+                    >
+                  </label>
+                  <label>
+                    分配原因
+                    <input
+                      v-model="target.reason"
+                      type="text"
+                      placeholder="命中规则或人工补充原因"
+                    >
+                  </label>
+                  <button type="button" @click="removeJiraGitTarget(target.id)">
+                    删除
+                  </button>
+                </article>
+              </div>
+
+              <div class="git-target-actions">
+                <button type="button" @click="addJiraGitTarget">
+                  新增仓库
+                </button>
+                <button type="button" @click="resetJiraGitTargets">
+                  重置推荐
+                </button>
+                <button type="button" class="primary-action" @click="saveJiraGitTargets">
+                  保存仓库分支
+                </button>
+              </div>
+            </section>
+
+            <section
               v-if="selectedDrawerTab === 'skills'"
               class="drawer-section skill-compose"
             >
@@ -5279,13 +6520,12 @@ function askStrategyAssistant(question?: string) {
                 <template v-if="selectedBusinessSkillMatch !== null">
                   <p>{{ selectedBusinessSkillMatch.reason }}</p>
                   <div class="business-skill-map">
-                    <span>
-                      代码库
-                      <strong>{{ selectedBusinessSkillMatch.repo }}</strong>
-                    </span>
-                    <span>
-                      分支
-                      <strong>{{ selectedBusinessSkillMatch.branch }}</strong>
+                    <span
+                      v-for="target in selectedBusinessSkillMatch.gitTargets"
+                      :key="`${target.repository}-${target.branch}-${target.module}`"
+                    >
+                      {{ target.module || "默认模块" }}
+                      <strong>{{ target.repository }}@{{ target.branch }}</strong>
                     </span>
                   </div>
                   <div class="business-signal-list" aria-label="匹配信号">
@@ -5808,9 +7048,12 @@ function askStrategyAssistant(question?: string) {
                   </a>
                 </p>
                 <div class="chip-list">
-                  <span v-for="repo in selectedIssue.impactedRepos" :key="repo">{{
-                    repo
-                  }}</span>
+                  <span
+                    v-for="target in selectedGitTargets"
+                    :key="`${target.repository}-${target.branch}`"
+                  >
+                    {{ target.repository }}@{{ target.branch }}
+                  </span>
                   <span
                     v-for="module in selectedIssue.impactedModules"
                     :key="module"

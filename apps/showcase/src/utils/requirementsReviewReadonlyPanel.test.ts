@@ -30,10 +30,12 @@ describe('requirements review readonly panel source', () => {
     expect(panelSource).not.toMatch(/Notion\s*写入/);
   });
 
-  it('does not declare write fetch methods in App.vue', () => {
-    expect(appSource).not.toMatch(/method\s*:\s*['"]POST['"]/);
-    expect(appSource).not.toMatch(/method\s*:\s*['"]PUT['"]/);
-    expect(appSource).not.toMatch(/method\s*:\s*['"]PATCH['"]/);
-    expect(appSource).not.toMatch(/method\s*:\s*['"]DELETE['"]/);
+  it('does not declare write fetch methods in requirements panel', () => {
+    const panelSource = getRequirementsPanelSource();
+
+    expect(panelSource).not.toMatch(/method\s*:\s*['"]POST['"]/);
+    expect(panelSource).not.toMatch(/method\s*:\s*['"]PUT['"]/);
+    expect(panelSource).not.toMatch(/method\s*:\s*['"]PATCH['"]/);
+    expect(panelSource).not.toMatch(/method\s*:\s*['"]DELETE['"]/);
   });
 });

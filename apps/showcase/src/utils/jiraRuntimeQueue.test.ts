@@ -29,8 +29,19 @@ describe('jira runtime queue source', () => {
     expect(appSource).toContain('Jira 队列未加载');
   });
 
-  it('refresh button path triggers runtime data refresh', () => {
-    expect(appSource).toContain('async function refreshReadonly()');
-    expect(appSource).toContain('await refreshRuntimeData();');
+  it('loads runtime data on initial mount without exposing removed topbar actions', () => {
+    expect(appSource).toContain('void refreshRuntimeData();');
+    expect(appSource).not.toContain('autoExecuteEnabled');
+    expect(appSource).not.toContain('async function refreshReadonly()');
+    expect(appSource).not.toContain('async function syncAndTrigger()');
+    expect(appSource).not.toContain('同步并触发');
+  });
+
+  it('moves repository and branch assignment from config center into jira drawer', () => {
+    expect(appSource).not.toContain('<span>代码检索配置</span>');
+    expect(appSource).not.toContain('addCodeRetrievalKeywordRule');
+    expect(appSource).toContain('{ id: "repos", label: "仓库分支" }');
+    expect(appSource).toContain('function openGitTargetsDrawer(issueKey: string)');
+    expect(appSource).toContain('codeTargets: getGitTargetsForIssue(issue).map((target) => ({');
   });
 });
